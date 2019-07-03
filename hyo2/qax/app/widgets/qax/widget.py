@@ -9,6 +9,7 @@ from hyo2.abc.app.qt_progress import QtProgress
 from hyo2.qax.app.widgets.widget import AbstractWidget
 from hyo2.qax.lib.project import QAXProject
 from hyo2.qax.app.widgets.qax.main_tab import MainTab
+from hyo2.qax.app.widgets.qax.qc_tools_tab import QCToolsTab
 
 logger = logging.getLogger(__name__)
 
@@ -69,11 +70,17 @@ class QAXWidget(AbstractWidget):
         self.tabs.setTabPosition(QtWidgets.QTabWidget.South)
         # main tab
         self.tab_inputs = MainTab(parent_win=self, prj=self.prj)
-
         # noinspection PyArgumentList
         self.idx_inputs = self.tabs.insertTab(0, self.tab_inputs,
-                                              QtGui.QIcon(os.path.join(self.media, 'app_icon.png')), "")
+                                              QtGui.QIcon(os.path.join(self.media, 'qax.png')), "")
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
+        # QC Tools tab
+        self.tab_qc_tools = QCToolsTab(parent_win=self, prj=self.prj)
+        # noinspection PyArgumentList
+        self.idx_qc_tools = self.tabs.insertTab(1, self.tab_qc_tools,
+                                                QtGui.QIcon(os.path.join(self.media, 'qc_tools.png')), "")
+        self.tabs.setTabEnabled(self.idx_qc_tools, False)
+        self.tabs.setTabToolTip(self.idx_qc_tools, "QC Tools")
         # noinspection PyUnresolvedReferences
         self.tabs.currentChanged.connect(self.change_tabs)
 

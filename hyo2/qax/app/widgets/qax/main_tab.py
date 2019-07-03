@@ -299,123 +299,163 @@ class MainTab(QtWidgets.QMainWindow):
 
         hbox.addStretch()
 
-        self.vbox.addSpacing(10)
-        
+        self.vbox.addStretch()
+
+        # data outputs
+        self.checksSuite = QtWidgets.QGroupBox("Checks suite")
+        self.checksSuite.setStyleSheet("QGroupBox::title { color: rgb(155, 155, 155); }")
+        self.checksSuite.setMaximumHeight(GuiSettings.single_line_height() * 8)
+        self.vbox.addWidget(self.checksSuite)
+
+        vbox = QtWidgets.QVBoxLayout()
+        self.checksSuite.setLayout(vbox)
+
         hbox = QtWidgets.QHBoxLayout()
-        self.vbox.addLayout(hbox)
+        vbox.addLayout(hbox)
         hbox.addStretch()
-        button_load_checks = QtWidgets.QPushButton()
-        hbox.addWidget(button_load_checks)
-        button_load_checks.setFixedHeight(GuiSettings.single_line_height())
-        # button_load_checks.setFixedWidth(GuiSettings.single_line_height())
-        button_load_checks.setText("Load Checks")
-        button_load_checks.setToolTip('Load the checks')
-        # noinspection PyUnresolvedReferences
-        button_load_checks.clicked.connect(self.click_load_checks)
         button_generate_checks = QtWidgets.QPushButton()
         hbox.addWidget(button_generate_checks)
         button_generate_checks.setFixedHeight(GuiSettings.single_line_height())
         # button_generate_checks.setFixedWidth(GuiSettings.single_line_height())
-        button_generate_checks.setText("Generate Checks")
-        button_generate_checks.setToolTip('Generate the checks based on the selected profile')
+        button_generate_checks.setText("Generate")
+        button_generate_checks.setToolTip('Generate the QA JSON checks based on the selected profile')
         # noinspection PyUnresolvedReferences
         button_generate_checks.clicked.connect(self.click_generate_checks)
         hbox.addStretch()
 
-        # self.installEventFilter(self)
+        # add folder
+        hbox = QtWidgets.QHBoxLayout()
+        vbox.addLayout(hbox)
+        text_add_folder = QtWidgets.QLabel("QA JSON:")
+        hbox.addWidget(text_add_folder)
+        text_add_folder.setMinimumWidth(64)
+        self.qa_json = QtWidgets.QListWidget()
+        hbox.addWidget(self.qa_json)
+        self.qa_json.setMinimumHeight(GuiSettings.single_line_height())
+        self.qa_json.setMaximumHeight(GuiSettings.single_line_height() * 2)
+        self.qa_json.clear()
+        # Enable dropping onto the input ss list
+        self.qa_json.setAcceptDrops(True)
+        self.qa_json.installEventFilter(self)
+        button_add_json = QtWidgets.QPushButton()
+        hbox.addWidget(button_add_json)
+        button_add_json.setFixedHeight(GuiSettings.single_line_height())
+        button_add_json.setFixedWidth(GuiSettings.single_line_height())
+        button_add_json.setText(" .. ")
+        button_add_json.setToolTip('Add (or drag-and-drop) QA JSON')
+        # noinspection PyUnresolvedReferences
+        button_add_json.clicked.connect(self.click_add_json)
+
+        self.installEventFilter(self)
 
         self.on_set_profiles()
 
-    # def eventFilter(self, obj, e):
-    #
-    #     # drag events
-    #     if (e.type() == QtCore.QEvent.DragEnter) or (e.type() == QtCore.QEvent.DragMove):
-    #
-    #         if obj in (self.input_dtm, ):
-    #
-    #             if e.mimeData().hasUrls:
-    #
-    #                 for url in e.mimeData().urls():
-    #
-    #                     if Helper.is_darwin():
-    #                         dropping_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-    #
-    #                     else:
-    #                         dropping_file = str(url.toLocalFile())
-    #
-    #                     if os.path.splitext(dropping_file)[-1].lower() in (".bag", ".tiff", ".tif"):
-    #                         e.accept()
-    #                         return True
-    #
-    #         elif obj in (self.input_enc, self.input_ss):
-    #
-    #             if e.mimeData().hasUrls:
-    #
-    #                 for url in e.mimeData().urls():
-    #
-    #                     if Helper.is_darwin():
-    #                         dropping_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-    #
-    #                     else:
-    #                         dropping_file = str(url.toLocalFile())
-    #
-    #                     if os.path.splitext(dropping_file)[-1].lower() in (".000", ):
-    #                         e.accept()
-    #                         return True
-    #
-    #         elif obj in (self.output_folder,):
-    #
-    #             if e.mimeData().hasUrls:
-    #
-    #                 for url in e.mimeData().urls():
-    #
-    #                     if Helper.is_darwin():
-    #                         dropped_path = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-    #
-    #                     else:
-    #                         dropped_path = str(url.toLocalFile())
-    #
-    #                     dropped_path = os.path.abspath(dropped_path)
-    #
-    #                     if os.path.isdir(dropped_path):
-    #                         e.accept()
-    #                         return True
-    #
-    #         e.ignore()
-    #         return True
-    #
-    #     # drop events
-    #     if e.type() == QtCore.QEvent.Drop:
-    #
-    #         # print('drop', obj)
-    #         if obj is self.input_dtm:
-    #
-    #             if e.mimeData().hasUrls():
-    #
-    #                 e.setDropAction(QtCore.Qt.CopyAction)
-    #                 e.accept()
-    #                 # Workaround for OSx dragging and dropping
-    #                 for url in e.mimeData().urls():
-    #                     if Helper.is_darwin():
-    #                         dropped_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-    #                     else:
-    #                         dropped_file = str(url.toLocalFile())
-    #
-    #                     logger.debug("dropped file: %s" % dropped_file)
-    #                     if os.path.splitext(dropped_file)[-1] in (".bag", ".tiff", ".tif"):
-    #
-    #                         self._add_dtm(selection=dropped_file)
-    #
-    #                     else:
-    #                         msg = 'Drag-and-drop is only possible with the following file extensions:\n' \
-    #                               '- BAG files: .bag\n\n' \
-    #                               '- GeoTIff files: .tif, .tiff\n\n' \
-    #                               'Dropped file:\n' \
-    #                               '%s' % dropped_file
-    #                         # noinspection PyCallByClass,PyArgumentList
-    #                         QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
-    #                 return True
-    #
+    def eventFilter(self, obj, e):
+
+        # drag events
+        if (e.type() == QtCore.QEvent.DragEnter) or (e.type() == QtCore.QEvent.DragMove):
+
+            if obj in (self.input_dtm, ):
+
+                if e.mimeData().hasUrls:
+
+                    for url in e.mimeData().urls():
+
+                        if Helper.is_darwin():
+                            dropping_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
+
+                        else:
+                            dropping_file = str(url.toLocalFile())
+
+                        if os.path.splitext(dropping_file)[-1].lower() in (".bag", ".csar"):
+                            e.accept()
+                            return True
+
+            elif obj in (self.input_ff,):
+
+                if e.mimeData().hasUrls:
+
+                    for url in e.mimeData().urls():
+
+                        if Helper.is_darwin():
+                            dropping_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
+
+                        else:
+                            dropping_file = str(url.toLocalFile())
+
+                        if os.path.splitext(dropping_file)[-1].lower() in (".000", ):
+                            e.accept()
+                            return True
+
+            elif obj in (self.output_folder,):
+
+                if e.mimeData().hasUrls:
+
+                    for url in e.mimeData().urls():
+
+                        if Helper.is_darwin():
+                            dropped_path = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
+
+                        else:
+                            dropped_path = str(url.toLocalFile())
+
+                        dropped_path = os.path.abspath(dropped_path)
+
+                        if os.path.isdir(dropped_path):
+                            e.accept()
+                            return True
+
+            elif obj in (self.qa_json,):
+
+                if e.mimeData().hasUrls:
+
+                    for url in e.mimeData().urls():
+
+                        if Helper.is_darwin():
+                            dropping_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
+
+                        else:
+                            dropping_file = str(url.toLocalFile())
+
+                        if os.path.splitext(dropping_file)[-1].lower() in (".json", ):
+                            e.accept()
+                            return True
+
+            e.ignore()
+            return True
+
+        # drop events
+        if e.type() == QtCore.QEvent.Drop:
+
+            # print('drop', obj)
+            if obj is self.input_dtm:
+
+                if e.mimeData().hasUrls():
+
+                    e.setDropAction(QtCore.Qt.CopyAction)
+                    e.accept()
+                    # Workaround for OSx dragging and dropping
+                    for url in e.mimeData().urls():
+                        if Helper.is_darwin():
+                            dropped_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
+                        else:
+                            dropped_file = str(url.toLocalFile())
+
+                        logger.debug("dropped file: %s" % dropped_file)
+                        if os.path.splitext(dropped_file)[-1] in (".bag", ".csar"):
+
+                            self._add_dtm(selection=dropped_file)
+
+                        else:
+                            msg = 'Drag-and-drop is only possible with the following file extensions:\n' \
+                                  '- BAG files: .bag\n\n' \
+                                  '- CSAR files: .csar\n\n' \
+                                  'Dropped file:\n' \
+                                  '%s' % dropped_file
+                            # noinspection PyCallByClass,PyArgumentList
+                            QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
+                    return True
+
     #         elif obj is self.input_enc:
     #
     #             if e.mimeData().hasUrls():
@@ -495,11 +535,11 @@ class MainTab(QtWidgets.QMainWindow):
     #                         QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
     #
     #                 return True
-    #
-    #         e.ignore()
-    #         return True
-    #
-    #     return QtWidgets.QMainWindow.eventFilter(self, obj, e)
+
+            e.ignore()
+            return True
+
+        return QtWidgets.QMainWindow.eventFilter(self, obj, e)
 
     def on_set_profiles(self):
         profile_text = self.set_profiles.currentText()
@@ -568,80 +608,65 @@ class MainTab(QtWidgets.QMainWindow):
         """ Read the DTM files provided by the user"""
         logger.debug('adding DTM ...')
 
-    #     # ask the file path to the user
-    #     # noinspection PyCallByClass
-    #     selections, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Add DTM file",
-    #                                                            QtCore.QSettings().value("dtm_import_folder"),
-    #                                                            "Supported formats (*.bag *.tif *.tiff);; "
-    #                                                            "BAG file (*.bag);;GeoTiff file (*.tif *.tiff);;"
-    #                                                            "All files (*.*)")
-    #     if len(selections) == 0:
-    #         logger.debug('adding dtm: aborted')
-    #         return
-    #     last_open_folder = os.path.dirname(selections[0])
-    #     if os.path.exists(last_open_folder):
-    #         QtCore.QSettings().setValue("dtm_import_folder", last_open_folder)
-    #
-    #     for selection in selections:
-    #         selection = os.path.abspath(selection).replace("\\", "/")
-    #         self._add_dtm(selection=selection)
-    #
-    # def _add_dtm(self, selection):
-    #
-    #     # attempt to read the data
-    #     try:
-    #         self.prj.add_input_dtm_path(selection)
-    #
-    #     except Exception as e:  # more general case that catches all the exceptions
-    #         msg = '<b>Error setting \"%s\".</b>' % selection
-    #         msg += '<br><br><font color=\"red\">%s</font>' % e
-    #         # noinspection PyCallByClass,PyArgumentList
-    #         QtWidgets.QMessageBox.critical(self, "Data Setting Error", msg, QtWidgets.QMessageBox.Ok)
-    #         logger.error('DTM file NOT added: %s' % selection)
-    #         return
-    #
-    #     self._update_input_dtm_list()
-    #     self.parent_win.dtm_loaded()
-    #
-    # def _update_input_dtm_list(self):
-    #     self.input_dtm.clear()
-    #     for input_dtm_path in self.prj.input_dtm_paths:
-    #         new_item = QtWidgets.QListWidgetItem()
-    #         if os.path.splitext(input_dtm_path)[-1] == ".bag":
-    #             new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'bag.png')))
-    #         elif os.path.splitext(input_dtm_path)[-1] in [".tif", ".tiff"]:
-    #             new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'tif.png')))
-    #         new_item.setText(input_dtm_path)
-    #         new_item.setFont(GuiSettings.console_font())
-    #         new_item.setForeground(GuiSettings.console_fg_color())
-    #         self.input_dtm.addItem(new_item)
+        # ask the file path to the user
+        # noinspection PyCallByClass
+        selections, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Add DTM file",
+                                                               QtCore.QSettings().value("dtm_import_folder"),
+                                                               "Supported formats (*.bag *.csar);; "
+                                                               "BAG file (*.bag);;CSAR file (*.csar);;"
+                                                               "All files (*.*)")
+        if len(selections) == 0:
+            logger.debug('adding dtm: aborted')
+            return
+        last_open_folder = os.path.dirname(selections[0])
+        if os.path.exists(last_open_folder):
+            QtCore.QSettings().setValue("dtm_import_folder", last_open_folder)
+
+        for selection in selections:
+            selection = os.path.abspath(selection).replace("\\", "/")
+            self._add_dtm(selection=selection)
+
+    def _add_dtm(self, selection):
+
+        if selection in self.prj.inputs.dtm_paths:
+            logger.info("File already existing in the current project")
+            return
+
+        self.prj.inputs.dtm_paths.append(selection)
+        self._update_input_dtm_list()
+        self.dtm_loaded()
+
+    def _update_input_dtm_list(self):
+        self.input_dtm.clear()
+        for input_dtm_path in self.prj.inputs.dtm_paths:
+            new_item = QtWidgets.QListWidgetItem()
+            if os.path.splitext(input_dtm_path)[-1] in [".bag", ]:
+                new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'bag.png')))
+            elif os.path.splitext(input_dtm_path)[-1] in [".csar",]:
+                new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'csar.png')))
+            new_item.setText(input_dtm_path)
+            new_item.setFont(GuiSettings.console_font())
+            new_item.setForeground(GuiSettings.console_fg_color())
+            self.input_dtm.addItem(new_item)
 
     def make_dtm_context_menu(self, pos):
         logger.debug('context menu')
 
-    #     # # check if any selection
-    #     # sel = self.input_ss.selectedItems()
-    #     # # noinspection PyArgumentList
-    #     # if len(sel) == 0:
-    #     #     # noinspection PyCallByClass,PyArgumentList
-    #     #     QtWidgets.QMessageBox.information(self, "SS list", "You need to first add and select one or more files!")
-    #     #     return
-    #
-    #     remove_act = QtWidgets.QAction("Remove files", self, statusTip="Remove DTM files",
-    #                                    triggered=self.remove_dtm_files)
-    #
-    #     menu = QtWidgets.QMenu(parent=self)
-    #     # noinspection PyArgumentList
-    #     menu.addAction(remove_act)
-    #     # noinspection PyArgumentList
-    #     menu.exec_(self.input_dtm.mapToGlobal(pos))
-    #
-    # def remove_dtm_files(self):
-    #     logger.debug("user want to remove DTM files")
-    #
-    #     self.prj.clear_input_dtm_paths()
-    #     self._update_input_dtm_list()
-    #     self.parent_win.dtm_unloaded()
+        remove_act = QtWidgets.QAction("Remove files", self, statusTip="Remove DTM files",
+                                       triggered=self.remove_dtm_files)
+
+        menu = QtWidgets.QMenu(parent=self)
+        # noinspection PyArgumentList
+        menu.addAction(remove_act)
+        # noinspection PyArgumentList
+        menu.exec_(self.input_dtm.mapToGlobal(pos))
+
+    def remove_dtm_files(self):
+        logger.debug("user want to remove DTM files")
+
+        self.prj.inputs.dtm_paths.clear()
+        self._update_input_dtm_list()
+        self.dtm_unloaded()
 
     # Feature File methods
 
@@ -828,13 +853,19 @@ class MainTab(QtWidgets.QMainWindow):
     #     logger.debug('open output folder: %s' % self.prj.output_folder)
     #     self.prj.open_output_folder()
 
-    def click_load_checks(self):
-        """ Generate the checks """
-        logger.debug("Load checks")
-
     def click_generate_checks(self):
+        """ Read the feature files provided by the user"""
+        logger.debug('generate checks ...')
+
+    def click_add_json(self):
         """ Generate the checks """
-        logger.debug("Generate checks")
+        logger.debug("add QA JSON ...")
+
+    def dtm_loaded(self):
+        logger.debug("DTM loaded")
+
+    def dtm_unloaded(self):
+        logger.debug("DTM unloaded")
 
     # common
     @classmethod
