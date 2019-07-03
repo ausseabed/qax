@@ -31,7 +31,7 @@ HydrOffice QAX
 General info
 ------------
 
-.. image:: https://github.com/hydroffice/hyo2_qc/raw/master/hyo2/qax/app/media/app_icon.png
+.. image:: https://github.com/hydroffice/hyo2_qax/raw/master/hyo2/qax/app/media/app_icon.png
     :alt: logo
 
 HydrOffice is a research development environment for ocean mapping. Its aim is to provide a collection of
