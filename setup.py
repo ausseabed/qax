@@ -46,8 +46,12 @@ setup(
         "wheel",
     ],
     install_requires=[
-        "hyo2.qc"
+        "jsonschema",
     ],
+    extras_require={
+        "QCTools": ["hyo2.qc"],
+        "Mate": ["hyo2.mate"],
+    },
     python_requires='>=3.5',
     entry_points={
         "gui_scripts": [
