@@ -833,4 +833,4 @@ class MainTab(QtWidgets.QMainWindow):
     @classmethod
     def click_open_manual(cls):
         logger.debug("open manual")
-        Helper.explore_folder("https://www.hydroffice.org/manuals/catools/user_manual_enc_data_inputs.html")
+        Helper.explore_folder("https://www.hydroffice.org/manuals/qax/user_manual_qax_data_inputs.html")

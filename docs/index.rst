@@ -1,8 +1,8 @@
-﻿.. HydrOffice QC Tools documentation master file.
+﻿.. HydrOffice QAX documentation master file.
 
-########################
-QC Tools's documentation
-########################
+#################
+QAX documentation
+#################
 
 .. toctree::
     :maxdepth: 1

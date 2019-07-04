@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'HydrOffice QC Tools'
+project = u'HydrOffice QAX'
 copyright = u'2019, CCOM/JHC,UNH'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -48,9 +48,9 @@ copyright = u'2019, CCOM/JHC,UNH'
 # built documents.
 #
 # The short X.Y version.
-version = '3.0'
+version = '1.0'
 # The full version, including alpha/beta/rc tags.
-release = '3.0.10'
+release = '1.0.0'
 
 numfig = True
 
@@ -172,7 +172,7 @@ html_show_sphinx = False
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'HydrOfficeQCToolsDoc'
+htmlhelp_basename = 'HydrOfficeQAXDoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -193,13 +193,13 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'HydrOfficeQCTools.tex', u'HydrOffice QC Tools Manual',
+  ('index', 'HydrOfficeQAX.tex', u'HydrOffice QA Checks Manual',
    u'2019, CCOM/JHC,UNH', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-latex_logo = '_static/qctools.png'
+latex_logo = '_static/qax.png'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
@@ -223,7 +223,7 @@ latex_logo = '_static/qctools.png'
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'hydrofficeqctools', u'HydrOffice QC Tools Documentation',
+    ('index', 'hydrofficeqax', u'HydrOffice QA Checks Documentation',
      [u'University of New Hampshire, Center for Coastal and Ocean Mapping'], 1)
 ]
 
@@ -237,9 +237,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'HydrOfficeQCTool', u'HydrOffice QC Tools Documentation',
+  ('index', 'HydrOfficeQAX', u'HydrOffice QA Checks Documentation',
    u'University of New Hampshire, Center for Coastal and Ocean Mapping', 
-   'HydrOfficeQCTools', 'Library and tools to improve quality of survey data.',
+   'HydrOfficeQAX', 'Library and tools for quality assurance of ocean mapping data.',
    'Miscellaneous'),
 ]
 

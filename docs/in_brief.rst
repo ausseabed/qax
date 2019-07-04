@@ -1,7 +1,7 @@
 In brief
 ========
 
-.. image:: _static/qctools.png
+.. image:: _static/qax.png
     :width: 256px
     :height: 256px
     :align: center
@@ -13,7 +13,7 @@ In brief
     single: data; accuracy
     single: ping-to-chart
 
-QC Tools assist in the review of various types of data occurring all throughout the ping-to-public process.
+QAX provides functionalities to perform quality assurance on ocean mapping data.
 
 Accepted data inputs are bathymetric grids, feature files, sounding selections, and directory structures.
 The output is GIS-layers that alert to the user various parts of their data that might require more attention.

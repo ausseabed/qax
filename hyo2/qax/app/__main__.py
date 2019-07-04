@@ -1,3 +1,3 @@
-from hyo2.qaqc.qaqc import gui
+from hyo2.qax.app import gui
 
 gui.gui()
