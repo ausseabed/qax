@@ -24,6 +24,11 @@ class MainTab(QtWidgets.QMainWindow):
         self.parent_win = parent_win
         self.media = self.parent_win.media
 
+        # aux variables
+        self.has_dtm = False
+        self.has_ff = False
+        self.has_json = False
+
         # ui
         self.panel = QtWidgets.QFrame()
         self.setCentralWidget(self.panel)
@@ -103,9 +108,9 @@ class MainTab(QtWidgets.QMainWindow):
         # add dtm
         hbox = QtWidgets.QHBoxLayout()
         vbox.addLayout(hbox)
-        text_add_dtm = QtWidgets.QLabel("Survey DTMs:")
-        hbox.addWidget(text_add_dtm)
-        text_add_dtm.setMinimumWidth(90)
+        self.text_dtm = QtWidgets.QLabel("Survey DTMs:")
+        hbox.addWidget(self.text_dtm)
+        self.text_dtm.setMinimumWidth(90)
         self.input_dtm = QtWidgets.QListWidget()
         hbox.addWidget(self.input_dtm)
         self.input_dtm.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
@@ -117,24 +122,24 @@ class MainTab(QtWidgets.QMainWindow):
         # Enable dropping onto the input ss list
         self.input_dtm.setAcceptDrops(True)
         self.input_dtm.installEventFilter(self)
-        button_add_dtm = QtWidgets.QPushButton()
-        hbox.addWidget(button_add_dtm)
-        button_add_dtm.setFixedHeight(GuiSettings.single_line_height())
-        button_add_dtm.setFixedWidth(GuiSettings.single_line_height())
-        button_add_dtm.setText(" + ")
-        button_add_dtm.setToolTip('Add (or drag-and-drop) the survey DTMs as CSAR or BAG files')
+        self.button_dtm = QtWidgets.QPushButton()
+        hbox.addWidget(self.button_dtm)
+        self.button_dtm.setFixedHeight(GuiSettings.single_line_height())
+        self.button_dtm.setFixedWidth(GuiSettings.single_line_height())
+        self.button_dtm.setText(" + ")
+        self.button_dtm.setToolTip('Add (or drag-and-drop) the survey DTMs as CSAR or BAG files')
         # noinspection PyUnresolvedReferences
-        button_add_dtm.clicked.connect(self.click_add_dtm)
+        self.button_dtm.clicked.connect(self.click_add_dtm)
 
         vbox.addSpacing(10)
 
         # add ENC
         hbox = QtWidgets.QHBoxLayout()
         vbox.addLayout(hbox)
-        text_add_ff = QtWidgets.QLabel("Feature Files:")
-        hbox.addWidget(text_add_ff)
-        text_add_ff.setFixedHeight(GuiSettings.single_line_height())
-        text_add_ff.setMinimumWidth(90)
+        self.text_ff = QtWidgets.QLabel("Feature Files:")
+        hbox.addWidget(self.text_ff)
+        self.text_ff.setFixedHeight(GuiSettings.single_line_height())
+        self.text_ff.setMinimumWidth(90)
         self.input_ff = QtWidgets.QListWidget()
         hbox.addWidget(self.input_ff)
         self.input_ff.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
@@ -146,14 +151,14 @@ class MainTab(QtWidgets.QMainWindow):
         # Enable dropping onto the input s57 list
         self.input_ff.setAcceptDrops(True)
         self.input_ff.installEventFilter(self)
-        button_add_ff = QtWidgets.QPushButton()
-        hbox.addWidget(button_add_ff)
-        button_add_ff.setFixedHeight(GuiSettings.single_line_height())
-        button_add_ff.setFixedWidth(GuiSettings.single_line_height())
-        button_add_ff.setText(" + ")
-        button_add_ff.setToolTip('Add (or drag-and-drop) the feature files as S57 file (.000)')
+        self.button_ff = QtWidgets.QPushButton()
+        hbox.addWidget(self.button_ff)
+        self.button_ff.setFixedHeight(GuiSettings.single_line_height())
+        self.button_ff.setFixedWidth(GuiSettings.single_line_height())
+        self.button_ff.setText(" + ")
+        self.button_ff.setToolTip('Add (or drag-and-drop) the feature files as S57 file (.000)')
         # noinspection PyUnresolvedReferences
-        button_add_ff.clicked.connect(self.click_add_ff)
+        self.button_ff.clicked.connect(self.click_add_ff)
 
         vbox.addStretch()
 
@@ -312,14 +317,15 @@ class MainTab(QtWidgets.QMainWindow):
         hbox = QtWidgets.QHBoxLayout()
         vbox.addLayout(hbox)
         hbox.addStretch()
-        button_generate_checks = QtWidgets.QPushButton()
-        hbox.addWidget(button_generate_checks)
-        button_generate_checks.setFixedHeight(GuiSettings.single_line_height())
+        self.button_generate_checks = QtWidgets.QPushButton()
+        hbox.addWidget(self.button_generate_checks)
+        self.button_generate_checks.setFixedHeight(GuiSettings.single_line_height())
         # button_generate_checks.setFixedWidth(GuiSettings.single_line_height())
-        button_generate_checks.setText("Generate")
-        button_generate_checks.setToolTip('Generate the QA JSON checks based on the selected profile')
+        self.button_generate_checks.setText("Generate")
+        self.button_generate_checks.setToolTip('Generate the QA JSON checks based on the selected profile')
+        self.button_generate_checks.setDisabled(True)
         # noinspection PyUnresolvedReferences
-        button_generate_checks.clicked.connect(self.click_generate_checks)
+        self.button_generate_checks.clicked.connect(self.click_generate_checks)
         hbox.addStretch()
 
         # add folder
@@ -333,6 +339,10 @@ class MainTab(QtWidgets.QMainWindow):
         self.qa_json.setMinimumHeight(GuiSettings.single_line_height())
         self.qa_json.setMaximumHeight(GuiSettings.single_line_height() * 2)
         self.qa_json.clear()
+        self.qa_json.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.qa_json.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        # noinspection PyUnresolvedReferences
+        self.qa_json.customContextMenuRequested.connect(self.make_json_context_menu)
         # Enable dropping onto the input ss list
         self.qa_json.setAcceptDrops(True)
         self.qa_json.installEventFilter(self)
@@ -561,6 +571,10 @@ class MainTab(QtWidgets.QMainWindow):
             self.set_valsou_check.setChecked(True)
             self.set_valsou_check.setEnabled(False)
 
+            self.text_ff.setEnabled(True)
+            self.input_ff.setEnabled(True)
+            self.button_ff.setEnabled(True)
+
         elif profile_text == "AusSeabed":
             self.set_flier_finder.setChecked(True)
             self.set_flier_finder.setEnabled(False)
@@ -580,6 +594,11 @@ class MainTab(QtWidgets.QMainWindow):
             self.set_valsou_check.setChecked(False)
             self.set_valsou_check.setEnabled(False)
 
+            self.text_ff.setDisabled(True)
+            self.input_ff.setDisabled(True)
+            self.input_ff.clear()
+            self.button_ff.setDisabled(True)
+
         else:
             self.set_flier_finder.setChecked(False)
             self.set_flier_finder.setEnabled(True)
@@ -598,6 +617,10 @@ class MainTab(QtWidgets.QMainWindow):
 
             self.set_valsou_check.setChecked(False)
             self.set_valsou_check.setEnabled(True)
+
+            self.text_ff.setEnabled(True)
+            self.input_ff.setEnabled(True)
+            self.button_ff.setEnabled(True)
 
     # DTM METHODS
 
@@ -832,6 +855,9 @@ class MainTab(QtWidgets.QMainWindow):
     def click_generate_checks(self):
         """ Read the feature files provided by the user"""
         logger.debug('generate checks ...')
+        self.prj.inputs.json_path = self.prj.example_paths()[-1]
+        self._update_json_list()
+        self.json_loaded()
 
     # QA JSON methods
 
@@ -869,7 +895,7 @@ class MainTab(QtWidgets.QMainWindow):
             new_item = QtWidgets.QListWidgetItem()
             if os.path.splitext(self.prj.inputs.json_path)[-1] == ".json":
                 new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'json.png')))
-            new_item.setText(self.prj.inputs.json_path)
+            new_item.setText(str(self.prj.inputs.json_path))
             new_item.setFont(GuiSettings.console_font())
             new_item.setForeground(GuiSettings.console_fg_color())
             self.qa_json.addItem(new_item)
@@ -897,21 +923,35 @@ class MainTab(QtWidgets.QMainWindow):
 
     def dtm_loaded(self):
         logger.debug("DTM loaded")
+        self.has_dtm = True
+        self.button_generate_checks.setEnabled(True)
 
     def dtm_unloaded(self):
         logger.debug("DTM unloaded")
+        self.has_dtm = False
+        if not self.has_ff:
+            self.button_generate_checks.setDisabled(True)
 
     def ff_loaded(self):
         logger.debug("FF loaded")
+        self.has_ff = True
+        self.button_generate_checks.setEnabled(True)
 
     def ff_unloaded(self):
         logger.debug("FF unloaded")
+        self.has_ff = False
+        if not self.has_dtm:
+            self.button_generate_checks.setDisabled(True)
 
     def json_loaded(self):
         logger.debug("JSON loaded")
+        self.has_json = True
+        self.parent_win.enable_qc_tools()
 
     def json_unloaded(self):
         logger.debug("JSON unloaded")
+        self.has_json = False
+        self.parent_win.disable_qc_tools()
 
     # common
     @classmethod

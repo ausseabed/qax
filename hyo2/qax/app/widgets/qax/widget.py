@@ -79,61 +79,42 @@ class QAXWidget(AbstractWidget):
         # noinspection PyArgumentList
         self.idx_mate = self.tabs.insertTab(1, self.tab_mate,
                                             QtGui.QIcon(os.path.join(self.media, 'mate.png')), "")
-        # self.tabs.setTabEnabled(self.idx_mate, False)
+        self.tabs.setTabEnabled(self.idx_mate, False)
         self.tabs.setTabToolTip(self.idx_mate, "Mate")
         # QC Tools tab
         self.tab_qc_tools = QCToolsTab(parent_win=self, prj=self.prj)
         # noinspection PyArgumentList
         self.idx_qc_tools = self.tabs.insertTab(2, self.tab_qc_tools,
                                                 QtGui.QIcon(os.path.join(self.media, 'qc_tools.png')), "")
-        # self.tabs.setTabEnabled(self.idx_qc_tools, False)
+        self.tabs.setTabEnabled(self.idx_qc_tools, False)
         self.tabs.setTabToolTip(self.idx_qc_tools, "QC Tools")
         # CA Tools tab
         self.tab_ca_tools = CAToolsTab(parent_win=self, prj=self.prj)
         # noinspection PyArgumentList
         self.idx_ca_tools = self.tabs.insertTab(3, self.tab_ca_tools,
                                                 QtGui.QIcon(os.path.join(self.media, 'ca_tools.png')), "")
-        # self.tabs.setTabEnabled(self.idx_ca_tools, False)
+        self.tabs.setTabEnabled(self.idx_ca_tools, False)
         self.tabs.setTabToolTip(self.idx_ca_tools, "CA Tools")
         # noinspection PyUnresolvedReferences
         self.tabs.currentChanged.connect(self.change_tabs)
 
-    #     # flags
-    #     self.has_ss = False
-    #     self.has_dtm = False
-    #     self.has_enc = False
-    #
-    # def dtm_loaded(self):
-    #     self.has_dtm = True
-    #     self.tabs.setTabEnabled(self.idx_ss, True)
-    #     if self.has_enc:
-    #         self.tabs.setTabEnabled(self.idx_dtm_vs_chart, True)
-    #
-    # def dtm_unloaded(self):
-    #     self.has_dtm = False
-    #     # self.tabs.setTabEnabled(self.idx_dtm_vs_chart, False)
-    #     self.tabs.setTabEnabled(self.idx_ss, False)
-    #
-    # def ss_loaded(self):
-    #     self.has_ss = True
-    #     if self.has_enc:
-    #         self.tabs.setTabEnabled(self.idx_ss_vs_chart, True)
-    #
-    # def ss_unloaded(self):
-    #     self.has_ss = False
-    #     self.tabs.setTabEnabled(self.idx_ss_vs_chart, False)
-    #
-    # def enc_loaded(self):
-    #     self.has_enc = True
-    #     if self.has_ss:
-    #         self.tabs.setTabEnabled(self.idx_ss_vs_chart, True)
-    #     if self.has_dtm:
-    #         self.tabs.setTabEnabled(self.idx_dtm_vs_chart, True)
-    #
-    # def enc_unloaded(self):
-    #     self.has_enc = False
-    #     self.tabs.setTabEnabled(self.idx_ss_vs_chart, False)
-    #     self.tabs.setTabEnabled(self.idx_dtm_vs_chart, False)
+    def enable_mate(self):
+        self.tabs.setTabEnabled(self.idx_mate, True)
+
+    def disable_mate(self):
+        self.tabs.setTabEnabled(self.idx_mate, False)
+
+    def enable_qc_tools(self):
+        self.tabs.setTabEnabled(self.idx_qc_tools, True)
+
+    def disable_qc_tools(self):
+        self.tabs.setTabEnabled(self.idx_qc_tools, False)
+
+    def enable_ca_tools(self):
+        self.tabs.setTabEnabled(self.idx_ca_tools, True)
+
+    def disable_ca_tools(self):
+        self.tabs.setTabEnabled(self.idx_ca_tools, False)
 
     def change_tabs(self, index):
         self.tabs.setCurrentIndex(index)
