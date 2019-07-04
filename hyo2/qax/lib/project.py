@@ -93,6 +93,9 @@ class QAXProject:
     def inputs(self, value: QAXInputs) -> None:
         self._i = value
 
+    def clear_inputs(self):
+        self._i = QAXInputs()
+
     @property
     def outputs(self) -> QAXOutputs:
         return self._o

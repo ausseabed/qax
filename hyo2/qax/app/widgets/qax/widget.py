@@ -1,15 +1,15 @@
 import os
 from pathlib import Path
 import logging
-
 from PySide2 import QtGui, QtCore, QtWidgets
 
 from hyo2.abc.app.qt_progress import QtProgress
-
 from hyo2.qax.app.widgets.widget import AbstractWidget
 from hyo2.qax.lib.project import QAXProject
 from hyo2.qax.app.widgets.qax.main_tab import MainTab
+from hyo2.qax.app.widgets.qax.mate_tab import MateTab
 from hyo2.qax.app.widgets.qax.qc_tools_tab import QCToolsTab
+from hyo2.qax.app.widgets.qax.ca_tools_tab import CAToolsTab
 
 logger = logging.getLogger(__name__)
 
@@ -74,13 +74,27 @@ class QAXWidget(AbstractWidget):
         self.idx_inputs = self.tabs.insertTab(0, self.tab_inputs,
                                               QtGui.QIcon(os.path.join(self.media, 'qax.png')), "")
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
+        # Mate tab
+        self.tab_mate = MateTab(parent_win=self, prj=self.prj)
+        # noinspection PyArgumentList
+        self.idx_mate = self.tabs.insertTab(1, self.tab_mate,
+                                            QtGui.QIcon(os.path.join(self.media, 'mate.png')), "")
+        # self.tabs.setTabEnabled(self.idx_mate, False)
+        self.tabs.setTabToolTip(self.idx_mate, "Mate")
         # QC Tools tab
         self.tab_qc_tools = QCToolsTab(parent_win=self, prj=self.prj)
         # noinspection PyArgumentList
-        self.idx_qc_tools = self.tabs.insertTab(1, self.tab_qc_tools,
+        self.idx_qc_tools = self.tabs.insertTab(2, self.tab_qc_tools,
                                                 QtGui.QIcon(os.path.join(self.media, 'qc_tools.png')), "")
-        self.tabs.setTabEnabled(self.idx_qc_tools, False)
+        # self.tabs.setTabEnabled(self.idx_qc_tools, False)
         self.tabs.setTabToolTip(self.idx_qc_tools, "QC Tools")
+        # CA Tools tab
+        self.tab_ca_tools = CAToolsTab(parent_win=self, prj=self.prj)
+        # noinspection PyArgumentList
+        self.idx_ca_tools = self.tabs.insertTab(3, self.tab_ca_tools,
+                                                QtGui.QIcon(os.path.join(self.media, 'ca_tools.png')), "")
+        # self.tabs.setTabEnabled(self.idx_ca_tools, False)
+        self.tabs.setTabToolTip(self.idx_ca_tools, "CA Tools")
         # noinspection PyUnresolvedReferences
         self.tabs.currentChanged.connect(self.change_tabs)
 

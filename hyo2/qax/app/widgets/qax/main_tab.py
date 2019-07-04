@@ -228,7 +228,7 @@ class MainTab(QtWidgets.QMainWindow):
         text_set_prj_folder.setFixedHeight(GuiSettings.single_line_height())
         self.output_prj_folder = QtWidgets.QCheckBox("")
         self.output_prj_folder.setToolTip('Create a sub-folder with project name')
-        # self.output_prj_folder.setChecked(self.prj.output_project_folder)
+        # self.output_prj_folder.setChecked(self.prj.outputs.project_folder)
         # noinspection PyUnresolvedReferences
         self.output_prj_folder.clicked.connect(self.click_output_project_folder)
         hbox.addWidget(self.output_prj_folder)
@@ -258,7 +258,7 @@ class MainTab(QtWidgets.QMainWindow):
         self.output_folder.clear()
         new_item = QtWidgets.QListWidgetItem()
         new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'folder.png')))
-        # new_item.setText("%s" % self.prj.output_folder)
+        new_item.setText("%s" % self.prj.outputs.output_folder)
         new_item.setFont(GuiSettings.console_font())
         new_item.setForeground(GuiSettings.console_fg_color())
         self.output_folder.addItem(new_item)
@@ -456,85 +456,58 @@ class MainTab(QtWidgets.QMainWindow):
                             QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
                     return True
 
-    #         elif obj is self.input_enc:
-    #
-    #             if e.mimeData().hasUrls():
-    #
-    #                 e.setDropAction(QtCore.Qt.CopyAction)
-    #                 e.accept()
-    #                 # Workaround for OSx dragging and dropping
-    #                 for url in e.mimeData().urls():
-    #                     if Helper.is_darwin():
-    #                         dropped_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-    #                     else:
-    #                         dropped_file = str(url.toLocalFile())
-    #
-    #                     logger.debug("dropped file: %s" % dropped_file)
-    #                     if os.path.splitext(dropped_file)[-1] in (".000",):
-    #
-    #                         self._add_enc(selection=dropped_file)
-    #
-    #                     else:
-    #                         msg = 'Drag-and-drop is only possible with the following file extensions:\n' \
-    #                               '- ENC S57 files: .000\n\n' \
-    #                               'Dropped file:\n' \
-    #                               '%s' % dropped_file
-    #                         # noinspection PyCallByClass,PyArgumentList
-    #                         QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
-    #                 return True
-    #
-    #         elif obj is self.input_ss:
-    #
-    #             if e.mimeData().hasUrls():
-    #
-    #                 e.setDropAction(QtCore.Qt.CopyAction)
-    #                 e.accept()
-    #                 # Workaround for OSx dragging and dropping
-    #                 for url in e.mimeData().urls():
-    #                     if Helper.is_darwin():
-    #                         dropped_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-    #                     else:
-    #                         dropped_file = str(url.toLocalFile())
-    #
-    #                     logger.debug("dropped file: %s" % dropped_file)
-    #                     if os.path.splitext(dropped_file)[-1] in (".000",):
-    #                         self._add_ss(selection=dropped_file)
-    #                     else:
-    #                         msg = 'Drag-and-drop is only possible with the following file extensions:\n' \
-    #                               '- Survey Soundings S57 files: .000\n\n' \
-    #                               'Dropped file:\n' \
-    #                               '%s' % dropped_file
-    #                         # noinspection PyCallByClass,PyArgumentList
-    #                         QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
-    #                 return True
-    #
-    #         elif obj is self.output_folder:
-    #
-    #             if e.mimeData().hasUrls():
-    #
-    #                 e.setDropAction(QtCore.Qt.CopyAction)
-    #                 e.accept()
-    #                 # Workaround for OSx dragging and dropping
-    #                 for url in e.mimeData().urls():
-    #
-    #                     if Helper.is_darwin():
-    #                         dropped_path = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-    #
-    #                     else:
-    #                         dropped_path = str(url.toLocalFile())
-    #
-    #                     dropped_path = os.path.abspath(dropped_path)
-    #
-    #                     logger.debug("dropped file: %s" % dropped_path)
-    #                     if os.path.isdir(dropped_path):
-    #                         self._add_folder(selection=dropped_path)
-    #
-    #                     else:
-    #                         msg = 'Drag-and-drop is only possible with a single folder\n'
-    #                         # noinspection PyCallByClass,PyArgumentList
-    #                         QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
-    #
-    #                 return True
+            elif obj is self.input_ff:
+
+                if e.mimeData().hasUrls():
+
+                    e.setDropAction(QtCore.Qt.CopyAction)
+                    e.accept()
+                    # Workaround for OSx dragging and dropping
+                    for url in e.mimeData().urls():
+                        if Helper.is_darwin():
+                            dropped_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
+                        else:
+                            dropped_file = str(url.toLocalFile())
+
+                        logger.debug("dropped file: %s" % dropped_file)
+                        if os.path.splitext(dropped_file)[-1] in (".000",):
+                            self._add_ff(selection=dropped_file)
+                        else:
+                            msg = 'Drag-and-drop is only possible with the following file extensions:\n' \
+                                  '- S57 Feature Files: .000\n\n' \
+                                  'Dropped file:\n' \
+                                  '%s' % dropped_file
+                            # noinspection PyCallByClass,PyArgumentList
+                            QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
+                    return True
+
+            elif obj is self.output_folder:
+
+                if e.mimeData().hasUrls():
+
+                    e.setDropAction(QtCore.Qt.CopyAction)
+                    e.accept()
+                    # Workaround for OSx dragging and dropping
+                    for url in e.mimeData().urls():
+
+                        if Helper.is_darwin():
+                            dropped_path = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
+
+                        else:
+                            dropped_path = str(url.toLocalFile())
+
+                        dropped_path = os.path.abspath(dropped_path)
+
+                        logger.debug("dropped file: %s" % dropped_path)
+                        if os.path.isdir(dropped_path):
+                            self._add_folder(selection=dropped_path)
+
+                        else:
+                            msg = 'Drag-and-drop is only possible with a single folder\n'
+                            # noinspection PyCallByClass,PyArgumentList
+                            QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
+
+                    return True
 
             e.ignore()
             return True
@@ -674,92 +647,76 @@ class MainTab(QtWidgets.QMainWindow):
         """ Read the feature files provided by the user"""
         logger.debug('adding feature files ...')
 
-    #     # ask the file path to the user
-    #     # noinspection PyCallByClass
-    #     selections, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Add ENC features",
-    #                                                            QtCore.QSettings().value("enc_import_folder"),
-    #                                                            "S57 file (*.000);;All files (*.*)")
-    #     if len(selections) == 0:
-    #         logger.debug('adding s57: aborted')
-    #         return
-    #     last_open_folder = os.path.dirname(selections[0])
-    #     if os.path.exists(last_open_folder):
-    #         QtCore.QSettings().setValue("enc_import_folder", last_open_folder)
-    #
-    #     for selection in selections:
-    #         selection = os.path.abspath(selection).replace("\\", "/")
-    #         self._add_enc(selection=selection)
-    #
-    # def _add_enc(self, selection):
-    #
-    #     # attempt to read the data
-    #     try:
-    #         self.parent_win.prj.add_input_enc_path(selection)
-    #
-    #     except Exception as e:  # more general case that catches all the exceptions
-    #         msg = '<b>Error setting \"%s\".</b>' % selection
-    #         msg += '<br><br><font color=\"red\">%s</font>' % e
-    #         # noinspection PyCallByClass,PyArgumentList
-    #         QtWidgets.QMessageBox.critical(self, "Data Setting Error", msg, QtWidgets.QMessageBox.Ok)
-    #         logger.error('ENC file NOT added: %s' % selection)
-    #         return
-    #
-    #     self._update_input_enc_list()
-    #     self.parent_win.enc_loaded()
-    #
-    # def _update_input_enc_list(self):
-    #     """ update the ENC list widget """
-    #     self.input_enc.clear()
-    #     for input_enc_path in self.prj.input_enc_paths:
-    #         new_item = QtWidgets.QListWidgetItem()
-    #         if os.path.splitext(input_enc_path)[-1] == ".000":
-    #             new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 's57.png')))
-    #         new_item.setText(input_enc_path)
-    #         new_item.setFont(GuiSettings.console_font())
-    #         new_item.setForeground(GuiSettings.console_fg_color())
-    #         self.input_enc.addItem(new_item)
+        # ask the file path to the user
+        # noinspection PyCallByClass
+        selections, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Add S57 Feature Files",
+                                                               QtCore.QSettings().value("ff_import_folder"),
+                                                               "S57 file (*.000);;All files (*.*)")
+        if len(selections) == 0:
+            logger.debug('adding s57: aborted')
+            return
+        last_open_folder = os.path.dirname(selections[0])
+        if os.path.exists(last_open_folder):
+            QtCore.QSettings().setValue("ff_import_folder", last_open_folder)
+
+        for selection in selections:
+            selection = os.path.abspath(selection).replace("\\", "/")
+            self._add_ff(selection=selection)
+
+    def _add_ff(self, selection):
+
+        if selection in self.prj.inputs.ff_paths:
+            logger.info("File already existing in the current project")
+            return
+
+        self.prj.inputs.ff_paths.append(selection)
+
+        self._update_input_ff_list()
+        self.ff_loaded()
+
+    def _update_input_ff_list(self):
+        """ update the FF list widget """
+        self.input_ff.clear()
+        for input_ff_path in self.prj.inputs.ff_paths:
+            new_item = QtWidgets.QListWidgetItem()
+            if os.path.splitext(input_ff_path)[-1] == ".000":
+                new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 's57.png')))
+            new_item.setText(input_ff_path)
+            new_item.setFont(GuiSettings.console_font())
+            new_item.setForeground(GuiSettings.console_fg_color())
+            self.input_ff.addItem(new_item)
 
     def make_ff_context_menu(self, pos):
         logger.debug('FF context menu')
 
-    #     # # check if any selection
-    #     # sel = self.input_enc.selectedItems()
-    #     # if len(sel) == 0:
-    #     #     # noinspection PyCallByClass,PyArgumentList
-    #     #     QtWidgets.QMessageBox.information(self, "ENC list", "You need to first add and select one or more files!")
-    #     #     return
-    #
-    #     remove_act = QtWidgets.QAction("Remove files", self, statusTip="Remove the ENC files",
-    #                                    triggered=self.remove_enc_files)
-    #
-    #     menu = QtWidgets.QMenu(parent=self)
-    #     # noinspection PyArgumentList
-    #     menu.addAction(remove_act)
-    #     # noinspection PyArgumentList
-    #     menu.exec_(self.input_enc.mapToGlobal(pos))
-    #
-    # def remove_enc_files(self):
-    #     logger.debug("user want to remove ENC files")
-    #
-    #     self.prj.clear_input_enc_paths()
-    #     self.parent_win.enc_unloaded()
-    #     self._update_input_enc_list()
+        remove_act = QtWidgets.QAction("Remove files", self, statusTip="Remove the FF files",
+                                       triggered=self.remove_ff_files)
+
+        menu = QtWidgets.QMenu(parent=self)
+        # noinspection PyArgumentList
+        menu.addAction(remove_act)
+        # noinspection PyArgumentList
+        menu.exec_(self.input_ff.mapToGlobal(pos))
+
+    def remove_ff_files(self):
+        logger.debug("user want to remove FF files")
+
+        self.prj.inputs.ff_paths.clear()
+        self.ff_unloaded()
+        self._update_input_ff_list()
 
     # AUX METHODS
 
     def click_clear_data(self):
         """ Clear all the read data"""
         logger.debug('clear data')
-    #     self.parent_win.prj.clear_data()
-    #
-    #     self.input_enc.clear()
-    #     self.parent_win.enc_unloaded()
-    #
-    #     self.input_dtm.clear()
-    #     self.parent_win.dtm_unloaded()
-    #
-    #     self.input_ss.clear()
-    #     self.parent_win.ss_unloaded()
+        self.prj.clear_inputs()
+
+        self.input_dtm.clear()
+        self.dtm_unloaded()
+
+        self.input_ff.clear()
+        self.ff_unloaded()
 
     def click_output_kml(self):
         """ Set the KML output"""
@@ -789,21 +746,21 @@ class MainTab(QtWidgets.QMainWindow):
         """ Read the grids provided by the user"""
         logger.debug('set output folder ...')
 
-    #     # ask the output folder
-    #     # noinspection PyCallByClass
-    #     selection = QtWidgets.QFileDialog.getExistingDirectory(self, "Set output folder",
-    #                                                            QtCore.QSettings().value("enc_export_folder"),)
-    #     if selection == "":
-    #         logger.debug('setting output folder: aborted')
-    #         return
-    #     logger.debug("selected path: %s" % selection)
-    #
-    #     self._add_folder(selection)
-    #
-    # def _add_folder(self, selection):
-    #
-    #     path_len = len(selection)
-    #     logger.debug("folder path length: %d" % path_len)
+        # ask the output folder
+        # noinspection PyCallByClass
+        selection = QtWidgets.QFileDialog.getExistingDirectory(self, "Set output folder",
+                                                               QtCore.QSettings().value("qa_export_folder"),)
+        if selection == "":
+            logger.debug('setting output folder: aborted')
+            return
+        logger.debug("selected path: %s" % selection)
+
+        self._add_folder(selection)
+
+    def _add_folder(self, selection):
+
+        path_len = len(selection)
+        logger.debug("folder path length: %d" % path_len)
     #     if path_len > 140:
     #
     #         msg = 'The selected path is %d characters long. ' \
@@ -844,14 +801,13 @@ class MainTab(QtWidgets.QMainWindow):
 
     def click_default_output(self):
         """ Set default output data folder """
-        pass
-    #     self._add_folder(selection=self.prj.default_output_folder())
+        self.prj.outputs.output_folder = self.prj.outputs.default_output_folder()
+        self._add_folder(selection=self.prj.outputs.output_folder)
     
     def click_open_output(self):
         """ Open output data folder """
-        pass
-    #     logger.debug('open output folder: %s' % self.prj.output_folder)
-    #     self.prj.open_output_folder()
+        logger.debug('open output folder: %s' % self.prj.output_folder)
+        self.prj.outputs.open_output_folder()
 
     def click_generate_checks(self):
         """ Read the feature files provided by the user"""
@@ -866,6 +822,12 @@ class MainTab(QtWidgets.QMainWindow):
 
     def dtm_unloaded(self):
         logger.debug("DTM unloaded")
+
+    def ff_loaded(self):
+        logger.debug("FF loaded")
+
+    def ff_unloaded(self):
+        logger.debug("FF unloaded")
 
     # common
     @classmethod

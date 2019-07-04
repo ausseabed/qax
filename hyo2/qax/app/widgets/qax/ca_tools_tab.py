@@ -6,7 +6,7 @@ from hyo2.abc.lib.helper import Helper
 logger = logging.getLogger(__name__)
 
 
-class QCToolsTab(QtWidgets.QMainWindow):
+class CAToolsTab(QtWidgets.QMainWindow):
 
     here = os.path.abspath(os.path.dirname(__file__))
 
