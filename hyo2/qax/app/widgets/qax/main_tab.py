@@ -1,16 +1,15 @@
-from PySide2 import QtCore, QtGui, QtWidgets
-
 import os
 import logging
-logger = logging.getLogger(__name__)
-
+from pathlib import Path
+from PySide2 import QtCore, QtGui, QtWidgets
 from hyo2.abc.lib.helper import Helper
-
 from hyo2.qax.app.gui_settings import GuiSettings
 # Use NSURL as a workaround to pyside/Qt4 behaviour for dragging and dropping on OSx
 if Helper.is_darwin():
     # noinspection PyUnresolvedReferences
     from Foundation import NSURL
+
+logger = logging.getLogger(__name__)
 
 
 class MainTab(QtWidgets.QMainWindow):
@@ -210,13 +209,13 @@ class MainTab(QtWidgets.QMainWindow):
         hbox.addWidget(self.output_s57)
         self.output_shp = QtWidgets.QCheckBox("Shapefile")
         self.output_shp.setToolTip('Activate/deactivate the creation of Shapefiles in output')
-        # self.output_shp.setChecked(self.prj.output_shp)
+        self.output_shp.setChecked(self.prj.params.write_shp)
         # noinspection PyUnresolvedReferences
         self.output_shp.clicked.connect(self.click_output_shp)
         hbox.addWidget(self.output_shp)
         self.output_kml = QtWidgets.QCheckBox("KML")
         self.output_kml.setToolTip('Activate/deactivate the creation of KML files in output')
-        # self.output_kml.setChecked(self.prj.output_kml)
+        self.output_kml.setChecked(self.prj.params.write_kml)
         # noinspection PyUnresolvedReferences
         self.output_kml.clicked.connect(self.click_output_kml)
         hbox.addWidget(self.output_kml)
@@ -228,7 +227,7 @@ class MainTab(QtWidgets.QMainWindow):
         text_set_prj_folder.setFixedHeight(GuiSettings.single_line_height())
         self.output_prj_folder = QtWidgets.QCheckBox("")
         self.output_prj_folder.setToolTip('Create a sub-folder with project name')
-        # self.output_prj_folder.setChecked(self.prj.outputs.project_folder)
+        self.output_prj_folder.setChecked(self.prj.params.project_folder)
         # noinspection PyUnresolvedReferences
         self.output_prj_folder.clicked.connect(self.click_output_project_folder)
         hbox.addWidget(self.output_prj_folder)
@@ -238,7 +237,7 @@ class MainTab(QtWidgets.QMainWindow):
         text_set_subfolders.setFixedHeight(GuiSettings.single_line_height())
         self.output_subfolders = QtWidgets.QCheckBox("")
         self.output_subfolders.setToolTip('Create a sub-folder for each tool')
-        # self.output_subfolders.setChecked(self.prj.output_subfolders)
+        self.output_subfolders.setChecked(self.prj.params.subfolders)
         # noinspection PyUnresolvedReferences
         self.output_subfolders.clicked.connect(self.click_output_subfolders)
         hbox.addWidget(self.output_subfolders)
@@ -509,6 +508,31 @@ class MainTab(QtWidgets.QMainWindow):
 
                     return True
 
+            elif obj is self.qa_json:
+
+                if e.mimeData().hasUrls():
+
+                    e.setDropAction(QtCore.Qt.CopyAction)
+                    e.accept()
+                    # Workaround for OSx dragging and dropping
+                    for url in e.mimeData().urls():
+                        if Helper.is_darwin():
+                            dropped_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
+                        else:
+                            dropped_file = str(url.toLocalFile())
+
+                        logger.debug("dropped file: %s" % dropped_file)
+                        if os.path.splitext(dropped_file)[-1] in (".json",):
+                            self._add_json(selection=dropped_file)
+                        else:
+                            msg = 'Drag-and-drop is only possible with the following file extensions:\n' \
+                                  '- QA JSON Files: .json\n\n' \
+                                  'Dropped file:\n' \
+                                  '%s' % dropped_file
+                            # noinspection PyCallByClass,PyArgumentList
+                            QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
+                    return True
+
             e.ignore()
             return True
 
@@ -720,27 +744,23 @@ class MainTab(QtWidgets.QMainWindow):
 
     def click_output_kml(self):
         """ Set the KML output"""
-        pass
-    #     self.prj.output_kml = self.output_kml.isChecked()
-    #     QtCore.QSettings().setValue("enc_export_kml", self.prj.output_kml)
+        self.prj.params.write_kml = self.output_kml.isChecked()
+        QtCore.QSettings().setValue("qax_export_kml", self.prj.params.write_kml)
 
     def click_output_shp(self):
         """ Set the Shapefile output"""
-        pass
-    #     self.prj.output_shp = self.output_shp.isChecked()
-    #     QtCore.QSettings().setValue("enc_export_shp", self.prj.output_shp)
-    #
+        self.prj.params.write_shp = self.output_shp.isChecked()
+        QtCore.QSettings().setValue("qax_export_shp", self.prj.params.write_shp)
+
     def click_output_project_folder(self):
         """ Set the output project folder"""
-        pass
-    #     self.prj.output_project_folder = self.output_prj_folder.isChecked()
-    #     QtCore.QSettings().setValue("enc_export_project_folder", self.prj.output_project_folder)
-    #
+        self.prj.params.project_folder = self.output_prj_folder.isChecked()
+        QtCore.QSettings().setValue("qax_export_project_folder", self.prj.params.project_folder)
+
     def click_output_subfolders(self):
         """ Set the output in sub-folders"""
-        pass
-    #     self.prj.output_subfolders = self.output_subfolders.isChecked()
-    #     QtCore.QSettings().setValue("enc_export_subfolders", self.prj.output_subfolders)
+        self.prj.params.subfolders = self.output_subfolders.isChecked()
+        QtCore.QSettings().setValue("qax_export_subfolders", self.prj.params.subfolders)
 
     def click_add_folder(self):
         """ Read the grids provided by the user"""
@@ -761,43 +781,43 @@ class MainTab(QtWidgets.QMainWindow):
 
         path_len = len(selection)
         logger.debug("folder path length: %d" % path_len)
-    #     if path_len > 140:
-    #
-    #         msg = 'The selected path is %d characters long. ' \
-    #               'This may trigger the filename truncation of generated outputs (max allowed path length: 260).\n\n' \
-    #               'Do you really want to use: %s?' % (path_len, selection)
-    #         msg_box = QtWidgets.QMessageBox(self)
-    #         msg_box.setWindowTitle("Output folder")
-    #         msg_box.setText(msg)
-    #         msg_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-    #         msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
-    #         reply = msg_box.exec_()
-    #
-    #         if reply == QtWidgets.QMessageBox.No:
-    #             return
-    #
-    #     try:
-    #         self.prj.output_folder = os.path.abspath(selection).replace("\\", "/")
-    #
-    #     except Exception as e:  # more general case that catches all the exceptions
-    #         msg = '<b>Error setting the output folder to \"%s\".</b>' % selection
-    #         msg += '<br><br><font color=\"red\">%s</font>' % e
-    #         # noinspection PyCallByClass,PyArgumentList
-    #         QtWidgets.QMessageBox.critical(self, "Output Folder Error", msg, QtWidgets.QMessageBox.Ok)
-    #         logger.debug('output folder NOT set: %s' % selection)
-    #         return
-    #
-    #     self.output_folder.clear()
-    #     new_item = QtWidgets.QListWidgetItem()
-    #     new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'folder.png')))
-    #     new_item.setText("%s" % self.prj.output_folder)
-    #     new_item.setFont(GuiSettings.console_font())
-    #     new_item.setForeground(GuiSettings.console_fg_color())
-    #     self.output_folder.addItem(new_item)
-    #
-    #     QtCore.QSettings().setValue("enc_export_folder", self.prj.output_folder)
-    #
-    #     logger.debug("new output folder: %s" % self.prj.output_folder)
+        if path_len > 140:
+
+            msg = 'The selected path is %d characters long. ' \
+                  'This may trigger the filename truncation of generated outputs (max allowed path length: 260).\n\n' \
+                  'Do you really want to use: %s?' % (path_len, selection)
+            msg_box = QtWidgets.QMessageBox(self)
+            msg_box.setWindowTitle("Output folder")
+            msg_box.setText(msg)
+            msg_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+            msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
+            reply = msg_box.exec_()
+
+            if reply == QtWidgets.QMessageBox.No:
+                return
+
+        try:
+            self.prj.outputs.output_folder = Path(selection)
+
+        except Exception as e:  # more general case that catches all the exceptions
+            msg = '<b>Error setting the output folder to \"%s\".</b>' % selection
+            msg += '<br><br><font color=\"red\">%s</font>' % e
+            # noinspection PyCallByClass,PyArgumentList
+            QtWidgets.QMessageBox.critical(self, "Output Folder Error", msg, QtWidgets.QMessageBox.Ok)
+            logger.debug('output folder NOT set: %s' % selection)
+            return
+
+        self.output_folder.clear()
+        new_item = QtWidgets.QListWidgetItem()
+        new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'folder.png')))
+        new_item.setText("%s" % self.prj.outputs.output_folder)
+        new_item.setFont(GuiSettings.console_font())
+        new_item.setForeground(GuiSettings.console_fg_color())
+        self.output_folder.addItem(new_item)
+
+        QtCore.QSettings().setValue("qax_export_folder", self.prj.outputs.output_folder)
+
+        logger.debug("new output folder: %s" % self.prj.outputs.output_folder)
 
     def click_default_output(self):
         """ Set default output data folder """
@@ -806,16 +826,74 @@ class MainTab(QtWidgets.QMainWindow):
     
     def click_open_output(self):
         """ Open output data folder """
-        logger.debug('open output folder: %s' % self.prj.output_folder)
+        logger.debug('open output folder: %s' % self.prj.outputs.output_folder)
         self.prj.outputs.open_output_folder()
 
     def click_generate_checks(self):
         """ Read the feature files provided by the user"""
         logger.debug('generate checks ...')
 
+    # QA JSON methods
+
     def click_add_json(self):
-        """ Generate the checks """
-        logger.debug("add QA JSON ...")
+        """ Read the feature files provided by the user"""
+        logger.debug('adding feature files ...')
+
+        # ask the file path to the user
+        # noinspection PyCallByClass
+        selections, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Add QA JSON Files",
+                                                               QtCore.QSettings().value("json_import_folder"),
+                                                               "QA JSON file (*.json);;All files (*.*)")
+        if len(selections) == 0:
+            logger.debug('adding json: aborted')
+            return
+        last_open_folder = os.path.dirname(selections[0])
+        if os.path.exists(last_open_folder):
+            QtCore.QSettings().setValue("json_import_folder", last_open_folder)
+
+        for selection in selections:
+            selection = os.path.abspath(selection).replace("\\", "/")
+            self._add_json(selection=selection)
+
+    def _add_json(self, selection):
+
+        self.prj.inputs.json_path = selection
+
+        self._update_json_list()
+        self.json_loaded()
+
+    def _update_json_list(self):
+        """ update the FF list widget """
+        self.qa_json.clear()
+        if self.prj.inputs.json_path is not None:
+            new_item = QtWidgets.QListWidgetItem()
+            if os.path.splitext(self.prj.inputs.json_path)[-1] == ".json":
+                new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'json.png')))
+            new_item.setText(self.prj.inputs.json_path)
+            new_item.setFont(GuiSettings.console_font())
+            new_item.setForeground(GuiSettings.console_fg_color())
+            self.qa_json.addItem(new_item)
+
+    def make_json_context_menu(self, pos):
+        logger.debug('JSON context menu')
+
+        remove_act = QtWidgets.QAction("Remove file", self, statusTip="Remove the JSON file",
+                                       triggered=self.remove_json_file)
+
+        menu = QtWidgets.QMenu(parent=self)
+        # noinspection PyArgumentList
+        menu.addAction(remove_act)
+        # noinspection PyArgumentList
+        menu.exec_(self.qa_json.mapToGlobal(pos))
+
+    def remove_json_file(self):
+        logger.debug("user want to remove JSON file")
+
+        self.prj.inputs.json_path = None
+        self.json_unloaded()
+        self._update_json_list()
+
+    # interaction methods
 
     def dtm_loaded(self):
         logger.debug("DTM loaded")
@@ -828,6 +906,12 @@ class MainTab(QtWidgets.QMainWindow):
 
     def ff_unloaded(self):
         logger.debug("FF unloaded")
+
+    def json_loaded(self):
+        logger.debug("JSON loaded")
+
+    def json_unloaded(self):
+        logger.debug("JSON unloaded")
 
     # common
     @classmethod

@@ -24,43 +24,43 @@ class QAXWidget(AbstractWidget):
 
         # init default settings
         settings = QtCore.QSettings()
-        # # - output folder
-        # export_folder = settings.value("qax_export_folder")
-        # if (export_folder is None) or (not os.path.exists(export_folder)):
-        #     settings.setValue("enc_export_folder", str(self.prj.output_folder))
-        # else:  # folder exists
-        #     self.prj.output_folder = Path(export_folder)
-        # # - shp
-        # export_shp = settings.value("enc_export_shp")
-        # if export_shp is None:
-        #     settings.setValue("enc_export_shp", self.prj.output_shp)
-        # else:  # exists
-        #     self.prj.output_shp = (export_shp == "true")
-        # # - kml
-        # export_kml = settings.value("enc_export_kml")
-        # if export_kml is None:
-        #     settings.setValue("enc_export_kml", self.prj.output_kml)
-        # else:  # exists
-        #     self.prj.output_kml = (export_kml == "true")
-        # # - import
-        # import_folder = settings.value("ss_import_folder")
-        # if (import_folder is None) or (not os.path.exists(import_folder)):
-        #     settings.setValue("ss_import_folder", str(self.prj.output_folder))
-        # import_folder = settings.value("ss_import_folder")
-        # if (import_folder is None) or (not os.path.exists(import_folder)):
-        #     settings.setValue("enc_import_folder", str(self.prj.output_folder))
-        # # - project folder
-        # export_project_folder = settings.value("enc_export_project_folder")
-        # if export_project_folder is None:
-        #     settings.setValue("enc_export_project_folder", str(self.prj.output_project_folder))
-        # else:  # exists
-        #     self.prj.output_project_folder = (export_project_folder == "true")
-        # # - subfolders
-        # export_subfolders = settings.value("enc_export_subfolders")
-        # if export_subfolders is None:
-        #     settings.setValue("enc_export_subfolders", self.prj.output_subfolders)
-        # else:  # exists
-        #     self.prj.output_subfolders = (export_subfolders == "true")
+        # - output folder
+        export_folder = settings.value("qax_export_folder")
+        if (export_folder is None) or (not os.path.exists(export_folder)):
+            settings.setValue("qax_export_folder", str(self.prj.outputs.output_folder))
+        else:  # folder exists
+            self.prj.outputs.output_folder = Path(export_folder)
+        # - shp
+        export_shp = settings.value("qax_export_shp")
+        if export_shp is None:
+            settings.setValue("qax_export_shp", self.prj.params.write_shp)
+        else:  # exists
+            self.prj.params.write_shp = (export_shp == "true")
+        # - kml
+        export_kml = settings.value("qax_export_kml")
+        if export_kml is None:
+            settings.setValue("qax_export_kml", self.prj.params.write_kml)
+        else:  # exists
+            self.prj.params.write_kml = (export_kml == "true")
+        # - import
+        import_folder = settings.value("ff_import_folder")
+        if (import_folder is None) or (not os.path.exists(import_folder)):
+            settings.setValue("ff_import_folder", str(self.prj.outputs.output_folder))
+        import_folder = settings.value("dtm_import_folder")
+        if (import_folder is None) or (not os.path.exists(import_folder)):
+            settings.setValue("dtm_import_folder", str(self.prj.outputs.output_folder))
+        # - project folder
+        export_project_folder = settings.value("qax_export_project_folder")
+        if export_project_folder is None:
+            settings.setValue("qax_export_project_folder", str(self.prj.params.project_folder))
+        else:  # exists
+            self.prj.params.project_folder = (export_project_folder == "true")
+        # - subfolders
+        export_subfolders = settings.value("qax_export_subfolders")
+        if export_subfolders is None:
+            settings.setValue("qax_export_subfolders", self.prj.params.subfolders)
+        else:  # exists
+            self.prj.params.subfolders = (export_subfolders == "true")
 
         # make tabs
         self.tabs = QtWidgets.QTabWidget()
