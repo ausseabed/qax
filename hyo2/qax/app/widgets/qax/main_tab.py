@@ -25,8 +25,10 @@ class MainTab(QtWidgets.QMainWindow):
         self.media = self.parent_win.media
 
         # aux variables
+        self.has_raw = False
         self.has_dtm = False
         self.has_ff = False
+        self.has_enc = False
         self.has_json = False
 
         # ui
@@ -105,12 +107,40 @@ class MainTab(QtWidgets.QMainWindow):
         vbox = QtWidgets.QVBoxLayout()
         self.survey.setLayout(vbox)
 
+        # add raw
+        hbox = QtWidgets.QHBoxLayout()
+        vbox.addLayout(hbox)
+        self.text_raw = QtWidgets.QLabel("Raw Files:")
+        hbox.addWidget(self.text_raw)
+        self.text_raw.setMinimumWidth(left_space)
+        self.input_raw = QtWidgets.QListWidget()
+        hbox.addWidget(self.input_raw)
+        self.input_raw.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.input_raw.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        # noinspection PyUnresolvedReferences
+        self.input_raw.customContextMenuRequested.connect(self.make_raw_context_menu)
+        self.input_raw.setAlternatingRowColors(True)
+        self.input_raw.setMaximumHeight(100)
+        # Enable dropping onto the input ss list
+        self.input_raw.setAcceptDrops(True)
+        self.input_raw.installEventFilter(self)
+        self.button_raw = QtWidgets.QPushButton()
+        hbox.addWidget(self.button_raw)
+        self.button_raw.setFixedHeight(GuiSettings.single_line_height())
+        self.button_raw.setFixedWidth(GuiSettings.single_line_height())
+        self.button_raw.setText(" + ")
+        self.button_raw.setToolTip('Add (or drag-and-drop) the survey raw files')
+        # noinspection PyUnresolvedReferences
+        self.button_raw.clicked.connect(self.click_add_raw)
+
+        vbox.addSpacing(3)
+
         # add dtm
         hbox = QtWidgets.QHBoxLayout()
         vbox.addLayout(hbox)
         self.text_dtm = QtWidgets.QLabel("Survey DTMs:")
         hbox.addWidget(self.text_dtm)
-        self.text_dtm.setMinimumWidth(90)
+        self.text_dtm.setMinimumWidth(left_space)
         self.input_dtm = QtWidgets.QListWidget()
         hbox.addWidget(self.input_dtm)
         self.input_dtm.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
@@ -131,15 +161,15 @@ class MainTab(QtWidgets.QMainWindow):
         # noinspection PyUnresolvedReferences
         self.button_dtm.clicked.connect(self.click_add_dtm)
 
-        vbox.addSpacing(10)
+        vbox.addSpacing(3)
 
-        # add ENC
+        # add FF
         hbox = QtWidgets.QHBoxLayout()
         vbox.addLayout(hbox)
         self.text_ff = QtWidgets.QLabel("Feature Files:")
         hbox.addWidget(self.text_ff)
         self.text_ff.setFixedHeight(GuiSettings.single_line_height())
-        self.text_ff.setMinimumWidth(90)
+        self.text_ff.setMinimumWidth(left_space)
         self.input_ff = QtWidgets.QListWidget()
         hbox.addWidget(self.input_ff)
         self.input_ff.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
@@ -159,6 +189,35 @@ class MainTab(QtWidgets.QMainWindow):
         self.button_ff.setToolTip('Add (or drag-and-drop) the feature files as S57 file (.000)')
         # noinspection PyUnresolvedReferences
         self.button_ff.clicked.connect(self.click_add_ff)
+
+        vbox.addSpacing(3)
+
+        # add ENC
+        hbox = QtWidgets.QHBoxLayout()
+        vbox.addLayout(hbox)
+        self.text_enc = QtWidgets.QLabel("Current ENCs:")
+        hbox.addWidget(self.text_enc)
+        self.text_enc.setFixedHeight(GuiSettings.single_line_height())
+        self.text_enc.setMinimumWidth(left_space)
+        self.input_enc = QtWidgets.QListWidget()
+        hbox.addWidget(self.input_enc)
+        self.input_enc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.input_enc.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        # noinspection PyUnresolvedReferences
+        self.input_enc.customContextMenuRequested.connect(self.make_enc_context_menu)
+        self.input_enc.setAlternatingRowColors(True)
+        self.input_enc.setMaximumHeight(100)
+        # Enable dropping onto the input s57 list
+        self.input_enc.setAcceptDrops(True)
+        self.input_enc.installEventFilter(self)
+        self.button_enc = QtWidgets.QPushButton()
+        hbox.addWidget(self.button_enc)
+        self.button_enc.setFixedHeight(GuiSettings.single_line_height())
+        self.button_enc.setFixedWidth(GuiSettings.single_line_height())
+        self.button_enc.setText(" + ")
+        self.button_enc.setToolTip('Add (or drag-and-drop) the ENCs as S57 files (.000)')
+        # noinspection PyUnresolvedReferences
+        self.button_enc.clicked.connect(self.click_add_enc)
 
         vbox.addStretch()
 
@@ -203,7 +262,7 @@ class MainTab(QtWidgets.QMainWindow):
         text_set_formats = QtWidgets.QLabel("Formats:")
         hbox.addWidget(text_set_formats)
         text_set_formats.setFixedHeight(GuiSettings.single_line_height())
-        text_set_formats.setMinimumWidth(64)
+        text_set_formats.setMinimumWidth(left_space)
         self.output_pdf = QtWidgets.QCheckBox("PDF")
         self.output_pdf.setChecked(True)
         self.output_pdf.setDisabled(True)
@@ -254,7 +313,7 @@ class MainTab(QtWidgets.QMainWindow):
         vbox.addLayout(hbox)
         text_add_folder = QtWidgets.QLabel("Folder:")
         hbox.addWidget(text_add_folder)
-        text_add_folder.setMinimumWidth(64)
+        text_add_folder.setMinimumWidth(left_space)
         self.output_folder = QtWidgets.QListWidget()
         hbox.addWidget(self.output_folder)
         self.output_folder.setMinimumHeight(GuiSettings.single_line_height())
@@ -333,7 +392,7 @@ class MainTab(QtWidgets.QMainWindow):
         vbox.addLayout(hbox)
         text_add_folder = QtWidgets.QLabel("QA JSON:")
         hbox.addWidget(text_add_folder)
-        text_add_folder.setMinimumWidth(64)
+        text_add_folder.setMinimumWidth(left_space)
         self.qa_json = QtWidgets.QListWidget()
         hbox.addWidget(self.qa_json)
         self.qa_json.setMinimumHeight(GuiSettings.single_line_height())
@@ -364,7 +423,23 @@ class MainTab(QtWidgets.QMainWindow):
         # drag events
         if (e.type() == QtCore.QEvent.DragEnter) or (e.type() == QtCore.QEvent.DragMove):
 
-            if obj in (self.input_dtm, ):
+            if obj in (self.input_raw, ):
+
+                if e.mimeData().hasUrls:
+
+                    for url in e.mimeData().urls():
+
+                        if Helper.is_darwin():
+                            dropping_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
+
+                        else:
+                            dropping_file = str(url.toLocalFile())
+
+                        if os.path.splitext(dropping_file)[-1].lower() in (".all", ".wcd"):
+                            e.accept()
+                            return True
+
+            elif obj in (self.input_dtm, ):
 
                 if e.mimeData().hasUrls:
 
@@ -381,6 +456,22 @@ class MainTab(QtWidgets.QMainWindow):
                             return True
 
             elif obj in (self.input_ff,):
+
+                if e.mimeData().hasUrls:
+
+                    for url in e.mimeData().urls():
+
+                        if Helper.is_darwin():
+                            dropping_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
+
+                        else:
+                            dropping_file = str(url.toLocalFile())
+
+                        if os.path.splitext(dropping_file)[-1].lower() in (".000", ):
+                            e.accept()
+                            return True
+
+            elif obj in (self.input_enc,):
 
                 if e.mimeData().hasUrls:
 
@@ -436,8 +527,34 @@ class MainTab(QtWidgets.QMainWindow):
         # drop events
         if e.type() == QtCore.QEvent.Drop:
 
-            # print('drop', obj)
-            if obj is self.input_dtm:
+            if obj is self.input_raw:
+
+                if e.mimeData().hasUrls():
+
+                    e.setDropAction(QtCore.Qt.CopyAction)
+                    e.accept()
+                    # Workaround for OSx dragging and dropping
+                    for url in e.mimeData().urls():
+                        if Helper.is_darwin():
+                            dropped_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
+                        else:
+                            dropped_file = str(url.toLocalFile())
+
+                        logger.debug("dropped file: %s" % dropped_file)
+                        if os.path.splitext(dropped_file)[-1] in (".all", ".wcd"):
+
+                            self._add_raw(selection=dropped_file)
+
+                        else:
+                            msg = 'Drag-and-drop is only possible with the following file extensions:\n' \
+                                  '- Kongsberg files: .all, .wcd\n\n' \
+                                  'Dropped file:\n' \
+                                  '%s' % dropped_file
+                            # noinspection PyCallByClass,PyArgumentList
+                            QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
+                    return True
+
+            elif obj is self.input_dtm:
 
                 if e.mimeData().hasUrls():
 
@@ -484,6 +601,31 @@ class MainTab(QtWidgets.QMainWindow):
                         else:
                             msg = 'Drag-and-drop is only possible with the following file extensions:\n' \
                                   '- S57 Feature Files: .000\n\n' \
+                                  'Dropped file:\n' \
+                                  '%s' % dropped_file
+                            # noinspection PyCallByClass,PyArgumentList
+                            QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
+                    return True
+
+            elif obj is self.input_enc:
+
+                if e.mimeData().hasUrls():
+
+                    e.setDropAction(QtCore.Qt.CopyAction)
+                    e.accept()
+                    # Workaround for OSx dragging and dropping
+                    for url in e.mimeData().urls():
+                        if Helper.is_darwin():
+                            dropped_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
+                        else:
+                            dropped_file = str(url.toLocalFile())
+
+                        logger.debug("dropped file: %s" % dropped_file)
+                        if os.path.splitext(dropped_file)[-1] in (".000",):
+                            self._add_enc(selection=dropped_file)
+                        else:
+                            msg = 'Drag-and-drop is only possible with the following file extensions:\n' \
+                                  '- S57 ENC Files: .000\n\n' \
                                   'Dropped file:\n' \
                                   '%s' % dropped_file
                             # noinspection PyCallByClass,PyArgumentList
@@ -622,6 +764,70 @@ class MainTab(QtWidgets.QMainWindow):
             self.input_ff.setEnabled(True)
             self.button_ff.setEnabled(True)
 
+    # RAW METHODS
+
+    def click_add_raw(self):
+        """ Read the raw files provided by the user"""
+        logger.debug('adding raw ...')
+
+        # ask the file path to the user
+        # noinspection PyCallByClass
+        selections, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Add raw file",
+                                                               QtCore.QSettings().value("raw_import_folder"),
+                                                               "Supported formats (*.all *.wcd);; "
+                                                               "Konsgberg file (*.all);;Kongsberg file (*.wcd);;"
+                                                               "All files (*.*)")
+        if len(selections) == 0:
+            logger.debug('adding raw: aborted')
+            return
+        last_open_folder = os.path.dirname(selections[0])
+        if os.path.exists(last_open_folder):
+            QtCore.QSettings().setValue("raw_import_folder", last_open_folder)
+
+        for selection in selections:
+            selection = os.path.abspath(selection).replace("\\", "/")
+            self._add_raw(selection=selection)
+
+    def _add_raw(self, selection):
+
+        if selection in self.prj.inputs.raw_paths:
+            logger.info("File already existing in the current project")
+            return
+
+        self.prj.inputs.raw_paths.append(selection)
+        self._update_input_raw_list()
+        self.raw_loaded()
+
+    def _update_input_raw_list(self):
+        self.input_raw.clear()
+        for input_raw_path in self.prj.inputs.raw_paths:
+            new_item = QtWidgets.QListWidgetItem()
+            if os.path.splitext(input_raw_path)[-1] in [".all", ".wcd"]:
+                new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'kng.png')))
+            new_item.setText(input_raw_path)
+            new_item.setFont(GuiSettings.console_font())
+            new_item.setForeground(GuiSettings.console_fg_color())
+            self.input_raw.addItem(new_item)
+
+    def make_raw_context_menu(self, pos):
+        logger.debug('context menu')
+
+        remove_act = QtWidgets.QAction("Remove files", self, statusTip="Remove raw files",
+                                       triggered=self.remove_raw_files)
+
+        menu = QtWidgets.QMenu(parent=self)
+        # noinspection PyArgumentList
+        menu.addAction(remove_act)
+        # noinspection PyArgumentList
+        menu.exec_(self.input_raw.mapToGlobal(pos))
+
+    def remove_raw_files(self):
+        logger.debug("user want to remove raw files")
+
+        self.prj.inputs.raw_paths.clear()
+        self._update_input_raw_list()
+        self.raw_unloaded()
+
     # DTM METHODS
 
     def click_add_dtm(self):
@@ -752,6 +958,70 @@ class MainTab(QtWidgets.QMainWindow):
         self.ff_unloaded()
         self._update_input_ff_list()
 
+    # ENC METHODS
+
+    def click_add_enc(self):
+        """ Read the ENC files provided by the user"""
+        logger.debug('adding ENC ...')
+
+        # ask the file path to the user
+        # noinspection PyCallByClass
+        selections, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Add S57 ENC Files",
+                                                               QtCore.QSettings().value("enc_import_folder"),
+                                                               "S57 file (*.000);;All files (*.*)")
+        if len(selections) == 0:
+            logger.debug('adding s57: aborted')
+            return
+        last_open_folder = os.path.dirname(selections[0])
+        if os.path.exists(last_open_folder):
+            QtCore.QSettings().setValue("enc_import_folder", last_open_folder)
+
+        for selection in selections:
+            selection = os.path.abspath(selection).replace("\\", "/")
+            self._add_enc(selection=selection)
+
+    def _add_enc(self, selection):
+
+        if selection in self.prj.inputs.enc_paths:
+            logger.info("File already existing in the current project")
+            return
+
+        self.prj.inputs.enc_paths.append(selection)
+
+        self._update_input_enc_list()
+        self.enc_loaded()
+
+    def _update_input_enc_list(self):
+        """ update the ENC list widget """
+        self.input_enc.clear()
+        for input_enc_path in self.prj.inputs.enc_paths:
+            new_item = QtWidgets.QListWidgetItem()
+            if os.path.splitext(input_enc_path)[-1] == ".000":
+                new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 's57.png')))
+            new_item.setText(input_enc_path)
+            new_item.setFont(GuiSettings.console_font())
+            new_item.setForeground(GuiSettings.console_fg_color())
+            self.input_enc.addItem(new_item)
+
+    def make_enc_context_menu(self, pos):
+        logger.debug('ENC context menu')
+
+        remove_act = QtWidgets.QAction("Remove files", self, statusTip="Remove the ENC files",
+                                       triggered=self.remove_enc_files)
+
+        menu = QtWidgets.QMenu(parent=self)
+        # noinspection PyArgumentList
+        menu.addAction(remove_act)
+        # noinspection PyArgumentList
+        menu.exec_(self.input_enc.mapToGlobal(pos))
+
+    def remove_enc_files(self):
+        logger.debug("user want to remove ENC files")
+
+        self.prj.inputs.enc_paths.clear()
+        self.enc_unloaded()
+        self._update_input_enc_list()
+
     # AUX METHODS
 
     def click_clear_data(self):
@@ -855,7 +1125,8 @@ class MainTab(QtWidgets.QMainWindow):
     def click_generate_checks(self):
         """ Read the feature files provided by the user"""
         logger.debug('generate checks ...')
-        self.prj.inputs.json_path = self.prj.example_paths()[-1]
+        from hyo2.qax.lib.qa_json import QAJson
+        self.prj.inputs.json_path = QAJson.example_paths()[-1]
         self._update_json_list()
         self.json_loaded()
 
@@ -921,6 +1192,17 @@ class MainTab(QtWidgets.QMainWindow):
 
     # interaction methods
 
+    def raw_loaded(self):
+        logger.debug("raw loaded")
+        self.has_raw = True
+        self.button_generate_checks.setEnabled(True)
+
+    def raw_unloaded(self):
+        logger.debug("raw unloaded")
+        self.has_raw = False
+        if not self.has_ff and not self.has_dtm:
+            self.button_generate_checks.setDisabled(True)
+
     def dtm_loaded(self):
         logger.debug("DTM loaded")
         self.has_dtm = True
@@ -929,7 +1211,7 @@ class MainTab(QtWidgets.QMainWindow):
     def dtm_unloaded(self):
         logger.debug("DTM unloaded")
         self.has_dtm = False
-        if not self.has_ff:
+        if not self.has_ff and not self.has_ff:
             self.button_generate_checks.setDisabled(True)
 
     def ff_loaded(self):
@@ -940,8 +1222,16 @@ class MainTab(QtWidgets.QMainWindow):
     def ff_unloaded(self):
         logger.debug("FF unloaded")
         self.has_ff = False
-        if not self.has_dtm:
+        if not self.has_raw and not self.has_dtm:
             self.button_generate_checks.setDisabled(True)
+
+    def enc_loaded(self):
+        logger.debug("ENC loaded")
+        self.has_enc = True
+
+    def enc_unloaded(self):
+        logger.debug("ENC unloaded")
+        self.has_enc = False
 
     def json_loaded(self):
         logger.debug("JSON loaded")
