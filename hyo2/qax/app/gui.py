@@ -29,7 +29,7 @@ def qt_custom_handler(error_type: QtCore.QtMsgType, error_context: QtCore.QMessa
 QtCore.qInstallMessageHandler(qt_custom_handler)
 
 
-def gui():
+def gui(dev_mode=False):
     """Run the QAX gui"""
 
     sys.argv.append("--disable-web-security")  # temporary fix for CORS warning (QTBUG-70228)
@@ -39,6 +39,7 @@ def gui():
     main_win = MainWin()
     sys.excepthook = main_win.exception_hook  # install the exception hook
     main_win.show()
-    # main.do()
+    if dev_mode:
+        main_win.do()
 
     sys.exit(app.exec_())

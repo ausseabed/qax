@@ -115,7 +115,7 @@
         "count": {
           "type": "number"
         },
-        "grade": {
+        "percentage": {
           "type": "number"
         }
       },

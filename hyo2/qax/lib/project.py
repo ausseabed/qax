@@ -17,65 +17,11 @@ logger = logging.getLogger(__name__)
 
 class QAXProject:
 
-    here = Path(__file__).parent
-
     def __init__(self):
 
         self._p = QAXParams()
         self._i = QAXInputs()
         self._o = QAXOutputs()
-
-    @classmethod
-    def schemas_folder(cls) -> Path:
-        schemas_path = cls.here.joinpath("schemas")
-        if not schemas_path.exists():
-            raise RuntimeError("unable to locate schemas folder")
-        return schemas_path
-
-    @classmethod
-    def schema_paths(cls) -> list:
-        paths = list()
-        for path in cls.schemas_folder().rglob('*.json'):
-
-            if path.match('*.schema.json'):
-                paths.append(path)
-
-        return paths
-
-    @classmethod
-    def validate_schema(cls, path: Path) -> bool:
-        schema = json.loads(open(str(path)).read())
-        try:
-            Draft7Validator.check_schema(schema)
-        except Exception as e:
-            logger.warning("%s" % e)
-            return False
-
-        return True
-
-    @classmethod
-    def validate_qa_json(cls, path: Path, schema_path: Path) -> bool:
-        qa = json.loads(open(str(path)).read())
-        # logger.debug(json)
-        try:
-            validate(instance=qa, schema=json.loads(open(str(schema_path)).read()))
-        except ValidationError as e:
-            logger.warning("%s" % e)
-            return False
-        except SchemaError as e:
-            logger.warning("%s" % e)
-            return False
-        return True
-
-    @classmethod
-    def example_paths(cls) -> list:
-        paths = list()
-        for path in cls.schemas_folder().rglob('*.json'):
-
-            if not path.match('*.schema.json'):
-                paths.append(path)
-
-        return paths
 
     @property
     def params(self) -> QAXParams:
@@ -107,7 +53,6 @@ class QAXProject:
     def __repr__(self):
         msg = super().__repr__()
         msg += "\n"
-        msg += "  <schemas folder: %s>\n" % (self.schemas_folder())
         msg += "%s" % (self._p,)
         msg += "%s" % (self._i,)
         msg += "%s" % (self._o,)

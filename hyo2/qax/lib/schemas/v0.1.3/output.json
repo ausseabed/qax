@@ -38,8 +38,7 @@
                 "description": "potential holidays"
               }
             ],
-            "count": 12,
-            "grade": 99.6
+            "count": 12
           },
           "params": {
             "type": "Full Coverage"
@@ -76,8 +75,7 @@
                 "description": "potential holidays"
               }
             ],
-            "count": 0,
-            "grade": 100.0
+            "count": 0
           },
           "params": {
             "type": "Full Coverage"
@@ -114,8 +112,7 @@
                 "description": "potential fliers"
               }
             ],
-            "count": 130,
-            "grade": 89.0
+            "count": 130
           },
           "params": {
             "threshold": 1.0
@@ -152,7 +149,7 @@
                 "description": "density plot"
               }
             ],
-            "grade": 99.4
+            "percentage": 99.4
           },
           "params": {
           }
