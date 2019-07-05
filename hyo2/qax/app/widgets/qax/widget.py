@@ -106,6 +106,7 @@ class QAXWidget(AbstractWidget):
 
     def enable_qc_tools(self):
         self.tabs.setTabEnabled(self.idx_qc_tools, True)
+        self.tab_qc_tools.display_json()
 
     def disable_qc_tools(self):
         self.tabs.setTabEnabled(self.idx_qc_tools, False)
