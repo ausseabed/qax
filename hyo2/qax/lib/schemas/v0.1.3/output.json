@@ -14,14 +14,14 @@
             "description": "The algorithm identifies data holidays in gridded data.",
             "version": "7",
             "group": {
-              "id": "123",
-              "name": "123"
+              "id": "H12123",
+              "name": "H12123"
             }
           },
           "inputs": {
             "files": [
               {
-                "path": "c:/data/test/123.bag",
+                "path": "c:/data/test/H12123_MB_VR_MLLW.bag",
                 "description": "grid input"
               }
             ]
@@ -34,7 +34,7 @@
             },
             "files": [
               {
-                "path": "output/123.HF7.000",
+                "path": "output/H12123.HF7.000",
                 "description": "potential holidays"
               }
             ],
@@ -46,19 +46,55 @@
         },
         {
           "info": {
-            "id": "774ccc80-5114-41e9-a6c3-1dbe2cd87f36",
-            "name": "Holiday Finder",
+            "id": "dad4bab8-edaf-4714-b75a-54caf7b3d4fb",
+            "name": "Filer Finder",
             "description": "The algorithm identifies data holidays in gridded data.",
-            "version": "7",
+            "version": "5",
             "group": {
-              "id": "456",
-              "name": "456"
+              "id": "H12123",
+              "name": "H12123"
             }
           },
           "inputs": {
             "files": [
               {
-                "path": "c:/data/test/456.bag",
+                "path": "c:/data/test/H12123_MB_VR_MLLW.bag",
+                "description": "grid input"
+              }
+            ]
+          },
+          "outputs": {
+            "execution": {
+              "start": "2019-07-03T20:20:39+00:00",
+              "end": "2019-07-03T20:21:32+00:00",
+              "status": "completed"
+            },
+            "files": [
+              {
+                "path": "output/H12123.FF5.000",
+                "description": "potential fliers"
+              }
+            ],
+            "count": 151
+          },
+          "params": {
+          }
+        },
+        {
+          "info": {
+            "id": "774ccc80-5114-41e9-a6c3-1dbe2cd87f36",
+            "name": "Holiday Finder",
+            "description": "The algorithm identifies data holidays in gridded data.",
+            "version": "7",
+            "group": {
+              "id": "H13456",
+              "name": "H13456"
+            }
+          },
+          "inputs": {
+            "files": [
+              {
+                "path": "c:/data/test/H13456_MB_50cm_MLLW_1of2.bag",
                 "description": "grid input"
               }
             ]
@@ -71,7 +107,7 @@
             },
             "files": [
               {
-                "path": "output/456.HF7.000",
+                "path": "output/H13456.HF7.000",
                 "description": "potential holidays"
               }
             ],
@@ -88,14 +124,14 @@
             "description": "The algorithm identifies data anomalies in gridded data.",
             "version": "5",
             "group": {
-              "id": "456",
-              "name": "456"
+              "id": "H13456",
+              "name": "H13456"
             }
           },
           "inputs": {
             "files": [
               {
-                "path": "c:/data/test/456.bag",
+                "path": "c:/data/test/H13456_MB_50cm_MLLW_1of2.bag",
                 "description": "grid input"
               }
             ]
@@ -104,11 +140,11 @@
             "execution": {
               "start": "2019-07-03T20:25:36+00:00",
               "end": "2019-07-03T20:26:22+00:00",
-              "status": "completed"
+              "status": "failed"
             },
             "files": [
               {
-                "path": "output/456.FF5.000",
+                "path": "output/H13456.FF5.000",
                 "description": "potential fliers"
               }
             ],
@@ -125,14 +161,14 @@
             "description": "The algorithm evaluates the grid data density.",
             "version": "3",
             "group": {
-              "id": "456",
-              "name": "456"
+              "id": "H13456",
+              "name": "H13456"
             }
           },
           "inputs": {
             "files": [
               {
-                "path": "c:/data/test/456.bag",
+                "path": "c:/data/test/H13456_MB_50cm_MLLW_1of2.bag",
                 "description": "grid input"
               }
             ]
@@ -150,6 +186,188 @@
               }
             ],
             "percentage": 99.4
+          },
+           "params": {
+          }
+        },
+        {
+          "info": {
+            "id": "dad4bab8-edaf-4714-b75a-54caf7b3d4fb",
+            "name": "Holiday Finder",
+            "description": "The algorithm identifies data holidays in gridded data.",
+            "version": "7",
+            "group": {
+              "id": "H15000",
+              "name": "H15000"
+            }
+          },
+          "inputs": {
+            "files": [
+              {
+                "path": "c:/data/test/H15000_MB_1m_MLLW_1of3.bag",
+                "description": "grid input"
+              }
+            ]
+          },
+          "outputs": {
+            "execution": {
+              "start": "2019-07-03T20:20:39+00:00",
+              "end": "2019-07-03T20:21:32+00:00",
+              "status": "completed"
+            },
+            "files": [
+              {
+                "path": "output/H15000_MB_1m_MLLW_1of3.HF7.000",
+                "description": "potential holidays"
+              }
+            ],
+            "count": 12
+          },
+          "params": {
+            "type": "Full Coverage"
+          }
+        },
+        {
+          "info": {
+            "id": "dad4bab8-edaf-4714-b75a-54caf7b3d4fb",
+            "name": "Filer Finder",
+            "description": "The algorithm identifies data holidays in gridded data.",
+            "version": "5",
+            "group": {
+              "id": "H15000",
+              "name": "H15000"
+            }
+          },
+          "inputs": {
+            "files": [
+              {
+                "path": "c:/data/test/H15000_MB_1m_MLLW_1of3.bag",
+                "description": "grid input"
+              }
+            ]
+          },
+          "outputs": {
+            "execution": {
+              "start": "2019-07-03T20:20:39+00:00",
+              "end": "2019-07-03T20:21:32+00:00",
+              "status": "completed"
+            },
+            "files": [
+              {
+                "path": "output/H15000_MB_1m_MLLW_1of3.FF5.000",
+                "description": "potential fliers"
+              }
+            ],
+            "count": 151
+          },
+          "params": {
+          }
+        },
+        {
+          "info": {
+            "id": "05b319e1-ec5e-4739-8fc3-174d31f90f4e",
+            "name": "Grid Data Density",
+            "description": "The algorithm evaluates the grid data density.",
+            "version": "3",
+            "group": {
+              "id": "H15000",
+              "name": "H15000"
+            }
+          },
+          "inputs": {
+            "files": [
+              {
+                "path": "c:/data/test/H15000_MB_2m_MLLW_2of3.bag",
+                "description": "grid input"
+              }
+            ]
+          },
+          "outputs": {
+            "execution": {
+              "start": "2019-07-03T21:2:31+00:00",
+              "end": "2019-07-03T21:22:37+00:00",
+              "status": "completed"
+            },
+            "files": [
+              {
+                "path": "output//H15000_MB_2m_MLLW_2of3.QA3.density.png",
+                "description": "density plot"
+              }
+            ],
+            "percentage": 92.6
+          },
+           "params": {
+          }
+        },
+        {
+          "info": {
+            "id": "dad4bab8-edaf-4714-b75a-54caf7b3d4fb",
+            "name": "Holiday Finder",
+            "description": "The algorithm identifies data holidays in gridded data.",
+            "version": "7",
+            "group": {
+              "id": "H15000",
+              "name": "H15000"
+            }
+          },
+          "inputs": {
+            "files": [
+              {
+                "path": "c:/data/test/H15000_MB_2m_MLLW_2of3.bag",
+                "description": "grid input"
+              }
+            ]
+          },
+          "outputs": {
+            "execution": {
+              "start": "2019-07-03T20:20:39+00:00",
+              "end": "2019-07-03T20:21:32+00:00",
+              "status": "completed"
+            },
+            "files": [
+              {
+                "path": "output/H15000_MB_2m_MLLW_2of3.HF7.000",
+                "description": "potential holidays"
+              }
+            ],
+            "count": 12
+          },
+          "params": {
+            "type": "Full Coverage"
+          }
+        },
+        {
+          "info": {
+            "id": "dad4bab8-edaf-4714-b75a-54caf7b3d4fb",
+            "name": "Filer Finder",
+            "description": "The algorithm identifies data holidays in gridded data.",
+            "version": "5",
+            "group": {
+              "id": "H15000",
+              "name": "H15000"
+            }
+          },
+          "inputs": {
+            "files": [
+              {
+                "path": "c:/data/test/H15000_MB_2m_MLLW_2of3.bag",
+                "description": "grid input"
+              }
+            ]
+          },
+          "outputs": {
+            "execution": {
+              "start": "2019-07-03T20:20:39+00:00",
+              "end": "2019-07-03T20:21:32+00:00",
+              "status": "aborted"
+            },
+            "files": [
+              {
+                "path": "output/H15000_MB_2m_MLLW_2of3.FF5.000",
+                "description": "potential fliers"
+              }
+            ],
+            "count": 151
           },
           "params": {
           }
