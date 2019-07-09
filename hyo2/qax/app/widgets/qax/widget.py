@@ -7,9 +7,7 @@ from hyo2.abc.app.qt_progress import QtProgress
 from hyo2.qax.app.widgets.widget import AbstractWidget
 from hyo2.qax.lib.project import QAXProject
 from hyo2.qax.app.widgets.qax.main_tab import MainTab
-from hyo2.qax.app.widgets.qax.mate_tab import MateTab
-from hyo2.qax.app.widgets.qax.qc_tools_tab import QCToolsTab
-from hyo2.qax.app.widgets.qax.ca_tools_tab import CAToolsTab
+from hyo2.qax.app.widgets.qax.checks_tab import ChecksTab
 
 logger = logging.getLogger(__name__)
 
@@ -75,21 +73,21 @@ class QAXWidget(AbstractWidget):
                                               QtGui.QIcon(os.path.join(self.media, 'qax.png')), "")
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
         # Mate tab
-        self.tab_mate = MateTab(parent_win=self, prj=self.prj)
+        self.tab_mate = ChecksTab(parent_win=self, prj=self.prj, qa_group="raw_data")
         # noinspection PyArgumentList
         self.idx_mate = self.tabs.insertTab(1, self.tab_mate,
                                             QtGui.QIcon(os.path.join(self.media, 'mate.png')), "")
         self.tabs.setTabEnabled(self.idx_mate, False)
         self.tabs.setTabToolTip(self.idx_mate, "Mate")
         # QC Tools tab
-        self.tab_qc_tools = QCToolsTab(parent_win=self, prj=self.prj)
+        self.tab_qc_tools = ChecksTab(parent_win=self, prj=self.prj, qa_group="survey_products")
         # noinspection PyArgumentList
         self.idx_qc_tools = self.tabs.insertTab(2, self.tab_qc_tools,
                                                 QtGui.QIcon(os.path.join(self.media, 'qc_tools.png')), "")
         self.tabs.setTabEnabled(self.idx_qc_tools, False)
         self.tabs.setTabToolTip(self.idx_qc_tools, "QC Tools")
         # CA Tools tab
-        self.tab_ca_tools = CAToolsTab(parent_win=self, prj=self.prj)
+        self.tab_ca_tools = ChecksTab(parent_win=self, prj=self.prj, qa_group="chart_adequacy")
         # noinspection PyArgumentList
         self.idx_ca_tools = self.tabs.insertTab(3, self.tab_ca_tools,
                                                 QtGui.QIcon(os.path.join(self.media, 'ca_tools.png')), "")
@@ -100,6 +98,7 @@ class QAXWidget(AbstractWidget):
 
     def enable_mate(self):
         self.tabs.setTabEnabled(self.idx_mate, True)
+        self.tab_mate.display_json()
 
     def disable_mate(self):
         self.tabs.setTabEnabled(self.idx_mate, False)
@@ -113,6 +112,7 @@ class QAXWidget(AbstractWidget):
 
     def enable_ca_tools(self):
         self.tabs.setTabEnabled(self.idx_ca_tools, True)
+        self.tab_ca_tools.display_json()
 
     def disable_ca_tools(self):
         self.tabs.setTabEnabled(self.idx_ca_tools, False)

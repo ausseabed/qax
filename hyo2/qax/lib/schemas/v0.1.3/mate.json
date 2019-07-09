@@ -1,0 +1,275 @@
+{
+    "qa": {
+        "version": "0.1.3",
+        "raw_data": {
+            "checks": [
+                {
+                    "info": {
+                        "id": "7761e08b-1380-46fa-a7eb-f1f41db38541",
+                        "name": "Filename checked",
+                        "description": "all filename is consistent with that recorded in file metadata",
+                        "version": "1",
+                        "group": {
+                            "id": "123",
+                            "name": "123"
+                        }
+                    },
+                    "inputs": {
+                        "files": [
+                            {
+                                "path": "tests/test_data/0243_P007_MBES_EM122_20150207_044356_Supporter_GA4430.all",
+                                "description": "raw data"
+                            }
+                        ]
+                    },
+                    "outputs": {
+                        "percentage": 0,
+                        "execution": {
+                            "start": "2019-07-08T14:56:49.006647",
+                            "end": "2019-07-08T14:56:49.006677",
+                            "status": "completed"
+                        },
+                        "files": [
+                            {
+                                "path": "tests/test_data/0243_P007_MBES_EM122_20150207_044356_Supporter_GA4430.all"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "info": {
+                        "id": "4a3f3371-3a21-44f2-93cf-d9ed19d0c002",
+                        "name": "Date checked",
+                        "description": "Date included in filename is consistent with that recorded in file metadata",
+                        "version": "1",
+                        "group": {
+                            "id": "123",
+                            "name": "123"
+                        }
+                    },
+                    "inputs": {
+                        "files": [
+                            {
+                                "path": "tests/test_data/0243_P007_MBES_EM122_20150207_044356_Supporter_GA4430.all",
+                                "description": "raw data"
+                            }
+                        ]
+                    },
+                    "outputs": {
+                        "percentage": 100,
+                        "execution": {
+                            "start": "2019-07-08T14:56:49.006690",
+                            "end": "2019-07-08T14:56:49.006834",
+                            "status": "completed"
+                        },
+                        "files": [
+                            {
+                                "path": "tests/test_data/0243_P007_MBES_EM122_20150207_044356_Supporter_GA4430.all"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "info": {
+                        "id": "8c909ace-8759-4c2c-b86a-f76f888cd821",
+                        "name": "Bathymetry Available",
+                        "description": "",
+                        "version": "1",
+                        "group": {
+                            "id": "123",
+                            "name": "123"
+                        }
+                    },
+                    "inputs": {
+                        "files": [
+                            {
+                                "path": "tests/test_data/0243_P007_MBES_EM122_20150207_044356_Supporter_GA4430.all",
+                                "description": "raw data"
+                            }
+                        ]
+                    },
+                    "outputs": {
+                        "percentage": 50,
+                        "execution": {
+                            "start": "2019-07-08T14:56:49.006844",
+                            "end": "2019-07-08T14:56:49.006862",
+                            "status": "completed"
+                        },
+                        "files": [
+                            {
+                                "path": "tests/test_data/0243_P007_MBES_EM122_20150207_044356_Supporter_GA4430.all"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "info": {
+                        "id": "bbce47c0-54c9-4c60-8de8-b174a8905091",
+                        "name": "Backscatter Available",
+                        "description": "",
+                        "version": "1",
+                        "group": {
+                            "id": "123",
+                            "name": "123"
+                        }
+                    },
+                    "inputs": {
+                        "files": [
+                            {
+                                "path": "tests/test_data/0243_P007_MBES_EM122_20150207_044356_Supporter_GA4430.all",
+                                "description": "raw data"
+                            }
+                        ]
+                    },
+                    "outputs": {
+                        "percentage": 50,
+                        "execution": {
+                            "start": "2019-07-08T14:56:49.006910",
+                            "end": "2019-07-08T14:56:49.006920",
+                            "status": "completed"
+                        },
+                        "files": [
+                            {
+                                "path": "tests/test_data/0243_P007_MBES_EM122_20150207_044356_Supporter_GA4430.all"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "info": {
+                        "id": "5421f3f2-6e37-4740-bf83-488bebde49f4",
+                        "name": "Ray Tracing Available",
+                        "description": "",
+                        "version": "1",
+                        "group": {
+                            "id": "123",
+                            "name": "123"
+                        }
+                    },
+                    "inputs": {
+                        "files": [
+                            {
+                                "path": "tests/test_data/0243_P007_MBES_EM122_20150207_044356_Supporter_GA4430.all",
+                                "description": "raw data"
+                            }
+                        ]
+                    },
+                    "outputs": {
+                        "percentage": 0,
+                        "execution": {
+                            "start": "2019-07-08T14:56:49.006893",
+                            "end": "2019-07-08T14:56:49.006903",
+                            "status": "completed"
+                        },
+                        "files": [
+                            {
+                                "path": "tests/test_data/0243_P007_MBES_EM122_20150207_044356_Supporter_GA4430.all"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "info": {
+                        "id": "d762fd79-75bc-4aff-a9d2-e0c36e744e17",
+                        "name": "Minimum Ping",
+                        "description": "",
+                        "version": "1",
+                        "group": {
+                            "id": "123",
+                            "name": "123"
+                        }
+                    },
+                    "inputs": {
+                        "files": [
+                            {
+                                "path": "tests/test_data/0200_MBES_EM122_20150203_010431_Supporter_GA4430.all",
+                                "description": "raw data"
+                            }
+                        ]
+                    },
+                    "params": {
+                        "threshold": 20
+                    },
+                    "outputs": {
+                        "percentage": 100,
+                        "execution": {
+                            "start": "2019-07-08T14:56:49.010891",
+                            "end": "2019-07-08T14:56:49.010930",
+                            "status": "completed"
+                        },
+                        "files": [
+                            {
+                                "path": "tests/test_data/0200_MBES_EM122_20150203_010431_Supporter_GA4430.all"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "info": {
+                        "id": "bbce47c0-54c9-4c60-8de8-b174a8905091",
+                        "name": "Ellipsoid Height Available",
+                        "description": "",
+                        "version": "1",
+                        "group": {
+                            "id": "123",
+                            "name": "123"
+                        }
+                    },
+                    "inputs": {
+                        "files": [
+                            {
+                                "path": "tests/test_data/0243_P007_MBES_EM122_20150207_044356_Supporter_GA4430.all",
+                                "description": "raw data"
+                            }
+                        ]
+                    },
+                    "outputs": {
+                        "execution":
+                        {
+                            "status": "draft"
+                        }
+                    }
+                },
+                {
+                    "info": {
+                        "id": "37b967ac-3e82-40f6-ba24-4badcf1317f3",
+                        "name": "PU Status",
+                        "description": "",
+                        "version": "1",
+                        "group": {
+                            "id": "123",
+                            "name": "123"
+                        }
+                    },
+                    "inputs": {
+                        "files": [
+                            {
+                                "path": "tests/test_data/0243_P007_MBES_EM122_20150207_044356_Supporter_GA4430.all",
+                                "description": "raw data"
+                            }
+                        ]
+                    },
+                    "outputs": {
+                        "percentage": 100,
+                        "execution": {
+                            "start": "2019-07-08T14:56:49.006927",
+                            "end": "2019-07-08T14:56:49.006938",
+                            "status": "completed"
+                        },
+                        "files": [
+                            {
+                                "path": "tests/test_data/0243_P007_MBES_EM122_20150207_044356_Supporter_GA4430.all"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "survey_products": {
+            "checks": []
+        },
+        "chart_adequacy": {
+            "checks": []
+        }
+    }
+}

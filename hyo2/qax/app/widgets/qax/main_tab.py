@@ -1236,12 +1236,16 @@ class MainTab(QtWidgets.QMainWindow):
     def json_loaded(self):
         logger.debug("JSON loaded")
         self.has_json = True
+        self.parent_win.enable_mate()
         self.parent_win.enable_qc_tools()
+        self.parent_win.enable_ca_tools()
 
     def json_unloaded(self):
         logger.debug("JSON unloaded")
         self.has_json = False
+        self.parent_win.disable_mate()
         self.parent_win.disable_qc_tools()
+        self.parent_win.disable_ca_tools()
 
     # common
     @classmethod

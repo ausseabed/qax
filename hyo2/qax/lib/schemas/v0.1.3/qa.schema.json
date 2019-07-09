@@ -58,7 +58,7 @@
         }
       },
       "required": [
-        "info"
+        "info", "outputs"
       ]
     },
     "info": {
