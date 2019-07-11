@@ -68,7 +68,7 @@ class QAJson:
         return paths
 
     def __init__(self, path: Path, schema_path: Optional[Path] = None, check_valid: bool = True):
-        self._path = path
+        self._path = Path(path)
         if schema_path is None:
             schema_path = self.schema_paths()[-1]
         self._schema_path = schema_path

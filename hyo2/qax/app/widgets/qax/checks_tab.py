@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
 from hyo2.abc.lib.helper import Helper
 
@@ -29,6 +30,8 @@ class ChecksTab(QtWidgets.QMainWindow):
         self.set_view = None
         self.cur_view = 'Json Text'
         self.force_reload = None
+        self.save_as = None
+        self.execute_all = None
         self.json_text_group = None
         self.json_viewer = None
         self.score_board_group = None
@@ -39,6 +42,8 @@ class ChecksTab(QtWidgets.QMainWindow):
 
         self.panel.deleteLater()
         self.vbox.deleteLater()
+
+        button_width = 120
 
         # ui
         self.panel = QtWidgets.QFrame()
@@ -55,11 +60,25 @@ class ChecksTab(QtWidgets.QMainWindow):
         # noinspection PyUnresolvedReferences
         self.set_view.currentTextChanged.connect(self.on_set_view)
         hbox.addWidget(self.set_view)
+        hbox.setSpacing(16)
         self.force_reload = QtWidgets.QPushButton()
+        self.force_reload.setFixedWidth(button_width)
         self.force_reload.setText("Reload")
         # noinspection PyUnresolvedReferences
         self.force_reload.clicked.connect(self.on_force_reload)
         hbox.addWidget(self.force_reload)
+        self.save_as = QtWidgets.QPushButton()
+        self.save_as.setFixedWidth(button_width)
+        self.save_as.setText("Save as")
+        # noinspection PyUnresolvedReferences
+        self.save_as.clicked.connect(self.on_save_as)
+        hbox.addWidget(self.save_as)
+        self.execute_all = QtWidgets.QPushButton()
+        self.execute_all.setFixedWidth(button_width)
+        self.execute_all.setText("Run all")
+        # noinspection PyUnresolvedReferences
+        self.execute_all.clicked.connect(self.on_execute_all)
+        hbox.addWidget(self.execute_all)
         hbox.addStretch()
 
         # Json Text
@@ -127,19 +146,34 @@ class ChecksTab(QtWidgets.QMainWindow):
             item4 = QtWidgets.QTableWidgetItem(output_txt)
             self.score_board.setItem(idx, 4, item4)
             try:
-                item5 = QtWidgets.QTableWidgetItem(checks[idx]['outputs']['execution']['status'])
+                status = checks[idx]['outputs']['execution']['status']
+                item5 = QtWidgets.QTableWidgetItem(status)
+                if status in ["aborted", "failed"]:
+                    item5.setBackground(QtGui.QColor(200, 100, 100, 50))
+                elif status in ["draft", "queued", "running"]:
+                    item5.setBackground(QtGui.QColor(200, 200, 100, 50))
+                else:
+                    item5.setBackground(QtGui.QColor(100, 200, 100, 50))
                 self.score_board.setItem(idx, 5, item5)
             except KeyError as e:
                 logger.debug("skipping grade for #%d: %s" % (idx, e))
             try:
-                item6 = QtWidgets.QTableWidgetItem(checks[idx]['outputs']['execution']['status'])
-                self.score_board.setItem(idx, 6, item6)
+                item6 = QtWidgets.QPushButton('Run')
+                # noinspection PyUnresolvedReferences
+                item6.clicked.connect(self.on_button_clicked)
+                self.score_board.setCellWidget(idx, 6, item6)
             except KeyError as e:
                 logger.debug("skipping grade for #%d: %s" % (idx, e))
 
         vbox.addWidget(self.score_board)
 
         self.on_set_view()
+
+    def on_button_clicked(self):
+        button = QtGui.qApp.focusWidget()
+        index = self.score_board.indexAt(button.pos())
+        if index.isValid():
+            logger.debug("(%s, %s)" % index.row(), index.column())
 
     def on_set_view(self):
         self.cur_view = self.set_view.currentText()
@@ -312,3 +346,33 @@ class ChecksTab(QtWidgets.QMainWindow):
                     self.prj.inputs.qa_json.js['qa'][self.qa_group]['checks'].remove(ck)
                     self.on_force_reload()
                     break
+
+    def on_save_as(self):
+        logger.debug("save as")
+
+        output_folder = QtCore.QSettings().value("json_export_folder")
+        if output_folder is None:
+            output_folder = self.prj.outputs.output_folder
+        else:
+            output_folder = Path(output_folder)
+
+        output_path = output_folder.joinpath(self.prj.inputs.qa_json.path.name)
+        # noinspection PyCallByClass
+        selection, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save file", str(output_path),
+                                                             "QA JSON file (*.json);;All files (*.*)", "")
+        if selection == "":
+            logger.debug('save file: aborted')
+            return
+
+        output_path = Path(selection)
+        output_folder = output_path.parent
+        QtCore.QSettings().setValue("json_export_folder", str(output_folder))
+
+        self.prj.save_cur_json(path=output_path)
+        self.on_force_reload()
+
+    def on_execute_all(self):
+        logger.debug("execute all")
+
+        self.prj.execute_all(self.qa_group)
+        self.on_force_reload()

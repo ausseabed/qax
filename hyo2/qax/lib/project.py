@@ -50,6 +50,19 @@ class QAXProject:
     def outputs(self, value: QAXOutputs) -> None:
         self._o = value
 
+    def save_cur_json(self, path: Path):
+        logger.debug("save json to %s" % path)
+        with open(str(path), "w") as file:
+            json.dump(self.inputs.qa_json.js, file, indent=4)
+
+    def execute_all(self, qa_group: str = "survey_products"):
+        checks = self.inputs.qa_json.js['qa'][qa_group]['checks']
+        logger.debug("checks: %s" % checks)
+        nr_of_checks = len(checks)
+        for idx in range(nr_of_checks):
+            # TODO
+            checks[idx]['outputs']['execution']['status'] = "completed"
+
     def __repr__(self):
         msg = super().__repr__()
         msg += "\n"

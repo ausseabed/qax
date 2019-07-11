@@ -140,8 +140,15 @@
             "execution": {
               "start": "2019-07-03T20:25:36+00:00",
               "end": "2019-07-03T20:26:22+00:00",
-              "status": "failed"
-            }
+              "status": "completed"
+            },
+            "files": [
+              {
+                "path": "output/H13456.FF5.000",
+                "description": "potential fliers"
+              }
+            ],
+            "count": 130
           },
           "params": {
             "threshold": 1.0
@@ -352,8 +359,15 @@
             "execution": {
               "start": "2019-07-03T20:20:39+00:00",
               "end": "2019-07-03T20:21:32+00:00",
-              "status": "aborted"
-            }
+              "status": "completed"
+            },
+            "files": [
+              {
+                "path": "output/H15000_MB_2m_MLLW_2of3.FF5.000",
+                "description": "potential fliers"
+              }
+            ],
+            "count": 151
           },
           "params": {
           }
