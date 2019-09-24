@@ -1,0 +1,41 @@
+{
+  "name": "AusSeabed",
+  "checkTools": [
+    {
+      "name": "Mate",
+      "description": "QA checks for raw bathymetry data",
+      "surveyProducts": [
+        {
+          "name": "Raw Files",
+          "description": "Kongsberg raw sonar files",
+          "extensions": ["all"]
+        }
+      ]
+    },
+    {
+      "name": "Flier Finder",
+      "surveyProducts": [
+        {
+          "name": "Survey DTMs",
+          "description": "Gridded Digital Terrain Models",
+          "extensions": ["bag"]
+        }
+      ]
+    },
+    {
+      "name": "Coverage check",
+      "surveyProducts": [
+        {
+          "name": "Survey DTMs",
+          "description": "Gridded Digital Terrain Models",
+          "extensions": ["bag"]
+        },
+        {
+          "name": "Expected coverage",
+          "description": "Expected area of coverage captures within DTM",
+          "extensions": ["shp", "geojson"]
+        }
+      ]
+    }
+  ]
+}
