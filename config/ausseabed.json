@@ -4,6 +4,8 @@
     {
       "name": "Mate",
       "description": "QA checks for raw bathymetry data",
+      "enabled": false,
+      "checked": true,
       "surveyProducts": [
         {
           "name": "Raw Files",

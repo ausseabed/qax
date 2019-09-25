@@ -1,4 +1,60 @@
 {
   "name": "NOAA",
-  "checkTools": []
+  "checkTools": [
+    {
+      "name": "Mate",
+      "description": "QA checks for raw bathymetry data",
+      "surveyProducts": [],
+      "enabled": true,
+      "checked": true
+    },
+    {
+      "name": "Flier Finder",
+      "surveyProducts": [],
+      "enabled": true,
+      "checked": true
+    },
+    {
+      "name": "Holiday Finder",
+      "surveyProducts": [],
+      "enabled": false,
+      "checked": true
+    },
+    {
+      "name": "Grid QA",
+      "surveyProducts": [],
+      "enabled": false,
+      "checked": true
+    },
+    {
+      "name": "Designated Scan",
+      "surveyProducts": [],
+      "enabled": true,
+      "checked": true
+    },
+    {
+      "name": "Feature Scan",
+      "surveyProducts": []
+    },
+    {
+      "name": "VALSOU Check",
+      "surveyProducts": []
+    },
+    {
+      "name": "Coverage check",
+      "surveyProducts": []
+    },
+    {
+      "name": "Another test",
+      "surveyProducts": []
+    },
+    {
+      "name": "yet another test",
+      "surveyProducts": []
+    },
+    {
+      "name": "one last test",
+      "surveyProducts": []
+    }
+  ]
 }
