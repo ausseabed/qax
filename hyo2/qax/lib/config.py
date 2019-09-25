@@ -82,26 +82,40 @@ class QaxConfigCheckTool:
                     survey_product_dict)
                 survey_products.append(survey_product)
 
+        checked = data['checked'] if ('checked' in data) else False
+        enabled = data['enabled'] if ('enabled' in data) else True
+
         description = data['description'] if 'description' in data else None
         check_tool = cls(
             name=data['name'],
             description=description,
-            survey_products=survey_products
+            survey_products=survey_products,
+            enabled=enabled,
+            checked=checked
         )
         return check_tool
 
     def __init__(
             self, name: str, description: str,
-            survey_products: List[QaxConfigSurveyProduct] = []):
+            survey_products: List[QaxConfigSurveyProduct] = [],
+            enabled: bool = True, checked: bool = False):
         self.name = name
         self.description = description
         self.survey_products = survey_products
+        # `enabled` indicates if the selection of this check tool can be
+        # altered by QAX users
+        self.enabled = enabled
+        # `checked` sets the default as to whether the check should be executed
+        # the checks are run.
+        self.checked = checked
 
     def __repr__(self):
         msg = super().__repr__()
         msg += "\n"
         msg += "name: {}".format(self.name)
         msg += "description: {}".format(self.description)
+        msg += "enabled: {}".format(self.enabled)
+        msg += "disabled: {}".format(self.disabled)
         msg += "survey product count: {}".format(len(self.survey_products))
         return msg
 
@@ -133,6 +147,7 @@ class QaxConfigProfile:
     def __init__(self, name: str, check_tools: List[QaxConfigCheckTool]):
         self.name = name
         self.check_tools = check_tools
+        self.description = None
 
     def get_unique_survey_products(self) -> List[QaxConfigSurveyProduct]:
         """
@@ -158,6 +173,7 @@ class QaxConfig:
     Handles loading of QAX Profiles from JSON based configurations stored in
     a config folder.
     """
+    _instance = None  # singleton instance
 
     @classmethod
     def config_folder(cls) -> Path:
@@ -167,6 +183,12 @@ class QaxConfig:
             raise RuntimeError(
                 "unable to locate config folder {}".format(config_path))
         return config_path
+
+    @staticmethod
+    def instance() -> 'QaxConfig':
+        if QaxConfig._instance is None:
+            raise RuntimeError("Configuration has not been loaded")
+        return QaxConfig._instance
 
     def __init__(self, path: Path = None):
         if path is None:
@@ -202,3 +224,5 @@ class QaxConfig:
         for config_file in config_files:
             profile = self.__load_config(config_file)
             self.profiles.append(profile)
+
+        QaxConfig._instance = self
