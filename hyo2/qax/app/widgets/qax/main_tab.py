@@ -4,6 +4,8 @@ from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
 from hyo2.abc.lib.helper import Helper
 from hyo2.qax.app.gui_settings import GuiSettings
+from hyo2.qax.app.widgets.qax.profile_groupbox import ProfileGroupBox
+from hyo2.qax.lib.config import QaxConfig
 # Use NSURL as a workaround to pyside/Qt4 behaviour for dragging and dropping on OSx
 if Helper.is_darwin():
     # noinspection PyUnresolvedReferences
@@ -41,64 +43,12 @@ class MainTab(QtWidgets.QMainWindow):
         vertical_space = 1
         label_size = 160
 
-        self.settings = QtWidgets.QGroupBox("Profile Settings")
-        self.settings.setStyleSheet("QGroupBox::title { color: rgb(155, 155, 155); }")
-        self.vbox.addWidget(self.settings)
-
-        vbox = QtWidgets.QVBoxLayout()
-        self.settings.setLayout(vbox)
-
-        hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(hbox)
-        hbox.addStretch()
-        self.text_profiles = QtWidgets.QLabel("Profile:")
-        hbox.addWidget(self.text_profiles)
-        profiles_list = ["NOAA", "AusSeabed", "Custom"]
-        self.set_profiles = QtWidgets.QComboBox()
-        self.set_profiles.addItems(profiles_list)
-        self.set_profiles.setCurrentText(profiles_list[0])
-        # noinspection PyUnresolvedReferences
-        self.set_profiles.currentTextChanged.connect(self.on_set_profiles)
-        hbox.addWidget(self.set_profiles)
-        hbox.addStretch()
-
-        vbox.addSpacing(vertical_space)
-
-        hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(hbox)
-        hbox.addStretch()
-        self.set_flier_finder = QtWidgets.QCheckBox("Flier Finder")
-        self.set_flier_finder.setFixedWidth(label_size)
-        hbox.addWidget(self.set_flier_finder)
-        hbox.addSpacing(left_space)
-        self.set_holiday_finder = QtWidgets.QCheckBox("Holiday Finder")
-        self.set_holiday_finder.setFixedWidth(label_size)
-        hbox.addWidget(self.set_holiday_finder)
-        hbox.addSpacing(left_space)
-        self.set_grid_qa = QtWidgets.QCheckBox("Grid QA")
-        self.set_grid_qa.setFixedWidth(label_size)
-        hbox.addWidget(self.set_grid_qa)
-        hbox.addStretch()
-
-        vbox.addSpacing(vertical_space)
-
-        hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(hbox)
-        hbox.addStretch()
-        self.set_designated_scan = QtWidgets.QCheckBox("Designated Scan")
-        self.set_designated_scan.setFixedWidth(label_size)
-        hbox.addWidget(self.set_designated_scan)
-        hbox.addSpacing(left_space)
-        self.set_feature_scan = QtWidgets.QCheckBox("Feature Scan")
-        self.set_feature_scan.setFixedWidth(label_size)
-        hbox.addWidget(self.set_feature_scan)
-        hbox.addSpacing(left_space)
-        self.set_valsou_check = QtWidgets.QCheckBox("VALSOU Check")
-        self.set_valsou_check.setFixedWidth(label_size)
-        hbox.addWidget(self.set_valsou_check)
-        hbox.addStretch()
-
-        vbox.addSpacing(vertical_space)
+        # Include widget for selecting profile and check tools to run
+        self.profile_selection = ProfileGroupBox(
+            self, self.prj, QaxConfig.instance())
+        self.profile_selection.profile_selected.connect(
+            self.on_profile_selected)
+        self.vbox.addWidget(self.profile_selection)
 
         self.survey = QtWidgets.QGroupBox("Survey Products")
         self.survey.setStyleSheet("QGroupBox::title { color: rgb(155, 155, 155); }")
@@ -416,7 +366,8 @@ class MainTab(QtWidgets.QMainWindow):
 
         self.installEventFilter(self)
 
-        self.on_set_profiles()
+    def on_profile_selected(self, profile):
+        print(profile.name)
 
     def eventFilter(self, obj, e):
 
@@ -690,79 +641,6 @@ class MainTab(QtWidgets.QMainWindow):
 
         return QtWidgets.QMainWindow.eventFilter(self, obj, e)
 
-    def on_set_profiles(self):
-        profile_text = self.set_profiles.currentText()
-        logger.debug("current profile: %s" % profile_text)
-
-        if profile_text == "NOAA":
-            self.set_flier_finder.setChecked(True)
-            self.set_flier_finder.setEnabled(False)
-
-            self.set_holiday_finder.setChecked(True)
-            self.set_holiday_finder.setEnabled(False)
-
-            self.set_grid_qa.setChecked(True)
-            self.set_grid_qa.setEnabled(False)
-
-            self.set_designated_scan.setChecked(True)
-            self.set_designated_scan.setEnabled(False)
-
-            self.set_feature_scan.setChecked(True)
-            self.set_feature_scan.setEnabled(False)
-
-            self.set_valsou_check.setChecked(True)
-            self.set_valsou_check.setEnabled(False)
-
-            self.text_ff.setEnabled(True)
-            self.input_ff.setEnabled(True)
-            self.button_ff.setEnabled(True)
-
-        elif profile_text == "AusSeabed":
-            self.set_flier_finder.setChecked(True)
-            self.set_flier_finder.setEnabled(False)
-
-            self.set_holiday_finder.setChecked(True)
-            self.set_holiday_finder.setEnabled(False)
-
-            self.set_grid_qa.setChecked(True)
-            self.set_grid_qa.setEnabled(False)
-
-            self.set_designated_scan.setChecked(False)
-            self.set_designated_scan.setEnabled(False)
-
-            self.set_feature_scan.setChecked(False)
-            self.set_feature_scan.setEnabled(False)
-
-            self.set_valsou_check.setChecked(False)
-            self.set_valsou_check.setEnabled(False)
-
-            self.text_ff.setDisabled(True)
-            self.input_ff.setDisabled(True)
-            self.input_ff.clear()
-            self.button_ff.setDisabled(True)
-
-        else:
-            self.set_flier_finder.setChecked(False)
-            self.set_flier_finder.setEnabled(True)
-
-            self.set_holiday_finder.setChecked(False)
-            self.set_holiday_finder.setEnabled(True)
-
-            self.set_grid_qa.setChecked(False)
-            self.set_grid_qa.setEnabled(True)
-
-            self.set_designated_scan.setChecked(False)
-            self.set_designated_scan.setEnabled(True)
-
-            self.set_feature_scan.setChecked(False)
-            self.set_feature_scan.setEnabled(True)
-
-            self.set_valsou_check.setChecked(False)
-            self.set_valsou_check.setEnabled(True)
-
-            self.text_ff.setEnabled(True)
-            self.input_ff.setEnabled(True)
-            self.button_ff.setEnabled(True)
 
     # RAW METHODS
 
@@ -1116,7 +994,7 @@ class MainTab(QtWidgets.QMainWindow):
         """ Set default output data folder """
         self.prj.outputs.output_folder = self.prj.outputs.default_output_folder()
         self._add_folder(selection=self.prj.outputs.output_folder)
-    
+
     def click_open_output(self):
         """ Open output data folder """
         logger.debug('open output folder: %s' % self.prj.outputs.output_folder)
