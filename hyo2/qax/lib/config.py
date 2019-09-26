@@ -115,7 +115,7 @@ class QaxConfigCheckTool:
         msg += "name: {}".format(self.name)
         msg += "description: {}".format(self.description)
         msg += "enabled: {}".format(self.enabled)
-        msg += "disabled: {}".format(self.disabled)
+        msg += "checked: {}".format(self.checked)
         msg += "survey product count: {}".format(len(self.survey_products))
         return msg
 
