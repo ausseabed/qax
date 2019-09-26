@@ -3,9 +3,14 @@ import logging
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
 from hyo2.abc.lib.helper import Helper
+
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.profile_groupbox import ProfileGroupBox
+from hyo2.qax.app.widgets.qax.surveyproduct_groupbox \
+    import SurveyProductGroupBox
 from hyo2.qax.lib.config import QaxConfig
+from hyo2.qax.lib.config import QaxConfigSurveyProduct
+
 # Use NSURL as a workaround to pyside/Qt4 behaviour for dragging and dropping on OSx
 if Helper.is_darwin():
     # noinspection PyUnresolvedReferences
@@ -52,12 +57,12 @@ class MainTab(QtWidgets.QMainWindow):
             self.on_check_tools_selected)
         self.vbox.addWidget(self.profile_selection)
 
-        self.survey = QtWidgets.QGroupBox("Survey Products")
-        self.survey.setStyleSheet("QGroupBox::title { color: rgb(155, 155, 155); }")
-        self.vbox.addWidget(self.survey)
+        self.survey_product_selection = SurveyProductGroupBox(self, self.prj)
+        self.on_check_tools_selected(
+            self.profile_selection.selected_check_tools())
+        self.vbox.addWidget(self.survey_product_selection)
 
-        vbox = QtWidgets.QVBoxLayout()
-        self.survey.setLayout(vbox)
+        vbox = self.survey_product_selection.survey_products_layout
 
         # add raw
         hbox = QtWidgets.QHBoxLayout()
@@ -374,6 +379,18 @@ class MainTab(QtWidgets.QMainWindow):
     def on_check_tools_selected(self, check_tools):
         print("Selected check tools")
         print(check_tools)
+
+        all_survey_prods = []
+        for check_tool in check_tools:
+            all_survey_prods.extend(check_tool.survey_products)
+        unique_survey_prods = QaxConfigSurveyProduct.merge(all_survey_prods)
+
+        if self.survey_product_selection is not None:
+            # it may be None during initialisation
+            self.survey_product_selection.update_survey_products(
+                unique_survey_prods)
+
+
 
     def eventFilter(self, obj, e):
 
