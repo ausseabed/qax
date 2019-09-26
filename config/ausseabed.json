@@ -10,7 +10,16 @@
         {
           "name": "Raw Files",
           "description": "Kongsberg raw sonar files",
-          "extensions": ["all"]
+          "fileTypes": [
+            {
+              "name": "Konsgberg file",
+              "extension": "all"
+            },
+            {
+              "name": "Konsgberg file",
+              "extension": "wcd"
+            }
+          ]
         }
       ]
     },
@@ -20,7 +29,16 @@
         {
           "name": "Survey DTMs",
           "description": "Gridded Digital Terrain Models",
-          "extensions": ["bag"]
+          "fileTypes": [
+            {
+              "name": "BAG file",
+              "extension": "bag"
+            },
+            {
+              "name": "CSAR file",
+              "extension": "csar"
+            }
+          ]
         }
       ]
     },
@@ -30,12 +48,30 @@
         {
           "name": "Survey DTMs",
           "description": "Gridded Digital Terrain Models",
-          "extensions": ["bag"]
+          "fileTypes": [
+            {
+              "name": "BAG file",
+              "extension": "bag"
+            },
+            {
+              "name": "CSAR file",
+              "extension": "csar"
+            }
+          ]
         },
         {
           "name": "Expected coverage",
           "description": "Expected area of coverage captures within DTM",
-          "extensions": ["shp", "geojson"]
+          "fileTypes": [
+            {
+              "name": "Shapefile",
+              "extension": "shp"
+            },
+            {
+              "name": "GeoJSON",
+              "extension": "json"
+            }
+          ]
         }
       ]
     }

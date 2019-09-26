@@ -4,7 +4,47 @@ from typing import Dict, List
 import copy
 import json
 import os
+import re
 import time
+
+"""
+Module defines classes for QAX JSON config file. Hierarchy is as follows;
+
+QaxConfig
+  QaxConfigProfile
+    QaxConfigCheckTool
+      QaxConfigSurveyProduct
+        QaxConfigFileType
+"""
+
+
+class QaxConfigFileType:
+    """
+    Represents a file type
+    """
+
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'QaxConfigFileType':
+        file_type = cls(
+            name=data['name'],
+            extension=data['extension']
+        )
+        return file_type
+
+    def __init__(
+            self, name: str, extension: str):
+        self.name = name
+        self.extension = extension
+
+    def formatted_name(self):
+        return "{} (*.{})".format(self.name, self.extension)
+
+    def __repr__(self):
+        msg = super().__repr__()
+        msg += "\n"
+        msg += "name: {}".format(self.name)
+        msg += "extension: {}".format(self.extension)
+        return msg
 
 
 class QaxConfigSurveyProduct:
@@ -17,11 +57,16 @@ class QaxConfigSurveyProduct:
     @classmethod
     def from_dict(cls, data: Dict) -> 'QaxConfigSurveyProduct':
         description = data['description'] if 'description' in data else None
-        extensions = data['extensions'] if 'extensions' in data else []
+
+        file_type_dicts = data['fileTypes'] if 'fileTypes' in data else []
+        file_types = [
+            QaxConfigFileType.from_dict(file_type_dict)
+            for file_type_dict in file_type_dicts]
+
         survey_product = cls(
             name=data['name'],
             description=description,
-            extensions=extensions
+            file_types=file_types
         )
         return survey_product
 
@@ -38,20 +83,33 @@ class QaxConfigSurveyProduct:
             merged_sp = None
             if sp.name not in sp_dict:
                 merged_sp = QaxConfigSurveyProduct(
-                    sp.name, sp.description, copy.deepcopy(sp.extensions))
+                    sp.name, sp.description, copy.deepcopy(sp.file_types))
                 sp_dict[merged_sp.name] = merged_sp
             else:
                 merged_sp = sp_dict[sp.name]
-                for ext in sp.extensions:
-                    if ext not in merged_sp.extensions:
-                        merged_sp.extensions.append(ext)
+                for ft in sp.file_types:
+                    found = next(
+                        x
+                        for x in merged_sp.file_types
+                        if x.formatted_name() == ft.formatted_name())
+                    if found is None:
+                        merged_sp.file_types.append(copy.deepcopy(ft))
         return list(sp_dict.values())
 
     def __init__(
-            self, name: str, description: str, extensions: List[str] = []):
+            self, name: str, description: str,
+            file_types: List[QaxConfigFileType] = []):
         self.name = name
         self.description = description
-        self.extensions = extensions
+        self.file_types = file_types
+
+    def clean_name(self):
+        """ Name with white space and special characters removed (or replaced)
+        to support use in file names or config params.
+        """
+        name = self.name.replace(' ', '_')
+        name = re.sub('[^a-zA-Z0-9_\\n\\.]', '', name)
+        return name
 
     def __eq__(self, other):
         if not (other is QaxConfigSurveyProduct):
@@ -63,6 +121,7 @@ class QaxConfigSurveyProduct:
         msg += "\n"
         msg += "name: {}".format(self.name)
         msg += "description: {}".format(self.description)
+        msg += "file type count: {}".format(len(self.file_types))
         return msg
 
 

@@ -4,25 +4,85 @@
     {
       "name": "Mate",
       "description": "QA checks for raw bathymetry data",
-      "surveyProducts": [],
+      "surveyProducts": [
+        {
+          "name": "Raw Files",
+          "description": "Kongsberg raw sonar files",
+          "fileTypes": [
+            {
+              "name": "Konsgberg file",
+              "extension": "all"
+            },
+            {
+              "name": "Konsgberg file",
+              "extension": "wcd"
+            }
+          ]
+        }
+      ],
       "enabled": true,
       "checked": true
     },
     {
       "name": "Flier Finder",
-      "surveyProducts": [],
+      "surveyProducts": [
+        {
+          "name": "Survey DTMs",
+          "description": "Grid files",
+          "fileTypes": [
+            {
+              "name": "BAG file",
+              "extension": "bag"
+            },
+            {
+              "name": "CSAR file",
+              "extension": "csar"
+            }
+          ]
+        }
+      ],
       "enabled": true,
       "checked": true
     },
     {
       "name": "Holiday Finder",
-      "surveyProducts": [],
+      "surveyProducts": [
+        {
+          "name": "Survey DTMs",
+          "description": "Grid files",
+          "fileTypes": [
+            {
+              "name": "BAG file",
+              "extension": "bag"
+            },
+            {
+              "name": "CSAR file",
+              "extension": "csar"
+            }
+          ]
+        }
+      ],
       "enabled": false,
       "checked": true
     },
     {
       "name": "Grid QA",
-      "surveyProducts": [],
+      "surveyProducts": [
+        {
+          "name": "Survey DTMs",
+          "description": "Grid files",
+          "fileTypes": [
+            {
+              "name": "BAG file",
+              "extension": "bag"
+            },
+            {
+              "name": "CSAR file",
+              "extension": "csar"
+            }
+          ]
+        }
+      ],
       "enabled": false,
       "checked": true
     },
@@ -50,7 +110,26 @@
     },
     {
       "name": "yet another test",
-      "surveyProducts": []
+      "surveyProducts": [
+        {
+          "name": "test survey prod",
+          "description": "testing",
+          "fileTypes": [
+            {
+              "name": "Test file type 1",
+              "extension": "t1"
+            },
+            {
+              "name": "Test file type 2",
+              "extension": "t2"
+            },
+            {
+              "name": "Test file type 3",
+              "extension": "t3"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "one last test",
