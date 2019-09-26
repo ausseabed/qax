@@ -48,6 +48,8 @@ class MainTab(QtWidgets.QMainWindow):
             self, self.prj, QaxConfig.instance())
         self.profile_selection.profile_selected.connect(
             self.on_profile_selected)
+        self.profile_selection.check_tool_selection_change.connect(
+            self.on_check_tools_selected)
         self.vbox.addWidget(self.profile_selection)
 
         self.survey = QtWidgets.QGroupBox("Survey Products")
@@ -368,6 +370,10 @@ class MainTab(QtWidgets.QMainWindow):
 
     def on_profile_selected(self, profile):
         print(profile.name)
+
+    def on_check_tools_selected(self, check_tools):
+        print("Selected check tools")
+        print(check_tools)
 
     def eventFilter(self, obj, e):
 
