@@ -1,7 +1,8 @@
-import os
-import logging
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
+from typing import List, NoReturn
+import os
+import logging
 
 from hyo2.qax.app.widgets.layout import FlowLayout
 from hyo2.qax.lib.config import QaxConfigCheckTool
@@ -86,6 +87,16 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
             self.check_tools_layout.addWidget(check_tool_widget)
             self.check_tool_checkboxes.append(check_tool_widget)
 
+    def selected_check_tools(self) -> List[QaxConfigCheckTool]:
+        """ Gets a list of check tools based on what is selected
+        """
+        selected_check_tools = [
+            cb.property('check_tool')
+            for cb in self.check_tool_checkboxes
+            if cb.checkState() == QtCore.Qt.CheckState.Checked
+        ]
+        return selected_check_tools
+
     def on_set_profile(self, currentIndex):
         """ Event handler for user selection of profile
         """
@@ -99,9 +110,4 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
     def on_check_tool_check_change(self):
         """ Event handler for user selection change of individual check tool
         """
-        selected_check_tools = [
-            cb.property('check_tool')
-            for cb in self.check_tool_checkboxes
-            if cb.checkState() == QtCore.Qt.CheckState.Checked
-        ]
-        self.check_tool_selection_change.emit(selected_check_tools)
+        self.check_tool_selection_change.emit(self.selected_check_tools())
