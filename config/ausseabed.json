@@ -13,11 +13,13 @@
           "fileTypes": [
             {
               "name": "Konsgberg file",
-              "extension": "all"
+              "extension": "all",
+              "icon": "kng.png"
             },
             {
               "name": "Konsgberg file",
-              "extension": "wcd"
+              "extension": "wcd",
+              "icon": "kng.png"
             }
           ]
         }
@@ -32,11 +34,13 @@
           "fileTypes": [
             {
               "name": "BAG file",
-              "extension": "bag"
+              "extension": "bag",
+              "icon": "bag.png"
             },
             {
               "name": "CSAR file",
-              "extension": "csar"
+              "extension": "csar",
+              "icon": "csar.png"
             }
           ]
         }
@@ -51,11 +55,13 @@
           "fileTypes": [
             {
               "name": "BAG file",
-              "extension": "bag"
+              "extension": "bag",
+              "icon": "bag.png"
             },
             {
               "name": "CSAR file",
-              "extension": "csar"
+              "extension": "csar",
+              "icon": "csar.png"
             }
           ]
         },
@@ -69,7 +75,8 @@
             },
             {
               "name": "GeoJSON",
-              "extension": "json"
+              "extension": "json",
+              "icon": "json.png"
             }
           ]
         }

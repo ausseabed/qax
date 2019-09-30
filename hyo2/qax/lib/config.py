@@ -25,16 +25,21 @@ class QaxConfigFileType:
 
     @classmethod
     def from_dict(cls, data: Dict) -> 'QaxConfigFileType':
+        icon = data['icon'] if 'icon' in data else None
         file_type = cls(
             name=data['name'],
-            extension=data['extension']
+            extension=data['extension'],
+            icon=icon
         )
         return file_type
 
     def __init__(
-            self, name: str, extension: str):
+            self, name: str, extension: str, icon: str = None):
         self.name = name
         self.extension = extension
+        # icon is a filename (without path) that exists in the
+        # applications `media` folder. eg; `tif.png`, `kng.png`
+        self.icon = icon
 
     def formatted_name(self):
         return "{} (*.{})".format(self.name, self.extension)
@@ -103,13 +108,23 @@ class QaxConfigSurveyProduct:
         self.description = description
         self.file_types = file_types
 
-    def clean_name(self):
+    def clean_name(self) -> str:
         """ Name with white space and special characters removed (or replaced)
         to support use in file names or config params.
         """
         name = self.name.replace(' ', '_')
         name = re.sub('[^a-zA-Z0-9_\\n\\.]', '', name)
         return name
+
+    def matching_file_type(self, path: Path) -> QaxConfigFileType:
+        """ Finds a file type with an extension that matched that of the
+        given path. None will be returned if no matching file type is found.
+        """
+        extension = path.suffix
+        extension = extension.lstrip('.')
+        match = next(
+            (ft for ft in self.file_types if ft.extension == extension), None)
+        return match
 
     def __eq__(self, other):
         if not (other is QaxConfigSurveyProduct):

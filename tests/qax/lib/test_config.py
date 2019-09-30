@@ -1,3 +1,4 @@
+from pathlib import Path
 import unittest
 
 from hyo2.qax.lib.config import QaxConfig
@@ -144,3 +145,22 @@ class TestQaxConfig(unittest.TestCase):
         self.assertEqual(2, len(unique_products))
         self.assertTrue(any(p.name == "raw type 1" for p in unique_products))
         self.assertTrue(any(p.name == "grid type 1" for p in unique_products))
+
+    def test_matching_file_type(self):
+        profile = QaxConfigProfile.from_dict(TestQaxConfig.profile_dict)
+
+        merged_prods = []
+        for ct in profile.check_tools:
+            merged_prods.extend(ct.survey_products)
+
+        merged_prods = profile.check_tools[0].survey_products
+        raw_prod = next(
+            (p for p in merged_prods if p.name == "raw type 1"), None)
+
+        path = Path('test/file/path/raw.all')
+        matching_file_type = raw_prod.matching_file_type(path)
+        self.assertEqual("Konsgberg file", matching_file_type.name)
+
+        path = Path('test/file/path/raw.has_no_file_type')
+        matching_file_type = raw_prod.matching_file_type(path)
+        self.assertIsNone(matching_file_type)
