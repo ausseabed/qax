@@ -1,6 +1,6 @@
 from PySide2 import QtGui
-
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +31,15 @@ class GuiSettings:
     def console_fg_color(cls):
         """text color (foreground) used by text console"""
         return QtGui.QColor(25, 152, 198)
+
+    @staticmethod
+    def here():
+        return os.path.abspath(os.path.dirname(__file__))
+
+    @staticmethod
+    def media():
+        here = GuiSettings.here()
+        return os.path.join(here, "media")
 
     @staticmethod
     def stylesheet_console_fg_color():
