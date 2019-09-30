@@ -1,10 +1,14 @@
+from hyo2.abc.lib.helper import Helper
 from PySide2 import QtCore, QtGui, QtWidgets
 from typing import List, NoReturn
-import re
+import logging
 import os
+import re
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.lib.config import QaxConfigSurveyProduct
+
+logger = logging.getLogger(__name__)
 
 
 class SurveyProductWidget(QtWidgets.QWidget):
@@ -130,8 +134,51 @@ class SurveyProductGroupBox(QtWidgets.QGroupBox):
         self.parent_win = parent_win
         self.survey_product_widgets = []
 
+        main_layout = QtWidgets.QVBoxLayout()
         self.survey_products_layout = QtWidgets.QVBoxLayout()
-        self.setLayout(self.survey_products_layout)
+        main_layout.addLayout(self.survey_products_layout)
+
+        self.setLayout(main_layout)
+
+        # clear data
+        hbox = QtWidgets.QHBoxLayout()
+        main_layout.addLayout(hbox)
+        hbox.addStretch()
+        self.clear_button = QtWidgets.QPushButton()
+        hbox.addWidget(self.clear_button)
+        self.clear_button.setFixedHeight(GuiSettings.single_line_height())
+        # button_clear_data.setFixedWidth(GuiSettings.single_line_height())
+        self.clear_button.setText("Clear data")
+        self.clear_button.setToolTip('Clear all data loaded')
+        # noinspection PyUnresolvedReferences
+        self.clear_button.clicked.connect(self._click_clear_data)
+        # info
+        manual_button = QtWidgets.QPushButton()
+        hbox.addWidget(manual_button)
+        manual_button.setFixedHeight(GuiSettings.single_line_height())
+        manual_button.setFixedWidth(GuiSettings.single_line_height())
+        icon_info = QtCore.QFileInfo(
+            os.path.join(GuiSettings.media(), 'small_info.png'))
+        manual_button.setIcon(QtGui.QIcon(icon_info.absoluteFilePath()))
+        manual_button.setToolTip('Open the manual page')
+        manual_button.setStyleSheet(
+            "QPushButton { background-color: rgba(255, 255, 255, 0); }\n"
+            "QPushButton:hover "
+            "{ background-color: rgba(230, 230, 230, 100); }\n")
+        # noinspection PyUnresolvedReferences
+        manual_button.clicked.connect(self._click_open_manual)
+        hbox.addStretch()
+
+    def _click_clear_data(self):
+        logger.debug("clearing selected input files")
+        for sp_widget in self.survey_product_widgets:
+            sp_widget.remove_files()
+
+    def _click_open_manual(self):
+        logger.debug("open manual")
+        Helper.explore_folder(
+            "https://www.hydroffice.org/"
+            "manuals/qax/user_manual_qax_data_inputs.html")
 
     def update_survey_products(
             self, survey_products: List[QaxConfigSurveyProduct]
