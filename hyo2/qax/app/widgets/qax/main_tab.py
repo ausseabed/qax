@@ -52,157 +52,20 @@ class MainTab(QtWidgets.QMainWindow):
         self.profile_selection = ProfileGroupBox(
             self, self.prj, QaxConfig.instance())
         self.profile_selection.profile_selected.connect(
-            self.on_profile_selected)
+            self._on_profile_selected)
         self.profile_selection.check_tool_selection_change.connect(
-            self.on_check_tools_selected)
+            self._on_check_tools_selected)
         self.vbox.addWidget(self.profile_selection)
 
         self.survey_product_selection = SurveyProductGroupBox(self, self.prj)
-        self.on_check_tools_selected(
-            self.profile_selection.selected_check_tools())
         self.vbox.addWidget(self.survey_product_selection)
 
-        vbox = self.survey_product_selection.survey_products_layout
-
-        # add raw
-        hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(hbox)
-        self.text_raw = QtWidgets.QLabel("Raw Files:")
-        hbox.addWidget(self.text_raw)
-        self.text_raw.setMinimumWidth(left_space)
-        self.input_raw = QtWidgets.QListWidget()
-        hbox.addWidget(self.input_raw)
-        self.input_raw.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        self.input_raw.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        # noinspection PyUnresolvedReferences
-        self.input_raw.customContextMenuRequested.connect(self.make_raw_context_menu)
-        self.input_raw.setAlternatingRowColors(True)
-        self.input_raw.setMaximumHeight(100)
-        # Enable dropping onto the input ss list
-        self.input_raw.setAcceptDrops(True)
-        self.input_raw.installEventFilter(self)
-        self.button_raw = QtWidgets.QPushButton()
-        hbox.addWidget(self.button_raw)
-        self.button_raw.setFixedHeight(GuiSettings.single_line_height())
-        self.button_raw.setFixedWidth(GuiSettings.single_line_height())
-        self.button_raw.setText(" + ")
-        self.button_raw.setToolTip('Add (or drag-and-drop) the survey raw files')
-        # noinspection PyUnresolvedReferences
-        self.button_raw.clicked.connect(self.click_add_raw)
-
-        vbox.addSpacing(3)
-
-        # add dtm
-        hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(hbox)
-        self.text_dtm = QtWidgets.QLabel("Survey DTMs:")
-        hbox.addWidget(self.text_dtm)
-        self.text_dtm.setMinimumWidth(left_space)
-        self.input_dtm = QtWidgets.QListWidget()
-        hbox.addWidget(self.input_dtm)
-        self.input_dtm.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        self.input_dtm.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        # noinspection PyUnresolvedReferences
-        self.input_dtm.customContextMenuRequested.connect(self.make_dtm_context_menu)
-        self.input_dtm.setAlternatingRowColors(True)
-        self.input_dtm.setMaximumHeight(100)
-        # Enable dropping onto the input ss list
-        self.input_dtm.setAcceptDrops(True)
-        self.input_dtm.installEventFilter(self)
-        self.button_dtm = QtWidgets.QPushButton()
-        hbox.addWidget(self.button_dtm)
-        self.button_dtm.setFixedHeight(GuiSettings.single_line_height())
-        self.button_dtm.setFixedWidth(GuiSettings.single_line_height())
-        self.button_dtm.setText(" + ")
-        self.button_dtm.setToolTip('Add (or drag-and-drop) the survey DTMs as CSAR or BAG files')
-        # noinspection PyUnresolvedReferences
-        self.button_dtm.clicked.connect(self.click_add_dtm)
-
-        vbox.addSpacing(3)
-
-        # add FF
-        hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(hbox)
-        self.text_ff = QtWidgets.QLabel("Feature Files:")
-        hbox.addWidget(self.text_ff)
-        self.text_ff.setFixedHeight(GuiSettings.single_line_height())
-        self.text_ff.setMinimumWidth(left_space)
-        self.input_ff = QtWidgets.QListWidget()
-        hbox.addWidget(self.input_ff)
-        self.input_ff.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        self.input_ff.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        # noinspection PyUnresolvedReferences
-        self.input_ff.customContextMenuRequested.connect(self.make_ff_context_menu)
-        self.input_ff.setAlternatingRowColors(True)
-        self.input_ff.setMaximumHeight(100)
-        # Enable dropping onto the input s57 list
-        self.input_ff.setAcceptDrops(True)
-        self.input_ff.installEventFilter(self)
-        self.button_ff = QtWidgets.QPushButton()
-        hbox.addWidget(self.button_ff)
-        self.button_ff.setFixedHeight(GuiSettings.single_line_height())
-        self.button_ff.setFixedWidth(GuiSettings.single_line_height())
-        self.button_ff.setText(" + ")
-        self.button_ff.setToolTip('Add (or drag-and-drop) the feature files as S57 file (.000)')
-        # noinspection PyUnresolvedReferences
-        self.button_ff.clicked.connect(self.click_add_ff)
-
-        vbox.addSpacing(3)
-
-        # add ENC
-        hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(hbox)
-        self.text_enc = QtWidgets.QLabel("Current ENCs:")
-        hbox.addWidget(self.text_enc)
-        self.text_enc.setFixedHeight(GuiSettings.single_line_height())
-        self.text_enc.setMinimumWidth(left_space)
-        self.input_enc = QtWidgets.QListWidget()
-        hbox.addWidget(self.input_enc)
-        self.input_enc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        self.input_enc.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        # noinspection PyUnresolvedReferences
-        self.input_enc.customContextMenuRequested.connect(self.make_enc_context_menu)
-        self.input_enc.setAlternatingRowColors(True)
-        self.input_enc.setMaximumHeight(100)
-        # Enable dropping onto the input s57 list
-        self.input_enc.setAcceptDrops(True)
-        self.input_enc.installEventFilter(self)
-        self.button_enc = QtWidgets.QPushButton()
-        hbox.addWidget(self.button_enc)
-        self.button_enc.setFixedHeight(GuiSettings.single_line_height())
-        self.button_enc.setFixedWidth(GuiSettings.single_line_height())
-        self.button_enc.setText(" + ")
-        self.button_enc.setToolTip('Add (or drag-and-drop) the ENCs as S57 files (.000)')
-        # noinspection PyUnresolvedReferences
-        self.button_enc.clicked.connect(self.click_add_enc)
-
-        vbox.addStretch()
-
-        # clear data
-        hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(hbox)
-        hbox.addStretch()
-        button_clear_data = QtWidgets.QPushButton()
-        hbox.addWidget(button_clear_data)
-        button_clear_data.setFixedHeight(GuiSettings.single_line_height())
-        # button_clear_data.setFixedWidth(GuiSettings.single_line_height())
-        button_clear_data.setText("Clear data")
-        button_clear_data.setToolTip('Clear all data loaded')
-        # noinspection PyUnresolvedReferences
-        button_clear_data.clicked.connect(self.click_clear_data)
-        # info
-        button = QtWidgets.QPushButton()
-        hbox.addWidget(button)
-        button.setFixedHeight(GuiSettings.single_line_height())
-        button.setFixedWidth(GuiSettings.single_line_height())
-        icon_info = QtCore.QFileInfo(os.path.join(self.media, 'small_info.png'))
-        button.setIcon(QtGui.QIcon(icon_info.absoluteFilePath()))
-        button.setToolTip('Open the manual page')
-        button.setStyleSheet("QPushButton { background-color: rgba(255, 255, 255, 0); }\n"
-                             "QPushButton:hover { background-color: rgba(230, 230, 230, 100); }\n")
-        # noinspection PyUnresolvedReferences
-        button.clicked.connect(self.click_open_manual)
-        hbox.addStretch()
+        self._on_check_tools_selected(
+            self.profile_selection.selected_check_tools())
+        self.survey_product_selection.files_added.connect(
+            self._on_survey_product_files_added)
+        self.survey_product_selection.files_removed.connect(
+            self._on_survey_product_files_removed)
 
         # data outputs
         self.savedData = QtWidgets.QGroupBox("Data outputs [drap-and-drop the desired output folder]")
@@ -373,10 +236,10 @@ class MainTab(QtWidgets.QMainWindow):
 
         self.installEventFilter(self)
 
-    def on_profile_selected(self, profile):
+    def _on_profile_selected(self, profile):
         print(profile.name)
 
-    def on_check_tools_selected(self, check_tools):
+    def _on_check_tools_selected(self, check_tools):
         print("Selected check tools")
         print(check_tools)
 
@@ -390,78 +253,24 @@ class MainTab(QtWidgets.QMainWindow):
             self.survey_product_selection.update_survey_products(
                 unique_survey_prods)
 
+    def _on_survey_product_files_added(self, survey_product):
+        print("files added to: {}".format(survey_product.name))
 
+        # todo: call interaction functions such as `raw_loaded` based on
+        # what check has had files selected
+
+    def _on_survey_product_files_removed(self, survey_product):
+        print("files removed from: {}".format(survey_product.name))
+
+        # todo: call interaction functions such as `raw_unloaded` based on
+        # what check has had files cleared from
 
     def eventFilter(self, obj, e):
 
         # drag events
         if (e.type() == QtCore.QEvent.DragEnter) or (e.type() == QtCore.QEvent.DragMove):
 
-            if obj in (self.input_raw, ):
-
-                if e.mimeData().hasUrls:
-
-                    for url in e.mimeData().urls():
-
-                        if Helper.is_darwin():
-                            dropping_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-
-                        else:
-                            dropping_file = str(url.toLocalFile())
-
-                        if os.path.splitext(dropping_file)[-1].lower() in (".all", ".wcd"):
-                            e.accept()
-                            return True
-
-            elif obj in (self.input_dtm, ):
-
-                if e.mimeData().hasUrls:
-
-                    for url in e.mimeData().urls():
-
-                        if Helper.is_darwin():
-                            dropping_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-
-                        else:
-                            dropping_file = str(url.toLocalFile())
-
-                        if os.path.splitext(dropping_file)[-1].lower() in (".bag", ".csar"):
-                            e.accept()
-                            return True
-
-            elif obj in (self.input_ff,):
-
-                if e.mimeData().hasUrls:
-
-                    for url in e.mimeData().urls():
-
-                        if Helper.is_darwin():
-                            dropping_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-
-                        else:
-                            dropping_file = str(url.toLocalFile())
-
-                        if os.path.splitext(dropping_file)[-1].lower() in (".000", ):
-                            e.accept()
-                            return True
-
-            elif obj in (self.input_enc,):
-
-                if e.mimeData().hasUrls:
-
-                    for url in e.mimeData().urls():
-
-                        if Helper.is_darwin():
-                            dropping_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-
-                        else:
-                            dropping_file = str(url.toLocalFile())
-
-                        if os.path.splitext(dropping_file)[-1].lower() in (".000", ):
-                            e.accept()
-                            return True
-
-            elif obj in (self.output_folder,):
+            if obj in (self.output_folder,):
 
                 if e.mimeData().hasUrls:
 
@@ -501,112 +310,7 @@ class MainTab(QtWidgets.QMainWindow):
         # drop events
         if e.type() == QtCore.QEvent.Drop:
 
-            if obj is self.input_raw:
-
-                if e.mimeData().hasUrls():
-
-                    e.setDropAction(QtCore.Qt.CopyAction)
-                    e.accept()
-                    # Workaround for OSx dragging and dropping
-                    for url in e.mimeData().urls():
-                        if Helper.is_darwin():
-                            dropped_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-                        else:
-                            dropped_file = str(url.toLocalFile())
-
-                        logger.debug("dropped file: %s" % dropped_file)
-                        if os.path.splitext(dropped_file)[-1] in (".all", ".wcd"):
-
-                            self._add_raw(selection=dropped_file)
-
-                        else:
-                            msg = 'Drag-and-drop is only possible with the following file extensions:\n' \
-                                  '- Kongsberg files: .all, .wcd\n\n' \
-                                  'Dropped file:\n' \
-                                  '%s' % dropped_file
-                            # noinspection PyCallByClass,PyArgumentList
-                            QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
-                    return True
-
-            elif obj is self.input_dtm:
-
-                if e.mimeData().hasUrls():
-
-                    e.setDropAction(QtCore.Qt.CopyAction)
-                    e.accept()
-                    # Workaround for OSx dragging and dropping
-                    for url in e.mimeData().urls():
-                        if Helper.is_darwin():
-                            dropped_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-                        else:
-                            dropped_file = str(url.toLocalFile())
-
-                        logger.debug("dropped file: %s" % dropped_file)
-                        if os.path.splitext(dropped_file)[-1] in (".bag", ".csar"):
-
-                            self._add_dtm(selection=dropped_file)
-
-                        else:
-                            msg = 'Drag-and-drop is only possible with the following file extensions:\n' \
-                                  '- BAG files: .bag\n\n' \
-                                  '- CSAR files: .csar\n\n' \
-                                  'Dropped file:\n' \
-                                  '%s' % dropped_file
-                            # noinspection PyCallByClass,PyArgumentList
-                            QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
-                    return True
-
-            elif obj is self.input_ff:
-
-                if e.mimeData().hasUrls():
-
-                    e.setDropAction(QtCore.Qt.CopyAction)
-                    e.accept()
-                    # Workaround for OSx dragging and dropping
-                    for url in e.mimeData().urls():
-                        if Helper.is_darwin():
-                            dropped_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-                        else:
-                            dropped_file = str(url.toLocalFile())
-
-                        logger.debug("dropped file: %s" % dropped_file)
-                        if os.path.splitext(dropped_file)[-1] in (".000",):
-                            self._add_ff(selection=dropped_file)
-                        else:
-                            msg = 'Drag-and-drop is only possible with the following file extensions:\n' \
-                                  '- S57 Feature Files: .000\n\n' \
-                                  'Dropped file:\n' \
-                                  '%s' % dropped_file
-                            # noinspection PyCallByClass,PyArgumentList
-                            QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
-                    return True
-
-            elif obj is self.input_enc:
-
-                if e.mimeData().hasUrls():
-
-                    e.setDropAction(QtCore.Qt.CopyAction)
-                    e.accept()
-                    # Workaround for OSx dragging and dropping
-                    for url in e.mimeData().urls():
-                        if Helper.is_darwin():
-                            dropped_file = str(NSURL.URLWithString_(str(url.toString())).filePathURL().path())
-                        else:
-                            dropped_file = str(url.toLocalFile())
-
-                        logger.debug("dropped file: %s" % dropped_file)
-                        if os.path.splitext(dropped_file)[-1] in (".000",):
-                            self._add_enc(selection=dropped_file)
-                        else:
-                            msg = 'Drag-and-drop is only possible with the following file extensions:\n' \
-                                  '- S57 ENC Files: .000\n\n' \
-                                  'Dropped file:\n' \
-                                  '%s' % dropped_file
-                            # noinspection PyCallByClass,PyArgumentList
-                            QtWidgets.QMessageBox.critical(self, "Drag-and-drop Error", msg, QtWidgets.QMessageBox.Ok)
-                    return True
-
-            elif obj is self.output_folder:
+            if obj is self.output_folder:
 
                 if e.mimeData().hasUrls():
 
@@ -663,278 +367,6 @@ class MainTab(QtWidgets.QMainWindow):
             return True
 
         return QtWidgets.QMainWindow.eventFilter(self, obj, e)
-
-
-    # RAW METHODS
-
-    def click_add_raw(self):
-        """ Read the raw files provided by the user"""
-        logger.debug('adding raw ...')
-
-        # ask the file path to the user
-        # noinspection PyCallByClass
-        selections, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Add raw file",
-                                                               QtCore.QSettings().value("raw_import_folder"),
-                                                               "Supported formats (*.all *.wcd);; "
-                                                               "Konsgberg file (*.all);;Kongsberg file (*.wcd);;"
-                                                               "All files (*.*)")
-        if len(selections) == 0:
-            logger.debug('adding raw: aborted')
-            return
-        last_open_folder = os.path.dirname(selections[0])
-        if os.path.exists(last_open_folder):
-            QtCore.QSettings().setValue("raw_import_folder", last_open_folder)
-
-        for selection in selections:
-            selection = os.path.abspath(selection).replace("\\", "/")
-            self._add_raw(selection=selection)
-
-    def _add_raw(self, selection):
-
-        if selection in self.prj.inputs.raw_paths:
-            logger.info("File already existing in the current project")
-            return
-
-        self.prj.inputs.raw_paths.append(selection)
-        self._update_input_raw_list()
-        self.raw_loaded()
-
-    def _update_input_raw_list(self):
-        self.input_raw.clear()
-        for input_raw_path in self.prj.inputs.raw_paths:
-            new_item = QtWidgets.QListWidgetItem()
-            if os.path.splitext(input_raw_path)[-1] in [".all", ".wcd"]:
-                new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'kng.png')))
-            new_item.setText(input_raw_path)
-            new_item.setFont(GuiSettings.console_font())
-            new_item.setForeground(GuiSettings.console_fg_color())
-            self.input_raw.addItem(new_item)
-
-    def make_raw_context_menu(self, pos):
-        logger.debug('context menu')
-
-        remove_act = QtWidgets.QAction("Remove files", self, statusTip="Remove raw files",
-                                       triggered=self.remove_raw_files)
-
-        menu = QtWidgets.QMenu(parent=self)
-        # noinspection PyArgumentList
-        menu.addAction(remove_act)
-        # noinspection PyArgumentList
-        menu.exec_(self.input_raw.mapToGlobal(pos))
-
-    def remove_raw_files(self):
-        logger.debug("user want to remove raw files")
-
-        self.prj.inputs.raw_paths.clear()
-        self._update_input_raw_list()
-        self.raw_unloaded()
-
-    # DTM METHODS
-
-    def click_add_dtm(self):
-        """ Read the DTM files provided by the user"""
-        logger.debug('adding DTM ...')
-
-        # ask the file path to the user
-        # noinspection PyCallByClass
-        selections, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Add DTM file",
-                                                               QtCore.QSettings().value("dtm_import_folder"),
-                                                               "Supported formats (*.bag *.csar);; "
-                                                               "BAG file (*.bag);;CSAR file (*.csar);;"
-                                                               "All files (*.*)")
-        if len(selections) == 0:
-            logger.debug('adding dtm: aborted')
-            return
-        last_open_folder = os.path.dirname(selections[0])
-        if os.path.exists(last_open_folder):
-            QtCore.QSettings().setValue("dtm_import_folder", last_open_folder)
-
-        for selection in selections:
-            selection = os.path.abspath(selection).replace("\\", "/")
-            self._add_dtm(selection=selection)
-
-    def _add_dtm(self, selection):
-
-        if selection in self.prj.inputs.dtm_paths:
-            logger.info("File already existing in the current project")
-            return
-
-        self.prj.inputs.dtm_paths.append(selection)
-        self._update_input_dtm_list()
-        self.dtm_loaded()
-
-    def _update_input_dtm_list(self):
-        self.input_dtm.clear()
-        for input_dtm_path in self.prj.inputs.dtm_paths:
-            new_item = QtWidgets.QListWidgetItem()
-            if os.path.splitext(input_dtm_path)[-1] in [".bag", ]:
-                new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'bag.png')))
-            elif os.path.splitext(input_dtm_path)[-1] in [".csar",]:
-                new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'csar.png')))
-            new_item.setText(input_dtm_path)
-            new_item.setFont(GuiSettings.console_font())
-            new_item.setForeground(GuiSettings.console_fg_color())
-            self.input_dtm.addItem(new_item)
-
-    def make_dtm_context_menu(self, pos):
-        logger.debug('context menu')
-
-        remove_act = QtWidgets.QAction("Remove files", self, statusTip="Remove DTM files",
-                                       triggered=self.remove_dtm_files)
-
-        menu = QtWidgets.QMenu(parent=self)
-        # noinspection PyArgumentList
-        menu.addAction(remove_act)
-        # noinspection PyArgumentList
-        menu.exec_(self.input_dtm.mapToGlobal(pos))
-
-    def remove_dtm_files(self):
-        logger.debug("user want to remove DTM files")
-
-        self.prj.inputs.dtm_paths.clear()
-        self._update_input_dtm_list()
-        self.dtm_unloaded()
-
-    # Feature File methods
-
-    def click_add_ff(self):
-        """ Read the feature files provided by the user"""
-        logger.debug('adding feature files ...')
-
-        # ask the file path to the user
-        # noinspection PyCallByClass
-        selections, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Add S57 Feature Files",
-                                                               QtCore.QSettings().value("ff_import_folder"),
-                                                               "S57 file (*.000);;All files (*.*)")
-        if len(selections) == 0:
-            logger.debug('adding s57: aborted')
-            return
-        last_open_folder = os.path.dirname(selections[0])
-        if os.path.exists(last_open_folder):
-            QtCore.QSettings().setValue("ff_import_folder", last_open_folder)
-
-        for selection in selections:
-            selection = os.path.abspath(selection).replace("\\", "/")
-            self._add_ff(selection=selection)
-
-    def _add_ff(self, selection):
-
-        if selection in self.prj.inputs.ff_paths:
-            logger.info("File already existing in the current project")
-            return
-
-        self.prj.inputs.ff_paths.append(selection)
-
-        self._update_input_ff_list()
-        self.ff_loaded()
-
-    def _update_input_ff_list(self):
-        """ update the FF list widget """
-        self.input_ff.clear()
-        for input_ff_path in self.prj.inputs.ff_paths:
-            new_item = QtWidgets.QListWidgetItem()
-            if os.path.splitext(input_ff_path)[-1] == ".000":
-                new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 's57.png')))
-            new_item.setText(input_ff_path)
-            new_item.setFont(GuiSettings.console_font())
-            new_item.setForeground(GuiSettings.console_fg_color())
-            self.input_ff.addItem(new_item)
-
-    def make_ff_context_menu(self, pos):
-        logger.debug('FF context menu')
-
-        remove_act = QtWidgets.QAction("Remove files", self, statusTip="Remove the FF files",
-                                       triggered=self.remove_ff_files)
-
-        menu = QtWidgets.QMenu(parent=self)
-        # noinspection PyArgumentList
-        menu.addAction(remove_act)
-        # noinspection PyArgumentList
-        menu.exec_(self.input_ff.mapToGlobal(pos))
-
-    def remove_ff_files(self):
-        logger.debug("user want to remove FF files")
-
-        self.prj.inputs.ff_paths.clear()
-        self.ff_unloaded()
-        self._update_input_ff_list()
-
-    # ENC METHODS
-
-    def click_add_enc(self):
-        """ Read the ENC files provided by the user"""
-        logger.debug('adding ENC ...')
-
-        # ask the file path to the user
-        # noinspection PyCallByClass
-        selections, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Add S57 ENC Files",
-                                                               QtCore.QSettings().value("enc_import_folder"),
-                                                               "S57 file (*.000);;All files (*.*)")
-        if len(selections) == 0:
-            logger.debug('adding s57: aborted')
-            return
-        last_open_folder = os.path.dirname(selections[0])
-        if os.path.exists(last_open_folder):
-            QtCore.QSettings().setValue("enc_import_folder", last_open_folder)
-
-        for selection in selections:
-            selection = os.path.abspath(selection).replace("\\", "/")
-            self._add_enc(selection=selection)
-
-    def _add_enc(self, selection):
-
-        if selection in self.prj.inputs.enc_paths:
-            logger.info("File already existing in the current project")
-            return
-
-        self.prj.inputs.enc_paths.append(selection)
-
-        self._update_input_enc_list()
-        self.enc_loaded()
-
-    def _update_input_enc_list(self):
-        """ update the ENC list widget """
-        self.input_enc.clear()
-        for input_enc_path in self.prj.inputs.enc_paths:
-            new_item = QtWidgets.QListWidgetItem()
-            if os.path.splitext(input_enc_path)[-1] == ".000":
-                new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 's57.png')))
-            new_item.setText(input_enc_path)
-            new_item.setFont(GuiSettings.console_font())
-            new_item.setForeground(GuiSettings.console_fg_color())
-            self.input_enc.addItem(new_item)
-
-    def make_enc_context_menu(self, pos):
-        logger.debug('ENC context menu')
-
-        remove_act = QtWidgets.QAction("Remove files", self, statusTip="Remove the ENC files",
-                                       triggered=self.remove_enc_files)
-
-        menu = QtWidgets.QMenu(parent=self)
-        # noinspection PyArgumentList
-        menu.addAction(remove_act)
-        # noinspection PyArgumentList
-        menu.exec_(self.input_enc.mapToGlobal(pos))
-
-    def remove_enc_files(self):
-        logger.debug("user want to remove ENC files")
-
-        self.prj.inputs.enc_paths.clear()
-        self.enc_unloaded()
-        self._update_input_enc_list()
-
-    # AUX METHODS
-
-    def click_clear_data(self):
-        """ Clear all the read data"""
-        logger.debug('clear data')
-        self.prj.clear_inputs()
-
-        self.input_dtm.clear()
-        self.dtm_unloaded()
-
-        self.input_ff.clear()
-        self.ff_unloaded()
 
     def click_output_kml(self):
         """ Set the KML output"""
@@ -1147,9 +579,3 @@ class MainTab(QtWidgets.QMainWindow):
         self.parent_win.disable_mate()
         self.parent_win.disable_qc_tools()
         self.parent_win.disable_ca_tools()
-
-    # common
-    @classmethod
-    def click_open_manual(cls):
-        logger.debug("open manual")
-        Helper.explore_folder("https://www.hydroffice.org/manuals/qax/user_manual_qax_data_inputs.html")
