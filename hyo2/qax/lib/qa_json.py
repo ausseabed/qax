@@ -256,11 +256,12 @@ class QaJsonCheck:
 
     def to_dict(self):
         dict = {
-            'info': info.to_dict(),
-            'outputs': outputs.to_dict()
+            'info': self.info.to_dict(),
         }
         if self.inputs is not None:
             dict['inputs'] = self.inputs.to_dict()
+        if self.outputs is not None:
+            dict['outputs'] = self.outputs.to_dict()
         return dict
 
 
@@ -283,6 +284,12 @@ class QaJsonDataLevel:
 
     def __init__(self, checks: List[QaJsonCheck]):
         self.checks = checks
+
+    def get_check(self, check_id: str) -> QaJsonCheck:
+        """ Gets a check based on id, or None if the check does not exist
+        """
+        check = next((c for c in self.checks if c.info.id == check_id), None)
+        return check
 
     def to_dict(self):
         return {
@@ -313,11 +320,23 @@ class QaJsonQa:
             version: str,
             raw_data: QaJsonDataLevel,
             survey_products: QaJsonDataLevel,
-            chart_adequacy: QaJsonDataLevel):
+            chart_adequacy: QaJsonDataLevel = None):
         self.version = version
         self.raw_data = raw_data
         self.survey_products = survey_products
         self.chart_adequacy = chart_adequacy
+
+    def get_or_add_data_level(
+            self, data_level: str) -> QaJsonDataLevel:
+        """ If a data level exists in the `qa` object it will be returned,
+        otherwise a new QaJsonDataLevel will be created, added to the qa object
+        and returned
+        """
+        dl = getattr(self, data_level)
+        if dl is None:
+            dl = QaJsonDataLevel(checks=[])
+            setattr(self, data_level, dl)
+        return dl
 
     def to_dict(self):
         dict = {
