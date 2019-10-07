@@ -8,6 +8,7 @@ from hyo2.abc.app.app_style import AppStyle
 from hyo2.abc.lib.logging import set_logging
 from hyo2.qax.app.mainwin import MainWin
 from hyo2.qax.lib.config import QaxConfig
+from hyo2.qax.lib.plugin import QaxPlugins
 
 logger = logging.getLogger(__name__)
 set_logging(ns_list=["hyo2.qax", ])
@@ -38,6 +39,8 @@ def gui(dev_mode=False):
 
     config = QaxConfig()
     config.load()
+    plugins = QaxPlugins()
+    plugins.load(config)
 
     main_win = MainWin()
     sys.excepthook = main_win.exception_hook  # install the exception hook

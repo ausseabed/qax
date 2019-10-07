@@ -4,83 +4,17 @@
     {
       "name": "Mate",
       "description": "QA checks for raw bathymetry data",
+      "pluginClass": "hyo2.qax.plugins.mate.MateQaxPlugin",
       "enabled": false,
-      "checked": true,
-      "surveyProducts": [
-        {
-          "name": "Raw Files",
-          "description": "Kongsberg raw sonar files",
-          "fileTypes": [
-            {
-              "name": "Konsgberg file",
-              "extension": "all",
-              "icon": "kng.png"
-            },
-            {
-              "name": "Konsgberg file",
-              "extension": "wcd",
-              "icon": "kng.png"
-            }
-          ]
-        }
-      ]
+      "checked": true
     },
     {
       "name": "Flier Finder",
-      "surveyProducts": [
-        {
-          "name": "Survey DTMs",
-          "description": "Gridded Digital Terrain Models",
-          "fileTypes": [
-            {
-              "name": "BAG file",
-              "extension": "bag",
-              "icon": "bag.png"
-            },
-            {
-              "name": "CSAR file",
-              "extension": "csar",
-              "icon": "csar.png"
-            }
-          ]
-        }
-      ]
+      "pluginClass": "hyo2.qax.plugins.test.FlierFinderQaxPlugin"
     },
     {
       "name": "Coverage check",
-      "surveyProducts": [
-        {
-          "name": "Survey DTMs",
-          "description": "Gridded Digital Terrain Models",
-          "fileTypes": [
-            {
-              "name": "BAG file",
-              "extension": "bag",
-              "icon": "bag.png"
-            },
-            {
-              "name": "CSAR file",
-              "extension": "csar",
-              "icon": "csar.png"
-            }
-          ]
-        },
-        {
-          "name": "Expected coverage",
-          "description": "Expected area of coverage captures within DTM",
-          "fileTypes": [
-            {
-              "name": "Shapefile",
-              "extension": "shp"
-            },
-            {
-              "name": "GeoJSON",
-              "extension": "json",
-              "icon": "json.png"
-            }
-          ]
-        }
-      ]
+      "pluginClass": "hyo2.qax.plugins.test.CoverageCheckQaxPlugin"
     }
   ]
 }

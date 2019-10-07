@@ -6,12 +6,13 @@ from hyo2.abc.lib.helper import Helper
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.profile_groupbox import ProfileGroupBox
-from hyo2.qax.app.widgets.qax.surveyproduct_groupbox \
-    import SurveyProductGroupBox
+from hyo2.qax.app.widgets.qax.filegroup_groupbox \
+    import FileGroupGroupBox
 from hyo2.qax.lib.config import QaxConfig
-from hyo2.qax.lib.config import QaxConfigSurveyProduct
+from hyo2.qax.lib.plugin import QaxPlugins, QaxFileGroup
 
-# Use NSURL as a workaround to pyside/Qt4 behaviour for dragging and dropping on OSx
+# Use NSURL as a workaround to pyside/Qt4 behaviour for dragging and dropping
+# on OSx
 if Helper.is_darwin():
     # noinspection PyUnresolvedReferences
     from Foundation import NSURL
@@ -57,15 +58,15 @@ class MainTab(QtWidgets.QMainWindow):
             self._on_check_tools_selected)
         self.vbox.addWidget(self.profile_selection)
 
-        self.survey_product_selection = SurveyProductGroupBox(self, self.prj)
-        self.vbox.addWidget(self.survey_product_selection)
+        self.file_group_selection = FileGroupGroupBox(self, self.prj)
+        self.vbox.addWidget(self.file_group_selection)
 
         self._on_check_tools_selected(
             self.profile_selection.selected_check_tools())
-        self.survey_product_selection.files_added.connect(
-            self._on_survey_product_files_added)
-        self.survey_product_selection.files_removed.connect(
-            self._on_survey_product_files_removed)
+        self.file_group_selection.files_added.connect(
+            self._on_file_group_files_added)
+        self.file_group_selection.files_removed.connect(
+            self._on_file_group_files_removed)
 
         # data outputs
         self.savedData = QtWidgets.QGroupBox("Data outputs [drap-and-drop the desired output folder]")
@@ -243,24 +244,27 @@ class MainTab(QtWidgets.QMainWindow):
         print("Selected check tools")
         print(check_tools)
 
-        all_survey_prods = []
+        all_file_groups = []
         for check_tool in check_tools:
-            all_survey_prods.extend(check_tool.survey_products)
-        unique_survey_prods = QaxConfigSurveyProduct.merge(all_survey_prods)
+            check_tool_plugin = QaxPlugins.instance().get_plugin(
+                check_tool.plugin_class)
+            file_groups = check_tool_plugin.get_file_groups()
+            all_file_groups.extend(file_groups)
+        unique_file_groups = QaxFileGroup.merge(all_file_groups)
 
-        if self.survey_product_selection is not None:
+        if self.file_group_selection is not None:
             # it may be None during initialisation
-            self.survey_product_selection.update_survey_products(
-                unique_survey_prods)
+            self.file_group_selection.update_file_groups(
+                unique_file_groups)
 
-    def _on_survey_product_files_added(self, survey_product):
-        print("files added to: {}".format(survey_product.name))
+    def _on_file_group_files_added(self, file_group):
+        print("files added to: {}".format(file_group.name))
 
         # todo: call interaction functions such as `raw_loaded` based on
         # what check has had files selected
 
-    def _on_survey_product_files_removed(self, survey_product):
-        print("files removed from: {}".format(survey_product.name))
+    def _on_file_group_files_removed(self, file_group):
+        print("files removed from: {}".format(file_group.name))
 
         # todo: call interaction functions such as `raw_unloaded` based on
         # what check has had files cleared from

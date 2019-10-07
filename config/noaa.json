@@ -4,144 +4,15 @@
     {
       "name": "Mate",
       "description": "QA checks for raw bathymetry data",
-      "surveyProducts": [
-        {
-          "name": "Raw Files",
-          "description": "Kongsberg raw sonar files",
-          "fileTypes": [
-            {
-              "name": "Konsgberg file",
-              "extension": "all",
-              "icon": "kng.png"
-            },
-            {
-              "name": "Konsgberg file",
-              "extension": "wcd",
-              "icon": "kng.png"
-            }
-          ]
-        }
-      ],
-      "enabled": true,
-      "checked": true
+      "pluginClass": "hyo2.qax.plugins.mate.MateQaxPlugin"
     },
     {
       "name": "Flier Finder",
-      "surveyProducts": [
-        {
-          "name": "Survey DTMs",
-          "description": "Grid files",
-          "fileTypes": [
-            {
-              "name": "BAG file",
-              "extension": "bag",
-              "icon": "bag.png"
-            },
-            {
-              "name": "CSAR file",
-              "extension": "csar",
-              "icon": "csar.png"
-            }
-          ]
-        }
-      ],
-      "enabled": true,
-      "checked": true
+      "pluginClass": "hyo2.qax.plugins.test.FlierFinderQaxPlugin"
     },
     {
       "name": "Holiday Finder",
-      "surveyProducts": [
-        {
-          "name": "Survey DTMs",
-          "description": "Grid files",
-          "fileTypes": [
-            {
-              "name": "BAG file",
-              "extension": "bag",
-              "icon": "bag.png"
-            },
-            {
-              "name": "CSAR file",
-              "extension": "csar",
-              "icon": "csar.png"
-            }
-          ]
-        }
-      ],
-      "enabled": false,
-      "checked": true
-    },
-    {
-      "name": "Grid QA",
-      "surveyProducts": [
-        {
-          "name": "Survey DTMs",
-          "description": "Grid files",
-          "fileTypes": [
-            {
-              "name": "BAG file",
-              "extension": "bag",
-              "icon": "bag.png"
-            },
-            {
-              "name": "CSAR file",
-              "extension": "csar",
-              "icon": "csar.png"
-            }
-          ]
-        }
-      ],
-      "enabled": false,
-      "checked": true
-    },
-    {
-      "name": "Designated Scan",
-      "surveyProducts": [],
-      "enabled": true,
-      "checked": true
-    },
-    {
-      "name": "Feature Scan",
-      "surveyProducts": []
-    },
-    {
-      "name": "VALSOU Check",
-      "surveyProducts": []
-    },
-    {
-      "name": "Coverage check",
-      "surveyProducts": []
-    },
-    {
-      "name": "Another test",
-      "surveyProducts": []
-    },
-    {
-      "name": "yet another test",
-      "surveyProducts": [
-        {
-          "name": "test survey prod",
-          "description": "testing",
-          "fileTypes": [
-            {
-              "name": "Test file type 1",
-              "extension": "t1"
-            },
-            {
-              "name": "Test file type 2",
-              "extension": "t2"
-            },
-            {
-              "name": "Test file type 3",
-              "extension": "t3"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "one last test",
-      "surveyProducts": []
+      "pluginClass": "hyo2.qax.plugins.test.HolidayFinderQaxPlugin"
     }
   ]
 }

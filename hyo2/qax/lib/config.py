@@ -13,157 +13,25 @@ Module defines classes for QAX JSON config file. Hierarchy is as follows;
 QaxConfig
   QaxConfigProfile
     QaxConfigCheckTool
-      QaxConfigSurveyProduct
-        QaxConfigFileType
 """
-
-
-class QaxConfigFileType:
-    """
-    Represents a file type
-    """
-
-    @classmethod
-    def from_dict(cls, data: Dict) -> 'QaxConfigFileType':
-        icon = data['icon'] if 'icon' in data else None
-        file_type = cls(
-            name=data['name'],
-            extension=data['extension'],
-            icon=icon
-        )
-        return file_type
-
-    def __init__(
-            self, name: str, extension: str, icon: str = None):
-        self.name = name
-        self.extension = extension
-        # icon is a filename (without path) that exists in the
-        # applications `media` folder. eg; `tif.png`, `kng.png`
-        self.icon = icon
-
-    def formatted_name(self):
-        return "{} (*.{})".format(self.name, self.extension)
-
-    def __repr__(self):
-        msg = super().__repr__()
-        msg += "\n"
-        msg += "name: {}".format(self.name)
-        msg += "extension: {}".format(self.extension)
-        return msg
-
-
-class QaxConfigSurveyProduct:
-    """
-    Represents a specific Survey Product. A survey product is a type of data.
-    Examples include a Digital Terrain Model that could be in a number of
-    formats.
-    """
-
-    @classmethod
-    def from_dict(cls, data: Dict) -> 'QaxConfigSurveyProduct':
-        description = data['description'] if 'description' in data else None
-
-        file_type_dicts = data['fileTypes'] if 'fileTypes' in data else []
-        file_types = [
-            QaxConfigFileType.from_dict(file_type_dict)
-            for file_type_dict in file_type_dicts]
-
-        survey_product = cls(
-            name=data['name'],
-            description=description,
-            file_types=file_types
-        )
-        return survey_product
-
-    @classmethod
-    def merge(
-            cls, survey_products: List['QaxConfigSurveyProduct']
-            ) -> List['QaxConfigSurveyProduct']:
-        """
-        Merges a list of `QaxConfigSurveyProduct` based on common name
-        attributes. Extension lists of each survey product are also merged.
-        """
-        sp_dict = {}
-        for sp in survey_products:
-            merged_sp = None
-            if sp.name not in sp_dict:
-                merged_sp = QaxConfigSurveyProduct(
-                    sp.name, sp.description, copy.deepcopy(sp.file_types))
-                sp_dict[merged_sp.name] = merged_sp
-            else:
-                merged_sp = sp_dict[sp.name]
-                for ft in sp.file_types:
-                    found = next(
-                        x
-                        for x in merged_sp.file_types
-                        if x.formatted_name() == ft.formatted_name())
-                    if found is None:
-                        merged_sp.file_types.append(copy.deepcopy(ft))
-        return list(sp_dict.values())
-
-    def __init__(
-            self, name: str, description: str,
-            file_types: List[QaxConfigFileType] = []):
-        self.name = name
-        self.description = description
-        self.file_types = file_types
-
-    def clean_name(self) -> str:
-        """ Name with white space and special characters removed (or replaced)
-        to support use in file names or config params.
-        """
-        name = self.name.replace(' ', '_')
-        name = re.sub('[^a-zA-Z0-9_\\n\\.]', '', name)
-        return name
-
-    def matching_file_type(self, path: Path) -> QaxConfigFileType:
-        """ Finds a file type with an extension that matched that of the
-        given path. None will be returned if no matching file type is found.
-        """
-        extension = path.suffix
-        extension = extension.lstrip('.')
-        match = next(
-            (ft for ft in self.file_types if ft.extension == extension), None)
-        return match
-
-    def __eq__(self, other):
-        if not (other is QaxConfigSurveyProduct):
-            return false
-        return self.name == other.name
-
-    def __repr__(self):
-        msg = super().__repr__()
-        msg += "\n"
-        msg += "name: {}".format(self.name)
-        msg += "description: {}".format(self.description)
-        msg += "file type count: {}".format(len(self.file_types))
-        return msg
 
 
 class QaxConfigCheckTool:
     """
-    Represents the configuration of a single check tool. Includes definition
-    of what survey products the tool is capable of checking and default input
-    parameters to these checks.
+    Represents the configuration of a single check tool.
     """
 
     @classmethod
     def from_dict(cls, data: Dict) -> 'QaxConfigCheckTool':
-        survey_products = []
-        if 'surveyProducts' in data:
-            for survey_product_dict in data['surveyProducts']:
-                survey_product = QaxConfigSurveyProduct.from_dict(
-                    survey_product_dict)
-                survey_products.append(survey_product)
-
+        plugin_class = data['pluginClass'] if ('pluginClass' in data) else None
         checked = data['checked'] if ('checked' in data) else False
         enabled = data['enabled'] if ('enabled' in data) else True
-
         description = data['description'] if 'description' in data else None
+
         check_tool = cls(
             name=data['name'],
             description=description,
-            survey_products=survey_products,
+            plugin_class=plugin_class,
             enabled=enabled,
             checked=checked
         )
@@ -171,11 +39,11 @@ class QaxConfigCheckTool:
 
     def __init__(
             self, name: str, description: str,
-            survey_products: List[QaxConfigSurveyProduct] = [],
+            plugin_class: str = None,
             enabled: bool = True, checked: bool = False):
         self.name = name
         self.description = description
-        self.survey_products = survey_products
+        self.plugin_class = plugin_class
         # `enabled` indicates if the selection of this check tool can be
         # altered by QAX users
         self.enabled = enabled
@@ -188,9 +56,9 @@ class QaxConfigCheckTool:
         msg += "\n"
         msg += "name: {}".format(self.name)
         msg += "description: {}".format(self.description)
+        msg += "plugin class: {}".format(self.plugin_class)
         msg += "enabled: {}".format(self.enabled)
         msg += "checked: {}".format(self.checked)
-        msg += "survey product count: {}".format(len(self.survey_products))
         return msg
 
 
@@ -222,17 +90,6 @@ class QaxConfigProfile:
         self.name = name
         self.check_tools = check_tools
         self.description = None
-
-    def get_unique_survey_products(self) -> List[QaxConfigSurveyProduct]:
-        """
-        Generate a list of `QaxConfigSurveyProduct` that includes only unique
-        survey products across all check tools included in this profile.
-        """
-        all_prods = []
-        for check_tool in self.check_tools:
-            all_prods.extend(check_tool.survey_products)
-        unique_prods = QaxConfigSurveyProduct.merge(all_prods)
-        return unique_prods
 
     def __repr__(self):
         msg = super().__repr__()
