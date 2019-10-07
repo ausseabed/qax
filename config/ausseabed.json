@@ -4,7 +4,7 @@
     {
       "name": "Mate",
       "description": "QA checks for raw bathymetry data",
-      "pluginClass": "hyo2.qax.plugins.mate.MateQaxPlugin",
+      "pluginClass": "hyo2.mate.qax.plugin.MateQaxPlugin",
       "enabled": false,
       "checked": true
     },

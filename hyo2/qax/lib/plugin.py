@@ -5,7 +5,8 @@ import re
 
 from hyo2.qax.lib.config import QaxConfig
 from hyo2.qax.lib.config import QaxConfigCheckTool
-from hyo2.qax.lib.qa_json import QaJsonParam
+from hyo2.qax.lib.qa_json import QaJsonRoot, QaJsonQa, QaJsonDataLevel, \
+    QaJsonParam, QAJson, QaJsonCheck, QaJsonInfo, QaJsonGroup, QaJsonFile
 
 """ Module defines the architecture and utility functions/classes for the
 QAX check tool plugin system. A check tool must implement the QAX check tool
@@ -55,6 +56,14 @@ class QaxFileType:
 
     def formatted_name(self):
         return "{} (*.{})".format(self.name, self.extension)
+
+    def supports_file(self, file_path: Path) -> bool:
+        """ Returns True if the file_path file's extension matches
+        `self.extenstion`.
+        """
+        extension = file_path.suffix
+        extension = extension.lstrip('.')
+        return extension == self.extension
 
     def __repr__(self):
         msg = super().__repr__()
@@ -176,6 +185,15 @@ class QaxCheckReference():
         self.description = description
         self.supported_file_types = supported_file_types
         self.default_input_params = default_input_params
+        self.version = '0'
+
+    def supports_file(self, file_path: Path) -> bool:
+        """ Returns True if the file_path file is supported by this check tool.
+        """
+        for supported_file_type in self.supported_file_types:
+            if supported_file_type.supports_file(file_path):
+                return True
+        return False
 
 
 class QaxCheckToolPlugin():
@@ -202,6 +220,91 @@ class QaxCheckToolPlugin():
                     file_groups_dict[fg.name] = fg
         return list(file_groups_dict.values())
 
+    def _get_or_add_check(
+            self,
+            data_level: QaJsonDataLevel,
+            check_reference: QaxCheckReference) -> QaJsonCheck:
+        """ If a check exists it will be returned, otherwise a new check will
+        be created, added, and then returned.
+        """
+        matching_check = data_level.get_check(check_reference.id)
+        if matching_check is not None:
+            return matching_check
+
+        check_info = QaJsonInfo(
+            id=check_reference.id,
+            name=check_reference.name,
+            description=check_reference.description,
+            version=check_reference.version,
+            group=QaJsonGroup("", "", ""),
+        )
+
+        new_check = QaJsonCheck(info=check_info, inputs=None, outputs=None)
+        data_level.checks.append(new_check)
+        return new_check
+
+    def update_qa_json(self, qa_json: QaJsonRoot) -> NoReturn:
+        """ Includes this plugins checks into the `qa_json` object based on
+        the checks this plugin provides
+        """
+        if qa_json.qa is None:
+            # assume schema naming convention is
+            #  `some_path/v0.1.2/qa.schema.json` or similar
+            last_path = QAJson.schema_paths()[-1]
+            version = last_path.parent.name[1:]
+            # if no qa object, initialise the minimum spec
+            qa_json.qa = QaJsonQa(
+                version=version,
+                raw_data=None,
+                survey_products=None,
+            )
+            qa_json.qa.get_or_add_data_level('raw_data')
+            qa_json.qa.get_or_add_data_level('survey_products')
+
+        check_refs = self.checks()
+        for check_ref in check_refs:
+            data_level = qa_json.qa.get_or_add_data_level(check_ref.data_level)
+            self._get_or_add_check(data_level, check_ref)
+
+    def update_qa_json_input_files(
+            self, qa_json: QaJsonRoot, files: List[Path]) -> NoReturn:
+        """ Updates the input definitions included in the qa_json object
+        to include the `files` list. Files are only added to a check if the
+        check already exists in the `qa_json` object, and the check supports
+        that file type (based on files extension and the supported file types
+        included in the QaxCheckReference).
+        """
+        all_data_levels = [check_ref.data_level for check_ref in self.checks()]
+        all_data_levels = list(set(all_data_levels))
+
+        # build a list of checks in the qa_json for all the different data
+        # levels
+        all_checks = []
+        for dl in all_data_levels:
+            dl_sp = getattr(qa_json.qa, dl)
+            if dl_sp is None:
+                continue
+            all_checks.extend(dl_sp.checks)
+
+        for check in all_checks:
+            inputs = check.get_or_add_inputs()
+            check_ref = self.get_check_reference(check.info.id)
+            if check_ref is None:
+                # then this is a check within the qa json that is not
+                # implemented by the plugin. This is ok, so skip and move
+                # onto next check.
+                continue
+            supported_files = [
+                QaJsonFile(path=str(f), description=None)
+                for f in files if check_ref.supports_file(f)]
+            inputs.files.extend(supported_files)
+
+    def get_check_reference(self, check_id: str) -> QaxCheckReference:
+        """ gets a check reference with the given id, if not found return None
+        """
+        check = next((cr for cr in self.checks() if cr.id == check_id), None)
+        return check
+
     def checks(self) -> List[QaxCheckReference]:
         """ returns a list of checks that are provided by this check tool.
         Each check includes a list of what file formats it supports and what
@@ -213,7 +316,38 @@ class QaxCheckToolPlugin():
         raise NotImplementedError
 
 
+class QaxProfilePlugins():
+    """ Manages a list of plugins that are specific to single profile
+    """
+
+    def __init__(self, plugins: List[QaxPlugin]):
+        self.plugins = plugins
+
+    def update_qa_json(self, qa_json: QaJsonRoot) -> NoReturn:
+        """ Refer to docstring for QaxProfile. This function simply runs
+        the equivalent QaxProfile function for each plugin.
+        """
+        for plugin in self.plugins:
+            plugin.update_qa_json(qa_json)
+
+    def update_qa_json_input_files(
+            self, qa_json: QaJsonRoot, files: List[Path]) -> NoReturn:
+        """ Refer to docstring for QaxProfile. This function simply runs
+        the equivalent QaxProfile function for each plugin.
+        """
+        for plugin in self.plugins:
+            plugin.update_qa_json(qa_json, files)
+
+
 class QaxPluginError(Exception):
+    """ Custom Error for plugin issues
+    """
+
+    def __init__(self, message):
+        super().__init__(message)
+
+
+class QaxPluginLoadError(QaxPluginError):
     """ Custom Error for plugin issues
     """
 
@@ -254,8 +388,17 @@ class QaxPlugins():
                 "{} was provided".format(check_tool.name))
 
         module_name, class_name = mod_class_bits
+        try:
+            plugin_module = importlib.import_module(module_name)
+        except ModuleNotFoundError as ex:
+            raise QaxPluginLoadError(
+                "Could not load plugin module {}".format(module_name))
 
-        plugin_module = importlib.import_module(module_name)
+        if not hasattr(plugin_module, class_name):
+            raise QaxPluginLoadError(
+                "Could not load plugin class {} (of module {})"
+                .format(class_name, module_name))
+
         plugin_class = getattr(plugin_module, class_name)
         plugin_instance = plugin_class()
         plugin_instance.plugin_class = check_tool.plugin_class
@@ -275,6 +418,18 @@ class QaxPlugins():
             None
         )
         return match
+
+    def get_profile_plugins(
+            self, profile: QaxConfigProfile) -> QaxProfilePlugins:
+        """ Gets the plugins for this profile ONLY
+        """
+        plugins = []
+        for check_tool in profile.check_tools:
+            plugin = self.get_plugin(check_tool.plugin_class)
+            if plugin is None:
+                continue
+            plugins.append(plugin)
+        return QaxProfilePlugins(plugins)
 
     def load(self, config: QaxConfig) -> NoReturn:
         """ Loads plugins defined in `config`

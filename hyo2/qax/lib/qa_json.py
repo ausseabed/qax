@@ -254,6 +254,11 @@ class QaJsonCheck:
         self.inputs = inputs
         self.outputs = outputs
 
+    def get_or_add_inputs(self) -> QaJsonInputs:
+        if self.inputs is None:
+            self.inputs = QaJsonInputs(files=[], params=[])
+        return self.inputs
+
     def to_dict(self):
         dict = {
             'info': self.info.to_dict(),

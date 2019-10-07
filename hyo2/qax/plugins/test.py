@@ -1,6 +1,6 @@
 from typing import List, Dict, NoReturn
 
-from hyo2.qax.plugins.mate import QaxCheckToolPlugin, QaxCheckReference, \
+from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference, \
     QaxFileType
 
 

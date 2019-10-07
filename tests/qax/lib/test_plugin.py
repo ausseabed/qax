@@ -1,18 +1,87 @@
 from pathlib import Path
-from typing import Dict, NoReturn
+from typing import Dict, NoReturn, List
 import unittest
 
 from hyo2.qax.lib.config import QaxConfigCheckTool
-from hyo2.qax.lib.plugin import QaxCheckToolPlugin
+from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference
 from hyo2.qax.lib.plugin import QaxFileType, QaxFileGroup
 from hyo2.qax.lib.plugin import QaxPlugins
+from hyo2.qax.lib.qa_json import QAJson, QaJsonRoot
 
 
 class MyPlugin(QaxCheckToolPlugin):
 
+    supported_file_types = [
+        QaxFileType(
+            name="BAG file",
+            extension="bag",
+            group="Survey DTMs",
+            icon="bag.png"
+        ),
+        QaxFileType(
+            name="CSAR file",
+            extension="csar",
+            group="Survey DTMs",
+            icon="csar.png"
+        )
+    ]
+
     def __init__(self):
         super(MyPlugin, self).__init__()
         self.name = 'MyPlugin test'
+        self._check_references = self._build_check_references()
+
+    def _build_check_references(self) -> List[QaxCheckReference]:
+        cr01 = QaxCheckReference(
+            id="ecd55c7c-ce54-4555-a344-ae53ccdd774b",
+            name="Test check 01",
+            data_level="survey_products",
+            description="This is only for test purposes",
+            supported_file_types=MyPlugin.supported_file_types
+        )
+        cr02 = QaxCheckReference(
+            id="ca04d1f5-3b9e-44cd-bc96-6665df6206f9",
+            name="Test check 02",
+            data_level="survey_products",
+            description="This is only for test purposes",
+            supported_file_types=MyPlugin.supported_file_types
+        )
+        return [cr01, cr02]
+
+    def checks(self) -> List[QaxCheckReference]:
+        return self._check_references
+
+    def run(self, qajson: Dict) -> NoReturn:
+        pass
+
+
+class MyOtherPlugin(QaxCheckToolPlugin):
+
+    supported_file_types = [
+        QaxFileType(
+            name="shp file",
+            extension="shp",
+            group="Shapefiles"
+        )
+    ]
+
+    def __init__(self):
+        super(MyOtherPlugin, self).__init__()
+        self.name = 'MyOtherPlugin test'
+        self._check_references = self._build_check_references()
+
+    def _build_check_references(self) -> List[QaxCheckReference]:
+        cr = QaxCheckReference(
+            id="bff164d5-9fc8-40c5-ab36-6c73e47257bd",
+            name="Test check 03",
+            data_level="survey_products",
+            description="This is only for test purposes",
+            supported_file_types=MyOtherPlugin.supported_file_types
+        )
+        return [cr]
+
+    def checks(self) -> List[QaxCheckReference]:
+        return self._check_references
 
     def run(self, qajson: Dict) -> NoReturn:
         pass
@@ -20,16 +89,23 @@ class MyPlugin(QaxCheckToolPlugin):
 
 class TestQaxPlugins(unittest.TestCase):
 
-    def test_load_plugin(self):
-        check_tool_config = QaxConfigCheckTool.from_dict(
-            {
-                'name': 'test check tool',
-                'pluginClass': 'tests.qax.lib.test_plugin.MyPlugin'
-            }
-        )
+    check_tool_config = QaxConfigCheckTool.from_dict(
+        {
+            'name': 'test check tool',
+            'pluginClass': 'tests.qax.lib.test_plugin.MyPlugin'
+        }
+    )
+    check_tool_config_other = QaxConfigCheckTool.from_dict(
+        {
+            'name': 'test check tool other',
+            'pluginClass': 'tests.qax.lib.test_plugin.MyOtherPlugin'
+        }
+    )
 
+    def test_load_plugin(self):
         plugins = QaxPlugins()
-        check_tool_plugin = plugins._load_plugin(check_tool_config)
+        check_tool_plugin = plugins._load_plugin(
+            TestQaxPlugins.check_tool_config)
         self.assertIsInstance(check_tool_plugin, MyPlugin)
 
     def test_file_group_from_dict(self):
@@ -110,3 +186,24 @@ class TestQaxPlugins(unittest.TestCase):
         path = Path('test/file/path/raw.has_no_file_type')
         matching_file_type = sp1.matching_file_type(path)
         self.assertIsNone(matching_file_type)
+
+    def test_qa_json_generation(self):
+        qa_json = QaJsonRoot(qa=None)
+        plugins = QaxPlugins()
+        check_tool_plugin = plugins._load_plugin(
+            TestQaxPlugins.check_tool_config)
+        check_tool_plugin_other = plugins._load_plugin(
+            TestQaxPlugins.check_tool_config_other)
+
+        check_tool_plugin.update_qa_json(qa_json)
+        check_tool_plugin_other.update_qa_json(qa_json)
+
+        files = [
+            Path('/my/test/bagfile.bag'),
+            Path('/my/test/csarfile.csar'),
+            Path('/my/test/shpfile.shp'),
+        ]
+        check_tool_plugin.update_qa_json_input_files(qa_json, files)
+        check_tool_plugin_other.update_qa_json_input_files(qa_json, files)
+
+        # todo: some asserts
