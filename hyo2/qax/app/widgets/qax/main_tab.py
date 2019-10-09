@@ -8,7 +8,7 @@ from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.profile_groupbox import ProfileGroupBox
 from hyo2.qax.app.widgets.qax.filegroup_groupbox \
     import FileGroupGroupBox
-from hyo2.qax.lib.config import QaxConfig
+from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxPlugins, QaxFileGroup
 
 # Use NSURL as a workaround to pyside/Qt4 behaviour for dragging and dropping
@@ -23,6 +23,8 @@ logger = logging.getLogger(__name__)
 class MainTab(QtWidgets.QMainWindow):
 
     here = os.path.abspath(os.path.dirname(__file__))
+
+    profile_selected = QtCore.Signal(QaxConfigProfile)
 
     def __init__(self, parent_win, prj):
         QtWidgets.QMainWindow.__init__(self)
@@ -238,7 +240,8 @@ class MainTab(QtWidgets.QMainWindow):
         self.installEventFilter(self)
 
     def _on_profile_selected(self, profile):
-        print(profile.name)
+        # propogate event up
+        self.profile_selected.emit(profile)
 
     def _on_check_tools_selected(self, check_tools):
         print("Selected check tools")

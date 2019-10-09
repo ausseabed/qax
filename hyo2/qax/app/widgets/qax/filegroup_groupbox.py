@@ -213,8 +213,8 @@ class FileGroupWidget(QtWidgets.QWidget):
                 (matching_file_type is not None) and
                 (matching_file_type.icon is not None)
             ):
-                file_type_icon = QtGui.QIcon(os.path.join(
-                    GuiSettings.media(), matching_file_type.icon))
+                file_type_icon = QtGui.QIcon(
+                    GuiSettings.icon_path(matching_file_type.icon))
                 file_item.setIcon(file_type_icon)
 
             self.file_list.addItem(file_item)

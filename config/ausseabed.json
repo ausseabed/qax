@@ -5,12 +5,14 @@
       "name": "Mate",
       "description": "QA checks for raw bathymetry data",
       "pluginClass": "hyo2.mate.qax.plugin.MateQaxPlugin",
+      "icon": "mate.png",
       "enabled": false,
       "checked": true
     },
     {
       "name": "Flier Finder",
-      "pluginClass": "hyo2.qax.plugins.test.FlierFinderQaxPlugin"
+      "pluginClass": "hyo2.qax.plugins.test.FlierFinderQaxPlugin",
+      "icon": "qc_tools.png"
     },
     {
       "name": "Coverage check",

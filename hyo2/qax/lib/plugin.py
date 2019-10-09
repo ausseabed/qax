@@ -3,8 +3,7 @@ from typing import Dict, List, NoReturn, Optional
 import importlib
 import re
 
-from hyo2.qax.lib.config import QaxConfig
-from hyo2.qax.lib.config import QaxConfigCheckTool
+from hyo2.qax.lib.config import QaxConfig, QaxConfigCheckTool, QaxConfigProfile
 from hyo2.qax.lib.qa_json import QaJsonRoot, QaJsonQa, QaJsonDataLevel, \
     QaJsonParam, QAJson, QaJsonCheck, QaJsonInfo, QaJsonGroup, QaJsonFile
 
@@ -204,6 +203,7 @@ class QaxCheckToolPlugin():
         # name of the check tool
         self.name = 'unknown'
         self.plugin_class = None  # full namespace string
+        self.icon = None
 
     def get_file_groups(self) -> List[QaxCheckReference]:
         """ Generate a list of file groups for this check tool plugin
@@ -299,6 +299,42 @@ class QaxCheckToolPlugin():
                 for f in files if check_ref.supports_file(f)]
             inputs.files.extend(supported_files)
 
+    def update_qa_json_input_params(
+            self,
+            qa_json: QaJsonRoot,
+            check_id: str,
+            params: List[QaJsonParam]) -> NoReturn:
+        """ Updates the input definitions included in the qa_json object
+        to include the `params` list. Parameters are only added to a check if
+        the check already exists in the `qa_json` object, and the check id
+        matches that passed to this function.
+        """
+        all_data_levels = [check_ref.data_level for check_ref in self.checks()]
+        all_data_levels = list(set(all_data_levels))  # remove duplicates
+
+        # build a list of checks in the qa_json for all the different data
+        # levels
+        all_checks = []
+        for dl in all_data_levels:
+            dl_sp = getattr(qa_json.qa, dl)
+            if dl_sp is None:
+                continue
+            all_checks.extend(dl_sp.checks)
+
+        for check in all_checks:
+            inputs = check.get_or_add_inputs()
+            check_ref = self.get_check_reference(check.info.id)
+            if check_ref is None:
+                # then this is a check within the qa json that is not
+                # implemented by the plugin. This is ok, so skip and move
+                # onto next check.
+                continue
+            if check.id != check_id:
+                # then the params aren't being assigned to this check, so
+                # skip to next
+                continue
+            inputs.params.extend(params)
+
     def get_check_reference(self, check_id: str) -> QaxCheckReference:
         """ gets a check reference with the given id, if not found return None
         """
@@ -320,7 +356,7 @@ class QaxProfilePlugins():
     """ Manages a list of plugins that are specific to single profile
     """
 
-    def __init__(self, plugins: List[QaxPlugin]):
+    def __init__(self, plugins: List[QaxCheckToolPlugin]):
         self.plugins = plugins
 
     def update_qa_json(self, qa_json: QaJsonRoot) -> NoReturn:
@@ -336,7 +372,18 @@ class QaxProfilePlugins():
         the equivalent QaxProfile function for each plugin.
         """
         for plugin in self.plugins:
-            plugin.update_qa_json(qa_json, files)
+            plugin.update_qa_json_input_files(qa_json, files)
+
+    def update_qa_json_input_params(
+            self,
+            qa_json: QaJsonRoot,
+            check_id: str,
+            params: List[QaJsonParam]) -> NoReturn:
+        """ Refer to docstring for QaxProfile. This function simply runs
+        the equivalent QaxProfile function for each plugin.
+        """
+        for plugin in self.plugins:
+            plugin.update_qa_json_input_params(qa_json, check_id, params)
 
 
 class QaxPluginError(Exception):
@@ -402,6 +449,8 @@ class QaxPlugins():
         plugin_class = getattr(plugin_module, class_name)
         plugin_instance = plugin_class()
         plugin_instance.plugin_class = check_tool.plugin_class
+        if check_tool.icon is not None and len(check_tool.icon) > 0:
+            plugin_instance.icon = check_tool.icon
         if check_tool.name is not None and len(check_tool.name) > 0:
             plugin_instance.name = check_tool.name
         return plugin_instance

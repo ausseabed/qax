@@ -2,17 +2,14 @@
   "name": "NOAA",
   "checkTools": [
     {
-      "name": "Mate",
-      "description": "QA checks for raw bathymetry data",
-      "pluginClass": "hyo2.mate.qax.plugin.MateQaxPlugin"
-    },
-    {
       "name": "Flier Finder",
-      "pluginClass": "hyo2.qax.plugins.test.FlierFinderQaxPlugin"
+      "pluginClass": "hyo2.qax.plugins.test.FlierFinderQaxPlugin",
+      "icon": "qc_tools.png"
     },
     {
       "name": "Holiday Finder",
-      "pluginClass": "hyo2.qax.plugins.test.HolidayFinderQaxPlugin"
+      "pluginClass": "hyo2.qax.plugins.test.HolidayFinderQaxPlugin",
+      "icon": "qc_tools.png"
     }
   ]
 }

@@ -1,4 +1,5 @@
 from PySide2 import QtGui
+from typing import Optional
 import logging
 import os
 
@@ -42,6 +43,21 @@ class GuiSettings:
         return os.path.join(here, "media")
 
     @staticmethod
+    def icon_path(icon: str) -> Optional[str]:
+        """ Checks if the icon filename exists in the media folder. Otherwise
+        attempt to treat `icon` as a absolute path to the icon image file.
+        If neither exist as files, return None.
+        """
+        if icon is None:
+            return None
+        media_icon = os.path.join(GuiSettings.media(), icon)
+        if os.path.isfile(media_icon):
+            return media_icon
+        if os.path.isfile(icon):
+            return icon
+        return None
+
+    @staticmethod
     def stylesheet_console_fg_color():
         """text color (foreground) used by line edit to be equal to text console"""
         return "color: rgb(0, 176, 240);"
@@ -54,6 +70,18 @@ class GuiSettings:
     @staticmethod
     def stylesheet_slider_labels():
         return "QLabel { color: rgb(185, 185, 185); font: 7pt; padding: 5px 0px 0px 0px;}"
+
+    @staticmethod
+    def stylesheet_plugin_tab_titles():
+        return "QLabel { font: 16pt; font-weight: bold; padding: 0px 0px 0px 0px;}"
+
+    @staticmethod
+    def stylesheet_check_titles():
+        return "QLabel { font: 14pt; padding: 0px 0px 0px 0px;}"
+
+    @staticmethod
+    def stylesheet_check_param_name():
+        return "QLabel { font: 12pt; padding: 0px 0px 0px 0px;}"
 
     @staticmethod
     def stylesheet_info_button():
