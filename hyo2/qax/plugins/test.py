@@ -2,6 +2,7 @@ from typing import List, Dict, NoReturn
 
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference, \
     QaxFileType
+from hyo2.qax.lib.qa_json import QaJsonParam
 
 
 class FlierFinderQaxPlugin(QaxCheckToolPlugin):
@@ -34,9 +35,21 @@ class FlierFinderQaxPlugin(QaxCheckToolPlugin):
             name="Placeholder flier finder checks",
             data_level="survey_products",
             description="This is only for test purposes",
+            supported_file_types=FlierFinderQaxPlugin.supported_file_types,
+            default_input_params=[
+                QaJsonParam("Height threshold", "32.3"),
+                QaJsonParam("Algorithm", "nearest"),
+                QaJsonParam("Max flier count", 20),
+            ]
+        )
+        cr2 = QaxCheckReference(
+            id="54321a",
+            name="Placeholder flier finder checks - with a really long name to test scrolling; really really long",
+            data_level="survey_products",
+            description="This is only for test purposes",
             supported_file_types=FlierFinderQaxPlugin.supported_file_types
         )
-        return [cr]
+        return [cr, cr2]
 
     def checks(self) -> List[QaxCheckReference]:
         return self._check_references
