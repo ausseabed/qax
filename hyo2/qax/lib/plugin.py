@@ -204,6 +204,7 @@ class QaxCheckToolPlugin():
         self.name = 'unknown'
         self.plugin_class = None  # full namespace string
         self.icon = None
+        self.profile = None   # QaxConfigProfile, set when plugin loaded
 
     def get_file_groups(self) -> List[QaxCheckReference]:
         """ Generate a list of file groups for this check tool plugin
@@ -418,7 +419,9 @@ class QaxPlugins():
         self.plugins = []
 
     def _load_plugin(
-            self, check_tool: QaxConfigCheckTool
+            self,
+            profile: QaxConfigProfile,
+            check_tool: QaxConfigCheckTool
             ) -> QaxCheckToolPlugin:
         """ creates an instance of the plugin based on the `plugin_class`
         defined in the QA JSON config for the given `check_tool`
@@ -449,6 +452,7 @@ class QaxPlugins():
         plugin_class = getattr(plugin_module, class_name)
         plugin_instance = plugin_class()
         plugin_instance.plugin_class = check_tool.plugin_class
+        plugin_instance.profile = profile
         if check_tool.icon is not None and len(check_tool.icon) > 0:
             plugin_instance.icon = check_tool.icon
         if check_tool.name is not None and len(check_tool.name) > 0:
@@ -456,14 +460,22 @@ class QaxPlugins():
         return plugin_instance
 
     def get_plugin(
-            self, check_tool_class: str
+            self,
+            profile_name: str,
+            check_tool_class: str
             ) -> Optional[QaxCheckToolPlugin]:
         """ Gets a plugin instance that has already been loaded based on the
-        class name string (as included in QAX config). Will return None if no
-        matching plugin found.
+        class name string (as included in QAX config) and the profile name.
+        Will return None if no matching plugin found.
         """
         match = next(
-            (p for p in self.plugins if p.plugin_class == check_tool_class),
+            (
+                p
+                for p in self.plugins
+                if (
+                    p.plugin_class == check_tool_class and
+                    p.profile.name == profile_name)
+            ),
             None
         )
         return match
@@ -474,7 +486,7 @@ class QaxPlugins():
         """
         plugins = []
         for check_tool in profile.check_tools:
-            plugin = self.get_plugin(check_tool.plugin_class)
+            plugin = self.get_plugin(profile.name, check_tool.plugin_class)
             if plugin is None:
                 continue
             plugins.append(plugin)
@@ -485,7 +497,7 @@ class QaxPlugins():
         """
         for profile in config.profiles:
             for check_tool in profile.check_tools:
-                plugin = self._load_plugin(check_tool)
+                plugin = self._load_plugin(profile, check_tool)
                 self.plugins.append(plugin)
 
         QaxPlugins._instance = self
