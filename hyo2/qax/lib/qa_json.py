@@ -370,7 +370,7 @@ class QaJsonRoot:
 
     def to_dict(self) -> Dict:
         return {
-            'qa': self.qa.to_dict()
+            'qa': self.qa.to_dict() if self.qa is not None else None
         }
 
 
