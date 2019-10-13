@@ -54,6 +54,7 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         self.check_tools_layout = FlowLayout()
         vbox.addLayout(self.check_tools_layout)
 
+    def initialize(self):
         self.profile_combobox.setCurrentIndex(0)
         self.on_set_profile(0)
 

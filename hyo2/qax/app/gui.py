@@ -43,6 +43,7 @@ def gui(dev_mode=False):
     plugins.load(config)
 
     main_win = MainWin()
+    main_win.initialize()
     sys.excepthook = main_win.exception_hook  # install the exception hook
     main_win.show()
     if dev_mode:

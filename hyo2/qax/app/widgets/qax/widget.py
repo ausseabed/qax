@@ -82,9 +82,6 @@ class QAXWidget(AbstractWidget):
                                               QtGui.QIcon(os.path.join(self.media, 'qax.png')), "")
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
 
-        # todo: save last selected profile and set here as default.
-        self.profile = QaxConfig.instance().profiles[0]
-        self.update_plugin_tabs()
         # # Mate tab
         # self.tab_mate = ChecksTab(parent_win=self, prj=self.prj, qa_group="raw_data")
         # # noinspection PyArgumentList
@@ -108,6 +105,12 @@ class QAXWidget(AbstractWidget):
         # self.tabs.setTabToolTip(self.idx_ca_tools, "CA Tools")
         # noinspection PyUnresolvedReferences
         self.tabs.currentChanged.connect(self.change_tabs)
+
+    def initialize(self):
+        self.tab_inputs.initialize()
+        # todo: save last selected profile and set here as default.
+        self.profile = QaxConfig.instance().profiles[0]
+        self.update_plugin_tabs()
 
     def update_plugin_tabs(self):
         """ Updates what plugins are shown in the bottom tabs

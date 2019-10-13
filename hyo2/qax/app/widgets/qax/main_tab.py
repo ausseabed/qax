@@ -10,6 +10,7 @@ from hyo2.qax.app.widgets.qax.filegroup_groupbox \
     import FileGroupGroupBox
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxPlugins, QaxFileGroup
+from hyo2.qax.lib.qa_json import QAJson, QaJsonRoot
 
 # Use NSURL as a workaround to pyside/Qt4 behaviour for dragging and dropping
 # on OSx
@@ -40,6 +41,9 @@ class MainTab(QtWidgets.QMainWindow):
         self.has_ff = False
         self.has_enc = False
         self.has_json = False
+
+        self.selected_profile = None
+        self.selected_check_tools = []
 
         # ui
         self.panel = QtWidgets.QFrame()
@@ -205,9 +209,9 @@ class MainTab(QtWidgets.QMainWindow):
         # button_generate_checks.setFixedWidth(GuiSettings.single_line_height())
         self.button_generate_checks.setText("Generate")
         self.button_generate_checks.setToolTip('Generate the QA JSON checks based on the selected profile')
-        self.button_generate_checks.setDisabled(True)
+
         # noinspection PyUnresolvedReferences
-        self.button_generate_checks.clicked.connect(self.click_generate_checks)
+        self.button_generate_checks.clicked.connect(self._on_generate_checks)
         hbox.addStretch()
 
         # add folder
@@ -239,7 +243,11 @@ class MainTab(QtWidgets.QMainWindow):
 
         self.installEventFilter(self)
 
+    def initialize(self):
+        self.profile_selection.initialize()
+
     def _on_profile_selected(self, profile):
+        self.selected_profile = profile
         # propogate event up
         self.profile_selected.emit(profile)
 
@@ -247,10 +255,12 @@ class MainTab(QtWidgets.QMainWindow):
         print("Selected check tools")
         print(check_tools)
 
+        self.selected_check_tools = check_tools
+
         all_file_groups = []
         for check_tool in check_tools:
             check_tool_plugin = QaxPlugins.instance().get_plugin(
-                check_tool.plugin_class)
+                self.selected_profile.name, check_tool.plugin_class)
             file_groups = check_tool_plugin.get_file_groups()
             all_file_groups.extend(file_groups)
         unique_file_groups = QaxFileGroup.merge(all_file_groups)
@@ -462,13 +472,35 @@ class MainTab(QtWidgets.QMainWindow):
         logger.debug('open output folder: %s' % self.prj.outputs.output_folder)
         self.prj.outputs.open_output_folder()
 
-    def click_generate_checks(self):
+    def _on_generate_checks(self):
         """ Read the feature files provided by the user"""
         logger.debug('generate checks ...')
-        from hyo2.qax.lib.qa_json import QAJson
-        self.prj.inputs.json_path = QAJson.example_paths()[-1]
-        self._update_json_list()
-        self.json_loaded()
+        qajson = self._build_qa_json()
+
+        import json
+        print("----- QA JSON -----")
+        print(json.dumps(qajson.to_dict(), sort_keys=True, indent=4))
+        print("-----         -----")
+
+        # from hyo2.qax.lib.qa_json import QAJson
+        # self.prj.inputs.json_path = QAJson.example_paths()[-1]
+        # self._update_json_list()
+        # self.json_loaded()
+
+    def _build_qa_json(self) -> QaJsonRoot:
+        """
+        Builds a QA JSON root object based on the information currently
+        entered into the user interface.
+        """
+        root = QaJsonRoot(None)
+
+        # update the qajson object with the check tool details
+        for config_check_tool in self.selected_check_tools:
+            plugin_check_tool = QaxPlugins.instance().get_plugin(
+                self.selected_profile.name, config_check_tool.plugin_class)
+            plugin_check_tool.update_qa_json(root)
+
+        return root
 
     # QA JSON methods
 
@@ -478,9 +510,10 @@ class MainTab(QtWidgets.QMainWindow):
 
         # ask the file path to the user
         # noinspection PyCallByClass
-        selections, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Add QA JSON Files",
-                                                               QtCore.QSettings().value("json_import_folder"),
-                                                               "QA JSON file (*.json);;All files (*.*)")
+        selections, _ = QtWidgets.QFileDialog.getOpenFileNames(
+            self, "Add QA JSON Files",
+            QtCore.QSettings().value("json_import_folder"),
+            "QA JSON file (*.json);;All files (*.*)")
         if len(selections) == 0:
             logger.debug('adding json: aborted')
             return
@@ -532,38 +565,38 @@ class MainTab(QtWidgets.QMainWindow):
 
     # interaction methods
 
-    def raw_loaded(self):
-        logger.debug("raw loaded")
-        self.has_raw = True
-        self.button_generate_checks.setEnabled(True)
-
-    def raw_unloaded(self):
-        logger.debug("raw unloaded")
-        self.has_raw = False
-        if not self.has_ff and not self.has_dtm:
-            self.button_generate_checks.setDisabled(True)
-
-    def dtm_loaded(self):
-        logger.debug("DTM loaded")
-        self.has_dtm = True
-        self.button_generate_checks.setEnabled(True)
-
-    def dtm_unloaded(self):
-        logger.debug("DTM unloaded")
-        self.has_dtm = False
-        if not self.has_ff and not self.has_ff:
-            self.button_generate_checks.setDisabled(True)
-
-    def ff_loaded(self):
-        logger.debug("FF loaded")
-        self.has_ff = True
-        self.button_generate_checks.setEnabled(True)
-
-    def ff_unloaded(self):
-        logger.debug("FF unloaded")
-        self.has_ff = False
-        if not self.has_raw and not self.has_dtm:
-            self.button_generate_checks.setDisabled(True)
+    # def raw_loaded(self):
+    #     logger.debug("raw loaded")
+    #     self.has_raw = True
+    #     self.button_generate_checks.setEnabled(True)
+    #
+    # def raw_unloaded(self):
+    #     logger.debug("raw unloaded")
+    #     self.has_raw = False
+    #     if not self.has_ff and not self.has_dtm:
+    #         self.button_generate_checks.setDisabled(True)
+    #
+    # def dtm_loaded(self):
+    #     logger.debug("DTM loaded")
+    #     self.has_dtm = True
+    #     self.button_generate_checks.setEnabled(True)
+    #
+    # def dtm_unloaded(self):
+    #     logger.debug("DTM unloaded")
+    #     self.has_dtm = False
+    #     if not self.has_ff and not self.has_ff:
+    #         self.button_generate_checks.setDisabled(True)
+    #
+    # def ff_loaded(self):
+    #     logger.debug("FF loaded")
+    #     self.has_ff = True
+    #     self.button_generate_checks.setEnabled(True)
+    #
+    # def ff_unloaded(self):
+    #     logger.debug("FF unloaded")
+    #     self.has_ff = False
+    #     if not self.has_raw and not self.has_dtm:
+    #         self.button_generate_checks.setDisabled(True)
 
     def enc_loaded(self):
         logger.debug("ENC loaded")

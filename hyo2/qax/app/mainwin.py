@@ -101,6 +101,9 @@ class MainWin(QtWidgets.QMainWindow):
         timer.start(300000)  # 5 mins
         self.update_gui()
 
+    def initialize(self):
+        self.tab_qax.initialize()
+
     def update_gui(self):
         msg = str()
         tokens = list()
