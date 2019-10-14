@@ -238,6 +238,7 @@ class FileGroupGroupBox(QtWidgets.QGroupBox):
         self.prj = prj
         self.parent_win = parent_win
         self.file_group_widgets = []
+        self.no_checks_selected_layout = None
 
         main_layout = QtWidgets.QVBoxLayout()
         self.file_groups_layout = QtWidgets.QVBoxLayout()
@@ -299,10 +300,28 @@ class FileGroupGroupBox(QtWidgets.QGroupBox):
         """ Updates the various lists of files based on the `file_groups`
         list
         """
+        if self.no_checks_selected_layout is not None:
+            self.no_checks_selected_layout.setParent(None)
+            self.no_checks_selected_layout = None
+
         # clear all items from survey products layout
         for sp_widget in self.file_group_widgets:
             sp_widget.setParent(None)
         self.file_group_widgets.clear()
+
+        if len(file_groups) == 0:
+            no_fgs = QtWidgets.QWidget()
+            hbox = QtWidgets.QHBoxLayout()
+            no_fgs.setLayout(hbox)
+            hbox.addStretch()
+            label_no_params = QtWidgets.QLabel(
+                "Please select one or more check tools to enable input file "
+                "selection")
+            hbox.addWidget(label_no_params)
+            hbox.addStretch()
+            self.file_groups_layout.addWidget(no_fgs)
+            self.no_checks_selected_layout = no_fgs
+            return
 
         for file_group in file_groups:
             sp_widget = FileGroupWidget(file_group, self)

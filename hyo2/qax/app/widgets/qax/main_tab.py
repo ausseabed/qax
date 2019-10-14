@@ -76,65 +76,14 @@ class MainTab(QtWidgets.QMainWindow):
             self._on_file_group_files_removed)
 
         # data outputs
-        self.savedData = QtWidgets.QGroupBox("Data outputs [drap-and-drop the desired output folder]")
-        self.savedData.setStyleSheet("QGroupBox::title { color: rgb(155, 155, 155); }")
-        self.savedData.setMaximumHeight(GuiSettings.single_line_height() * 8)
+        self.savedData = QtWidgets.QGroupBox(
+            "Data outputs [drap-and-drop the desired output folder]")
+        self.savedData.setStyleSheet(
+            "QGroupBox::title { color: rgb(155, 155, 155); }")
         self.vbox.addWidget(self.savedData)
 
         vbox = QtWidgets.QVBoxLayout()
         self.savedData.setLayout(vbox)
-
-        # set optional formats
-        hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(hbox)
-        text_set_formats = QtWidgets.QLabel("Formats:")
-        hbox.addWidget(text_set_formats)
-        text_set_formats.setFixedHeight(GuiSettings.single_line_height())
-        text_set_formats.setMinimumWidth(left_space)
-        self.output_pdf = QtWidgets.QCheckBox("PDF")
-        self.output_pdf.setChecked(True)
-        self.output_pdf.setDisabled(True)
-        hbox.addWidget(self.output_pdf)
-        self.output_s57 = QtWidgets.QCheckBox("S57")
-        self.output_s57.setChecked(True)
-        self.output_s57.setDisabled(True)
-        hbox.addWidget(self.output_s57)
-        self.output_shp = QtWidgets.QCheckBox("Shapefile")
-        self.output_shp.setToolTip('Activate/deactivate the creation of Shapefiles in output')
-        self.output_shp.setChecked(self.prj.params.write_shp)
-        # noinspection PyUnresolvedReferences
-        self.output_shp.clicked.connect(self.click_output_shp)
-        hbox.addWidget(self.output_shp)
-        self.output_kml = QtWidgets.QCheckBox("KML")
-        self.output_kml.setToolTip('Activate/deactivate the creation of KML files in output')
-        self.output_kml.setChecked(self.prj.params.write_kml)
-        # noinspection PyUnresolvedReferences
-        self.output_kml.clicked.connect(self.click_output_kml)
-        hbox.addWidget(self.output_kml)
-
-        hbox.addSpacing(36)
-
-        text_set_prj_folder = QtWidgets.QLabel("Create project folder: ")
-        hbox.addWidget(text_set_prj_folder)
-        text_set_prj_folder.setFixedHeight(GuiSettings.single_line_height())
-        self.output_prj_folder = QtWidgets.QCheckBox("")
-        self.output_prj_folder.setToolTip('Create a sub-folder with project name')
-        self.output_prj_folder.setChecked(self.prj.params.project_folder)
-        # noinspection PyUnresolvedReferences
-        self.output_prj_folder.clicked.connect(self.click_output_project_folder)
-        hbox.addWidget(self.output_prj_folder)
-
-        text_set_subfolders = QtWidgets.QLabel("Per-tool sub-folders: ")
-        hbox.addWidget(text_set_subfolders)
-        text_set_subfolders.setFixedHeight(GuiSettings.single_line_height())
-        self.output_subfolders = QtWidgets.QCheckBox("")
-        self.output_subfolders.setToolTip('Create a sub-folder for each tool')
-        self.output_subfolders.setChecked(self.prj.params.subfolders)
-        # noinspection PyUnresolvedReferences
-        self.output_subfolders.clicked.connect(self.click_output_subfolders)
-        hbox.addWidget(self.output_subfolders)
-
-        hbox.addStretch()
 
         # add folder
         hbox = QtWidgets.QHBoxLayout()
@@ -145,10 +94,11 @@ class MainTab(QtWidgets.QMainWindow):
         self.output_folder = QtWidgets.QListWidget()
         hbox.addWidget(self.output_folder)
         self.output_folder.setMinimumHeight(GuiSettings.single_line_height())
-        self.output_folder.setMaximumHeight(GuiSettings.single_line_height() * 2)
+        self.output_folder.setMaximumHeight(GuiSettings.single_line_height())
         self.output_folder.clear()
         new_item = QtWidgets.QListWidgetItem()
-        new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'folder.png')))
+        new_item.setIcon(
+            QtGui.QIcon(os.path.join(self.parent_win.media, 'folder.png')))
         new_item.setText("%s" % self.prj.outputs.output_folder)
         new_item.setFont(GuiSettings.console_font())
         new_item.setForeground(GuiSettings.console_fg_color())
@@ -168,6 +118,29 @@ class MainTab(QtWidgets.QMainWindow):
         # open folder
         hbox = QtWidgets.QHBoxLayout()
         vbox.addLayout(hbox)
+        hbox.addStretch()
+
+        text_set_prj_folder = QtWidgets.QLabel("Create project folder: ")
+        hbox.addWidget(text_set_prj_folder)
+        text_set_prj_folder.setFixedHeight(GuiSettings.single_line_height())
+        self.output_prj_folder = QtWidgets.QCheckBox("")
+        self.output_prj_folder.setToolTip(
+            'Create a sub-folder with project name')
+        self.output_prj_folder.setChecked(self.prj.params.project_folder)
+        self.output_prj_folder.clicked.connect(
+            self.click_output_project_folder)
+        hbox.addWidget(self.output_prj_folder)
+
+        text_set_subfolders = QtWidgets.QLabel("Per-tool sub-folders: ")
+        hbox.addWidget(text_set_subfolders)
+        text_set_subfolders.setFixedHeight(GuiSettings.single_line_height())
+        self.output_subfolders = QtWidgets.QCheckBox("")
+        self.output_subfolders.setToolTip('Create a sub-folder for each tool')
+        self.output_subfolders.setChecked(self.prj.params.subfolders)
+        # noinspection PyUnresolvedReferences
+        self.output_subfolders.clicked.connect(self.click_output_subfolders)
+        hbox.addWidget(self.output_subfolders)
+
         hbox.addStretch()
 
         button_default_output = QtWidgets.QPushButton()
@@ -194,8 +167,8 @@ class MainTab(QtWidgets.QMainWindow):
 
         # data outputs
         self.checksSuite = QtWidgets.QGroupBox("Checks suite")
-        self.checksSuite.setStyleSheet("QGroupBox::title { color: rgb(155, 155, 155); }")
-        self.checksSuite.setMaximumHeight(GuiSettings.single_line_height() * 8)
+        self.checksSuite.setStyleSheet(
+            "QGroupBox::title { color: rgb(155, 155, 155); }")
         self.vbox.addWidget(self.checksSuite)
 
         vbox = QtWidgets.QVBoxLayout()
@@ -206,10 +179,11 @@ class MainTab(QtWidgets.QMainWindow):
         hbox.addStretch()
         self.button_generate_checks = QtWidgets.QPushButton()
         hbox.addWidget(self.button_generate_checks)
-        self.button_generate_checks.setFixedHeight(GuiSettings.single_line_height())
-        # button_generate_checks.setFixedWidth(GuiSettings.single_line_height())
+        self.button_generate_checks.setFixedHeight(
+            GuiSettings.single_line_height())
         self.button_generate_checks.setText("Generate")
-        self.button_generate_checks.setToolTip('Generate the QA JSON checks based on the selected profile')
+        self.button_generate_checks.setToolTip(
+            'Generate the QA JSON checks based on the selected profile')
 
         # noinspection PyUnresolvedReferences
         self.button_generate_checks.clicked.connect(self._on_generate_checks)
@@ -223,13 +197,16 @@ class MainTab(QtWidgets.QMainWindow):
         text_add_folder.setMinimumWidth(left_space)
         self.qa_json = QtWidgets.QListWidget()
         hbox.addWidget(self.qa_json)
-        self.qa_json.setMinimumHeight(GuiSettings.single_line_height())
-        self.qa_json.setMaximumHeight(GuiSettings.single_line_height() * 2)
+        self.qa_json.setFixedHeight(GuiSettings.single_line_height())
+        # self.qa_json.setMinimumHeight(GuiSettings.single_line_height())
+        # self.qa_json.setMaximumHeight(GuiSettings.single_line_height() * 2)
         self.qa_json.clear()
-        self.qa_json.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.qa_json.setSelectionMode(
+            QtWidgets.QAbstractItemView.ExtendedSelection)
         self.qa_json.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         # noinspection PyUnresolvedReferences
-        self.qa_json.customContextMenuRequested.connect(self.make_json_context_menu)
+        self.qa_json.customContextMenuRequested.connect(
+            self.make_json_context_menu)
         # Enable dropping onto the input ss list
         self.qa_json.setAcceptDrops(True)
         self.qa_json.installEventFilter(self)

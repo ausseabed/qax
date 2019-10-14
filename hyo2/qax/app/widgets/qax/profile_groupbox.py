@@ -5,6 +5,7 @@ import os
 import logging
 
 from hyo2.qax.app.widgets.layout import FlowLayout
+from hyo2.qax.app.widgets.lines import QHLine
 from hyo2.qax.lib.config import QaxConfigCheckTool
 from hyo2.qax.lib.config import QaxConfigProfile
 
@@ -50,6 +51,11 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
 
         self.profile_description_label = QtWidgets.QLabel("")
         hbox.addWidget(self.profile_description_label)
+
+        vbox.addWidget(QHLine())
+
+        check_tools_label = QtWidgets.QLabel("Check Tools:")
+        vbox.addWidget(check_tools_label)
 
         self.check_tools_layout = FlowLayout()
         vbox.addLayout(self.check_tools_layout)
