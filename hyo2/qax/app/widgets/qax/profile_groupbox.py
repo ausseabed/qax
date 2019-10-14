@@ -35,7 +35,7 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         self.setLayout(vbox)
 
         self.profile_name_label = QtWidgets.QLabel("Profile:")
-        hbox = QtWidgets.QHBoxLayout(self)
+        hbox = QtWidgets.QHBoxLayout()
         hbox.setAlignment(QtCore.Qt.AlignLeft)
         vbox.addLayout(hbox)
         hbox.addWidget(self.profile_name_label)
