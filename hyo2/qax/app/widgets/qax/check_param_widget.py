@@ -33,7 +33,7 @@ class CheckParamWidget(QtWidgets.QWidget):
         self._param = param
         self.label_min_width = 200
 
-    def param() -> QaJsonParam:
+    def param(self) -> QaJsonParam:
         raise NotImplementedError(
             "Must implement in param function of child class to return "
             "correct value type within an QaJsonParam")
@@ -60,7 +60,7 @@ class CheckParamStringWidget(CheckParamWidget):
         self.lineedit_value.setText(self._param.value)
         hbox.addWidget(self.lineedit_value)
 
-    def param() -> QaJsonParam:
+    def param(self) -> QaJsonParam:
         return QaJsonParam(
             name=self._param.name,
             value=self.lineedit_value.text()
@@ -88,7 +88,7 @@ class CheckParamIntWidget(CheckParamWidget):
         self.lineedit_value.setText(str(self._param.value))
         hbox.addWidget(self.lineedit_value)
 
-    def param() -> QaJsonParam:
+    def param(self) -> QaJsonParam:
         return QaJsonParam(
             name=self._param.name,
             value=int(self.lineedit_value.text())
@@ -112,7 +112,7 @@ class CheckParamUnknownWidget(CheckParamWidget):
         label_name.setStyleSheet(GuiSettings.stylesheet_check_param_name())
         hbox.addWidget(label_name)
 
-    def param() -> QaJsonParam:
+    def param(self) -> QaJsonParam:
         return QaJsonParam(
             name=self._param.name,
             value=None
