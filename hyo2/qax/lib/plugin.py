@@ -330,7 +330,7 @@ class QaxCheckToolPlugin():
                 # implemented by the plugin. This is ok, so skip and move
                 # onto next check.
                 continue
-            if check.id != check_id:
+            if check.info.id != check_id:
                 # then the params aren't being assigned to this check, so
                 # skip to next
                 continue
