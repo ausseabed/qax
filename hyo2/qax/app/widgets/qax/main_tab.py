@@ -26,6 +26,7 @@ class MainTab(QtWidgets.QMainWindow):
     here = os.path.abspath(os.path.dirname(__file__))
 
     profile_selected = QtCore.Signal(QaxConfigProfile)
+    generate_checks = QtCore.Signal(Path)
 
     def __init__(self, parent_win, prj):
         QtWidgets.QMainWindow.__init__(self)
@@ -475,44 +476,7 @@ class MainTab(QtWidgets.QMainWindow):
     def _on_generate_checks(self):
         """ Read the feature files provided by the user"""
         logger.debug('generate checks ...')
-        qajson = self._build_qa_json()
-
-        import json
-        print("----- QA JSON -----")
-        print(json.dumps(qajson.to_dict(), sort_keys=True, indent=4))
-        print("-----         -----")
-
-        # from hyo2.qax.lib.qa_json import QAJson
-        # self.prj.inputs.json_path = QAJson.example_paths()[-1]
-        # self._update_json_list()
-        # self.json_loaded()
-
-    def _build_qa_json(self) -> QaJsonRoot:
-        """
-        Builds a QA JSON root object based on the information currently
-        entered into the user interface.
-        """
-        root = QaJsonRoot(None)
-
-        # update the qajson object with the check tool details
-        for config_check_tool in self.selected_check_tools:
-            plugin_check_tool = QaxPlugins.instance().get_plugin(
-                self.selected_profile.name, config_check_tool.plugin_class)
-            # update the `root` qa json object with the selected checks
-            plugin_check_tool.update_qa_json(root)
-
-            # get a list of user selected files from the relevant controls
-            # for this plugin (based on the file groups)
-            file_groups = plugin_check_tool.get_file_groups()
-            all_files = self.file_group_selection.get_files(file_groups)
-            # update the `root` qa json object with files selected by the
-            # user
-            plugin_check_tool.update_qa_json_input_files(root, all_files)
-
-
-        return root
-
-    # QA JSON methods
+        self.generate_checks.emit(Path(""))
 
     def click_add_json(self):
         """ Read the feature files provided by the user"""

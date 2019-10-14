@@ -4,14 +4,15 @@ import logging
 from PySide2 import QtGui, QtCore, QtWidgets
 
 from hyo2.abc.app.qt_progress import QtProgress
+from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.checks_tab import ChecksTab
 from hyo2.qax.app.widgets.qax.main_tab import MainTab
 from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
 from hyo2.qax.app.widgets.widget import AbstractWidget
-from hyo2.qax.app.gui_settings import GuiSettings
-from hyo2.qax.lib.project import QAXProject
-from hyo2.qax.lib.plugin import QaxPlugins
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
+from hyo2.qax.lib.plugin import QaxPlugins
+from hyo2.qax.lib.project import QAXProject
+from hyo2.qax.lib.qa_json import QAJson, QaJsonRoot
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +78,7 @@ class QAXWidget(AbstractWidget):
         # main tab
         self.tab_inputs = MainTab(parent_win=self, prj=self.prj)
         self.tab_inputs.profile_selected.connect(self._on_profile_selected)
+        self.tab_inputs.generate_checks.connect(self._on_generate_checks)
         # noinspection PyArgumentList
         self.idx_inputs = self.tabs.insertTab(0, self.tab_inputs,
                                               QtGui.QIcon(os.path.join(self.media, 'qax.png')), "")
@@ -142,6 +144,43 @@ class QAXWidget(AbstractWidget):
     def _on_profile_selected(self, profile: QaxConfigProfile):
         self.profile = profile
         self.update_plugin_tabs()
+
+    def _on_generate_checks(self, path: Path):
+        """ Read the feature files provided by the user"""
+        logger.debug('generate checks ...')
+        qajson = self._build_qa_json()
+
+        import json
+        print("----- QA JSON -----")
+        print(json.dumps(qajson.to_dict(), sort_keys=True, indent=4))
+        print("-----         -----")
+
+    # QA JSON methods
+    def _build_qa_json(self) -> QaJsonRoot:
+        """
+        Builds a QA JSON root object based on the information currently
+        entered into the user interface.
+        """
+        root = QaJsonRoot(None)
+
+        # update the qajson object with the check tool details
+        for config_check_tool in self.tab_inputs.selected_check_tools:
+            plugin_check_tool = QaxPlugins.instance().get_plugin(
+                self.profile.name, config_check_tool.plugin_class)
+            # update the `root` qa json object with the selected checks
+            plugin_check_tool.update_qa_json(root)
+
+            # get a list of user selected files from the relevant controls
+            # for this plugin (based on the file groups)
+            file_groups = plugin_check_tool.get_file_groups()
+            all_files = self.tab_inputs.file_group_selection.get_files(
+                file_groups)
+            # update the `root` qa json object with files selected by the
+            # user
+            plugin_check_tool.update_qa_json_input_files(root, all_files)
+            print(self.parent())
+
+        return root
 
 
     def enable_mate(self):
