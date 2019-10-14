@@ -206,7 +206,7 @@ class QaxCheckToolPlugin():
         self.icon = None
         self.profile = None   # QaxConfigProfile, set when plugin loaded
 
-    def get_file_groups(self) -> List[QaxCheckReference]:
+    def get_file_groups(self) -> List[QaxFileGroup]:
         """ Generate a list of file groups for this check tool plugin
         """
         file_groups_dict = {}

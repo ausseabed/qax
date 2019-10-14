@@ -310,3 +310,22 @@ class FileGroupGroupBox(QtWidgets.QGroupBox):
             sp_widget.files_removed.connect(self._on_files_removed)
             self.file_groups_layout.addWidget(sp_widget)
             self.file_group_widgets.append(sp_widget)
+
+    def get_files(self, file_groups: List[QaxFileGroup]) -> List[Path]:
+        """ Gets a list of files that have been selected by the user, but only
+        for the given file groups.
+        """
+        all_files = []
+        for fgwidget in self.file_group_widgets:
+            matching_fg = next(
+                (
+                    fg
+                    for fg in file_groups
+                    if fg.name == fgwidget.file_group.name
+                ), None)
+            if matching_fg is None:
+                continue
+            paths = [Path(fn) for fn in fgwidget.selected_files]
+            all_files.extend(paths)
+
+        return all_files

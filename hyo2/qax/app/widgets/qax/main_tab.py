@@ -498,7 +498,17 @@ class MainTab(QtWidgets.QMainWindow):
         for config_check_tool in self.selected_check_tools:
             plugin_check_tool = QaxPlugins.instance().get_plugin(
                 self.selected_profile.name, config_check_tool.plugin_class)
+            # update the `root` qa json object with the selected checks
             plugin_check_tool.update_qa_json(root)
+
+            # get a list of user selected files from the relevant controls
+            # for this plugin (based on the file groups)
+            file_groups = plugin_check_tool.get_file_groups()
+            all_files = self.file_group_selection.get_files(file_groups)
+            # update the `root` qa json object with files selected by the
+            # user
+            plugin_check_tool.update_qa_json_input_files(root, all_files)
+
 
         return root
 
