@@ -24,6 +24,8 @@ class PluginTab(QtWidgets.QMainWindow):
         self.media = self.parent_win.media
         self.plugin = plugin
 
+        self.check_widgets = []
+
         self.panel = QtWidgets.QFrame()
         self.setCentralWidget(self.panel)
         self.vbox = QtWidgets.QVBoxLayout()
@@ -58,10 +60,20 @@ class PluginTab(QtWidgets.QMainWindow):
         for check in self.plugin.checks():
             check_widget = CheckWidget(check)
             self.layout_checks.addWidget(check_widget)
+            self.check_widgets.append(check_widget)
 
         self.layout_checks.addStretch(1)
         self.scrollarea_checks.setWidget(self.widget_checks)
 
+    def get_check_ids_and_params(self):
+        """ Returns a list of tuples. First element of each tuple is the check
+        id, second element is the list of params for the check. Information is
+        returned in this manner to support updating qa json.
+        """
+        check_ids_and_params = [
+            check_widget.get_check_id_and_params()
+            for check_widget in self.check_widgets]
+        return check_ids_and_params
 
     def _add_checks(self):
         pass

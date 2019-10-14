@@ -178,7 +178,24 @@ class QAXWidget(AbstractWidget):
             # update the `root` qa json object with files selected by the
             # user
             plugin_check_tool.update_qa_json_input_files(root, all_files)
-            print(self.parent())
+
+            # get the plugin tab for the current check tool
+            plugin_tab = next(
+                (
+                    ptab
+                    for ptab in self.plugin_tabs
+                    if ptab.plugin == plugin_check_tool
+                ),
+                None
+            )
+            if plugin_tab is None:
+                raise RuntimeError(
+                    "No plugin tab found for {}".format(
+                        config_check_tool.name))
+            check_param_details = plugin_tab.get_check_ids_and_params()
+            for (check_id, params) in check_param_details:
+                plugin_check_tool.update_qa_json_input_params(
+                    root, check_id, params)
 
         return root
 

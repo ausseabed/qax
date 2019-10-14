@@ -15,6 +15,7 @@ class CheckWidget(QtWidgets.QWidget):
         QtWidgets.QWidget.__init__(self, parent=parent)
 
         self.check_reference = check_reference
+        self.param_widgets = []
 
         vbox = QtWidgets.QVBoxLayout()
         vbox.setContentsMargins(0, 4, 0, 4)
@@ -55,6 +56,16 @@ class CheckWidget(QtWidgets.QWidget):
             for check_param in self.check_reference.default_input_params:
                 widget_param = get_param_widget(check_param)
                 params_layout.addWidget(widget_param)
+                self.param_widgets.append(widget_param)
             hbox.addSpacing(10)
 
         vbox.addWidget(QHLine())
+
+    def get_check_id_and_params(self):
+        """ Returns a tuple. First element of each tuple is the check
+        id, second element is the list of params for the check. Information is
+        returned in this manner to support updating qa json.
+        """
+        params = [param_widget.param() for param_widget in self.param_widgets]
+        res = (self.check_reference.id, params)
+        return res
