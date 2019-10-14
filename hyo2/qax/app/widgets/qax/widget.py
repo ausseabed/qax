@@ -8,6 +8,7 @@ from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.checks_tab import ChecksTab
 from hyo2.qax.app.widgets.qax.main_tab import MainTab
 from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
+from hyo2.qax.app.widgets.qax.run_tab import RunTab
 from hyo2.qax.app.widgets.widget import AbstractWidget
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxPlugins
@@ -77,12 +78,23 @@ class QAXWidget(AbstractWidget):
         self.tabs.setTabPosition(QtWidgets.QTabWidget.South)
         # main tab
         self.tab_inputs = MainTab(parent_win=self, prj=self.prj)
+        self.tabs.setStyleSheet(
+            "QTabBar::tab:first { margin-right:20px;}"
+            "QTabBar::tab:last { margin-left:20px;}"
+        )
         self.tab_inputs.profile_selected.connect(self._on_profile_selected)
         self.tab_inputs.generate_checks.connect(self._on_generate_checks)
         # noinspection PyArgumentList
-        self.idx_inputs = self.tabs.insertTab(0, self.tab_inputs,
-                                              QtGui.QIcon(os.path.join(self.media, 'qax.png')), "")
+        self.idx_inputs = self.tabs.insertTab(
+            0, self.tab_inputs,
+            QtGui.QIcon(os.path.join(self.media, 'qax.png')), "")
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
+
+        self.tab_run = RunTab()
+        self.idx_run = self.tabs.insertTab(
+            1, self.tab_run,
+            QtGui.QIcon(os.path.join(self.media, 'play.png')), "")
+        self.tabs.setTabToolTip(self.idx_run, "Run Checks")
 
         # # Mate tab
         # self.tab_mate = ChecksTab(parent_win=self, prj=self.prj, qa_group="raw_data")
@@ -140,6 +152,11 @@ class QAXWidget(AbstractWidget):
             else:
                 tab_index = self.tabs.addTab(plugin_tab, plugin.name)
             self.tabs.setTabToolTip(tab_index, plugin.name)
+
+        # move the run tab so it is *always* the last tab
+        old_index = self.tabs.indexOf(self.tab_run)
+        new_index = self.tabs.count() - 1
+        self.tabs.tabBar().moveTab(old_index, new_index)
 
     def _on_profile_selected(self, profile: QaxConfigProfile):
         self.profile = profile
