@@ -49,12 +49,12 @@ class PluginTab(QtWidgets.QMainWindow):
 
         self.scrollarea_checks = QtWidgets.QScrollArea()
         self.scrollarea_checks.setWidgetResizable(True)
-        self.scrollarea_checks.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scrollarea_checks.setHorizontalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff)
         self.scrollarea_checks.setStyleSheet("QScrollArea { border: none;}")
         layout_gb_checks.addWidget(self.scrollarea_checks)
 
         self.widget_checks = QtWidgets.QWidget()
-        # self.widget_checks.setStyleSheet("QWidget { background-color: rgb(155, 0, 0); }")
         self.layout_checks = QtWidgets.QVBoxLayout(self.widget_checks)
 
         for check in self.plugin.checks():
@@ -74,6 +74,3 @@ class PluginTab(QtWidgets.QMainWindow):
             check_widget.get_check_id_and_params()
             for check_widget in self.check_widgets]
         return check_ids_and_params
-
-    def _add_checks(self):
-        pass
