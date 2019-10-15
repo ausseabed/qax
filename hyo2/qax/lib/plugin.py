@@ -161,7 +161,8 @@ class QaxCheckReference():
             data_level: str,
             description: str = None,
             supported_file_types: List[QaxFileType] = [],
-            default_input_params: List[QaJsonParam] = []
+            default_input_params: List[QaJsonParam] = [],
+            version: str = None
             ):
         """
         Constructor
@@ -177,6 +178,7 @@ class QaxCheckReference():
             supported by this check tool.
         :param List[QaJsonParam] default_input_params: list of the
             input parameters and their default values.
+        :param str version: version identifier of the check
         """
         self.id = id
         self.name = name
@@ -184,7 +186,7 @@ class QaxCheckReference():
         self.description = description
         self.supported_file_types = supported_file_types
         self.default_input_params = default_input_params
-        self.version = '0'
+        self.version = version
 
     def supports_file(self, file_path: Path) -> bool:
         """ Returns True if the file_path file is supported by this check tool.
