@@ -26,6 +26,7 @@ class QtCheckExecutor(QtCore.QThread, CheckExecutor):
     progress = QtCore.Signal(float)
     check_tool_started = QtCore.Signal(object)
     checks_complete = QtCore.Signal()
+    status_changed = QtCore.Signal(str)
 
     def __init__(
             self,
@@ -36,6 +37,8 @@ class QtCheckExecutor(QtCore.QThread, CheckExecutor):
 
     def run(self):
         # seems ugly, but is required
+        # expect this is related to the fact both the QThread and CheckExecutor
+        # classes implement a `runs` function.
         CheckExecutor.run(self)
 
     def _progress_callback(self, check_tool, progress):
@@ -47,6 +50,10 @@ class QtCheckExecutor(QtCore.QThread, CheckExecutor):
 
     def _checks_complete(self):
         self.checks_complete.emit()
+
+    def _set_status(self, status: str):
+        self.status = status
+        self.status_changed.emit(status)
 
 
 class RunTab(QtWidgets.QMainWindow):
@@ -94,6 +101,7 @@ class RunTab(QtWidgets.QMainWindow):
             "QGroupBox::title { color: rgb(155, 155, 155); }")
         vbox = QtWidgets.QVBoxLayout()
         self.progress_groupbox.setLayout(vbox)
+
         hbox = QtWidgets.QHBoxLayout()
         vbox.addLayout(hbox)
         check_name_label = QtWidgets.QLabel("Check:")
@@ -101,6 +109,14 @@ class RunTab(QtWidgets.QMainWindow):
         hbox.addWidget(check_name_label)
         self.check_name_text_label = QtWidgets.QLabel("n/a")
         hbox.addWidget(self.check_name_text_label)
+
+        hbox = QtWidgets.QHBoxLayout()
+        vbox.addLayout(hbox)
+        status_name_label = QtWidgets.QLabel("Status:")
+        status_name_label.setFixedWidth(80)
+        hbox.addWidget(status_name_label)
+        self.status_name_text_label = QtWidgets.QLabel("Not started")
+        hbox.addWidget(self.status_name_text_label)
 
         hbox = QtWidgets.QHBoxLayout()
         vbox.addLayout(hbox)
@@ -137,6 +153,7 @@ class RunTab(QtWidgets.QMainWindow):
             self._on_check_tool_started)
         self.check_executor.progress.connect(self._on_progress)
         self.check_executor.checks_complete.connect(self._on_checks_complete)
+        self.check_executor.status_changed.connect(self._on_status_change)
         self.check_executor.start()
 
     def click_run(self):
@@ -161,4 +178,7 @@ class RunTab(QtWidgets.QMainWindow):
     @QtCore.Slot()
     def _on_checks_complete(self):
         self.set_run_stop_buttons_enabled(False)
-        self.progress_bar.setValue(100)
+
+    @QtCore.Slot(str)
+    def _on_status_change(self, status):
+        self.status_name_text_label.setText(status)

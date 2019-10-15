@@ -18,6 +18,7 @@ class CheckExecutor():
         self.check_tools = check_tools
         self.current_check_number = 1
         self.stopped = False
+        self.status = "Not started"
 
     def _progress_callback(self, check_tool, progress):
         print(progress)
@@ -31,11 +32,16 @@ class CheckExecutor():
     def _checks_complete(self):
         print("all checks done")
 
+    def _set_status(self, status: str):
+        self.status = status
+
     def run(self):
+        self._set_status("Running")
         self.stopped = False
         self.current_check_number = 1
         for check_tool in self.check_tools:
             if self.stopped:
+                self._set_status("Stopped")
                 self._checks_complete()
                 return
 
@@ -46,9 +52,15 @@ class CheckExecutor():
 
             check_tool.run(self.qa_json, self._progress_callback)
             self._increment_check_number()
+        if self.stopped:
+            self._set_status("Stopped")
+        else:
+            self._set_status("Complete")
+            self._progress_callback(self, 1.0)
         self._checks_complete()
 
     def stop(self):
+        self._set_status("Stopping")
         for check_tool in self.check_tools:
             check_tool.stop()
         self.stopped = True
