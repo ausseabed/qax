@@ -201,6 +201,8 @@ class QaJsonOutputs:
             files=files,
             count=data['count'] if 'count' in data else None,
             percentage=data['percentage'] if 'percentage' in data else None,
+            message=data['message'] if 'message' in data else None,
+            qa_pass=data['qa_pass'] if 'qa_pass' in data else None,
         )
         return instance
 
@@ -209,11 +211,15 @@ class QaJsonOutputs:
             execution: QaJsonExecution,
             files: List[QaJsonFile],
             count: int,
-            percentage: float):
+            percentage: float,
+            message: str,
+            qa_pass: str):
         self.execution = execution
         self.files = files
         self.count = count
         self.percentage = percentage
+        self.message = message
+        self.qa_pass = qa_pass
 
     def to_dict(self):
         dict = {
@@ -224,6 +230,10 @@ class QaJsonOutputs:
             dict['count'] = self.count
         if self.percentage is not None:
             dict['percentage'] = self.percentage
+        if self.message is not None:
+            dict['message'] = self.message
+        if self.qa_pass is not None:
+            dict['qa_pass'] = self.qa_pass
         return dict
 
 

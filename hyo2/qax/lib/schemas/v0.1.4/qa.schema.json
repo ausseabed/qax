@@ -121,7 +121,14 @@
         },
         "percentage": {
           "type": "number"
-        }
+        },
+        "message": {
+          "type": "string"
+        },
+        "qa_pass": {
+          "type": "string",
+          "enum": ["yes", "no"]
+        },
       },
       "required": [
         "execution"
