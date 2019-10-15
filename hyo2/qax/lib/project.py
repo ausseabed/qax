@@ -3,25 +3,106 @@ import json
 import time
 import os
 from pathlib import Path
+from PySide2 import QtCore
 import traceback
 import logging
-from typing import Optional
+from typing import Optional, NoReturn
 from jsonschema import validate, ValidationError, SchemaError, Draft7Validator
+from hyo2.abc.lib.helper import Helper
+from hyo2.qax.lib import lib_info
 
 from hyo2.qax.lib.inputs import QAXInputs
-from hyo2.qax.lib.outputs import QAXOutputs
 from hyo2.qax.lib.params import QAXParams
+from hyo2.qax.lib.qa_json import QaJsonRoot
 
 logger = logging.getLogger(__name__)
 
 
-class QAXProject:
+# inherits from QObject to support signals
+class QAXProject(QtCore.QObject):
+    """ Class represents the current QAX project as configured by the user.
+    This includes option settings, QA JSON details are persisted elsewhere.
+    """
+
+    qa_json_changed = QtCore.Signal(Path)
+
+    @classmethod
+    def default_output_folder(cls):
+        output_folder = Helper(lib_info=lib_info).package_folder()
+        # create it if it does not exist
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+        return output_folder
 
     def __init__(self):
+        super(QAXProject, self).__init__()
+
+        self._qa_json = None
+        self._create_project_folder = False
+        self._per_tool_folders = False
+        self._output_folder = QAXProject.default_output_folder()
 
         self._p = QAXParams()
         self._i = QAXInputs()
-        self._o = QAXOutputs()
+
+    @property
+    def qa_json(self) -> Optional[Path]:
+        return self._qa_json
+
+    @qa_json.setter
+    def qa_json(self, value: Optional[Path]) -> NoReturn:
+        self._qa_json = value
+        self.qa_json_changed.emit(self._qa_json)
+
+    @property
+    def create_project_folder(self) -> bool:
+        return self._create_project_folder
+
+    @create_project_folder.setter
+    def create_project_folder(self, value: bool) -> NoReturn:
+        self._create_project_folder = value
+
+    @property
+    def per_tool_folders(self) -> bool:
+        return self._per_tool_folders
+
+    @per_tool_folders.setter
+    def per_tool_folders(self, value: bool) -> NoReturn:
+        self._per_tool_folders = value
+
+    @property
+    def output_folder(self) -> Optional[Path]:
+        return self._output_folder
+
+    @output_folder.setter
+    def output_folder(self, value: Optional[Path]) -> NoReturn:
+        self._output_folder = value
+
+    def open_output_folder(self) -> None:
+        if self.output_folder:
+            Helper.explore_folder(str(self.output_folder))
+        else:
+            logger.warning('unable to define the output folder to open')
+
+    def get_qa_json_path(self) -> Path:
+        if self.qa_json is not None:
+            return self.qa_json
+        if self.output_folder is not None:
+            return self.output_folder.joinpath('qa.json')
+        if QAXProject.default_output_folder() is not None:
+            return QAXProject.default_output_folder().joinpath('qa.json')
+        raise RuntimeError("could not construct qa json path")
+
+    def save_qa_json(self, qa_json: QaJsonRoot) -> NoReturn:
+        path = self.get_qa_json_path()
+        if self.qa_json is None or str(path) != str(self.qa_json):
+            # then set the qa json path to fire events so the ui updates
+            # to show where the qa json file was written
+            self.qa_json = path
+        logger.debug("save json to {}".format(path))
+        with open(str(path), "w") as file:
+            json.dump(qa_json.to_dict(), file, indent=4)
+
 
     @property
     def params(self) -> QAXParams:
@@ -42,18 +123,8 @@ class QAXProject:
     def clear_inputs(self):
         self._i = QAXInputs()
 
-    @property
-    def outputs(self) -> QAXOutputs:
-        return self._o
 
-    @outputs.setter
-    def outputs(self, value: QAXOutputs) -> None:
-        self._o = value
 
-    def save_cur_json(self, path: Path):
-        logger.debug("save json to %s" % path)
-        with open(str(path), "w") as file:
-            json.dump(self.inputs.qa_json.js, file, indent=4)
 
     def execute_all(self, qa_group: str = "survey_products"):
         checks = self.inputs.qa_json.js['qa'][qa_group]['checks']

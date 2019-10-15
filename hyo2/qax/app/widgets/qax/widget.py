@@ -19,7 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 class QAXWidget(AbstractWidget):
-    here = os.path.abspath(os.path.join(os.path.dirname(__file__)))  # overloading
+    # overloading
+    here = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 
     def __init__(self, main_win):
         AbstractWidget.__init__(self, main_win=main_win)
@@ -37,7 +38,7 @@ class QAXWidget(AbstractWidget):
         if (export_folder is None) or (not os.path.exists(export_folder)):
             settings.setValue("qax_export_folder", str(self.prj.outputs.output_folder))
         else:  # folder exists
-            self.prj.outputs.output_folder = Path(export_folder)
+            self.prj.output_folder = Path(export_folder)
         # - shp
         export_shp = settings.value("qax_export_shp")
         if export_shp is None:
@@ -131,6 +132,7 @@ class QAXWidget(AbstractWidget):
         """
         for plugin_tab in self.plugin_tabs:
             plugin_tab.setParent(None)
+        self.plugin_tabs.clear()
 
         if self.profile is None:
             return
@@ -166,11 +168,12 @@ class QAXWidget(AbstractWidget):
         """ Read the feature files provided by the user"""
         logger.debug('generate checks ...')
         qajson = self._build_qa_json()
-
-        import json
-        print("----- QA JSON -----")
-        print(json.dumps(qajson.to_dict(), sort_keys=True, indent=4))
-        print("-----         -----")
+        self.prj.save_qa_json(qajson)
+        #
+        # import json
+        # print("----- QA JSON -----")
+        # print(json.dumps(qajson.to_dict(), sort_keys=True, indent=4))
+        # print("-----         -----")
 
     # QA JSON methods
     def _build_qa_json(self) -> QaJsonRoot:
@@ -211,32 +214,12 @@ class QAXWidget(AbstractWidget):
                         config_check_tool.name))
             check_param_details = plugin_tab.get_check_ids_and_params()
             for (check_id, params) in check_param_details:
+                for p in params:
+                    print(p.to_dict())
                 plugin_check_tool.update_qa_json_input_params(
                     root, check_id, params)
 
         return root
-
-
-    def enable_mate(self):
-        self.tabs.setTabEnabled(self.idx_mate, True)
-        self.tab_mate.display_json()
-
-    def disable_mate(self):
-        self.tabs.setTabEnabled(self.idx_mate, False)
-
-    def enable_qc_tools(self):
-        self.tabs.setTabEnabled(self.idx_qc_tools, True)
-        self.tab_qc_tools.display_json()
-
-    def disable_qc_tools(self):
-        self.tabs.setTabEnabled(self.idx_qc_tools, False)
-
-    def enable_ca_tools(self):
-        self.tabs.setTabEnabled(self.idx_ca_tools, True)
-        self.tab_ca_tools.display_json()
-
-    def disable_ca_tools(self):
-        self.tabs.setTabEnabled(self.idx_ca_tools, False)
 
     def change_tabs(self, index):
         self.tabs.setCurrentIndex(index)

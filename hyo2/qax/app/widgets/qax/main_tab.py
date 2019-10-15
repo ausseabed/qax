@@ -33,6 +33,7 @@ class MainTab(QtWidgets.QMainWindow):
 
         # store a project reference
         self.prj = prj
+        self.prj.qa_json_changed.connect(self._on_qa_json_changed)
         self.parent_win = parent_win
         self.media = self.parent_win.media
 
@@ -99,7 +100,7 @@ class MainTab(QtWidgets.QMainWindow):
         new_item = QtWidgets.QListWidgetItem()
         new_item.setIcon(
             QtGui.QIcon(os.path.join(self.parent_win.media, 'folder.png')))
-        new_item.setText("%s" % self.prj.outputs.output_folder)
+        new_item.setText("{}".format(self.prj.output_folder))
         new_item.setFont(GuiSettings.console_font())
         new_item.setForeground(GuiSettings.console_fg_color())
         self.output_folder.addItem(new_item)
@@ -126,7 +127,7 @@ class MainTab(QtWidgets.QMainWindow):
         self.output_prj_folder = QtWidgets.QCheckBox("")
         self.output_prj_folder.setToolTip(
             'Create a sub-folder with project name')
-        self.output_prj_folder.setChecked(self.prj.params.project_folder)
+        self.output_prj_folder.setChecked(self.prj.create_project_folder)
         self.output_prj_folder.clicked.connect(
             self.click_output_project_folder)
         hbox.addWidget(self.output_prj_folder)
@@ -136,7 +137,7 @@ class MainTab(QtWidgets.QMainWindow):
         text_set_subfolders.setFixedHeight(GuiSettings.single_line_height())
         self.output_subfolders = QtWidgets.QCheckBox("")
         self.output_subfolders.setToolTip('Create a sub-folder for each tool')
-        self.output_subfolders.setChecked(self.prj.params.subfolders)
+        self.output_subfolders.setChecked(self.prj.per_tool_folders)
         # noinspection PyUnresolvedReferences
         self.output_subfolders.clicked.connect(self.click_output_subfolders)
         hbox.addWidget(self.output_subfolders)
@@ -363,25 +364,17 @@ class MainTab(QtWidgets.QMainWindow):
 
         return QtWidgets.QMainWindow.eventFilter(self, obj, e)
 
-    def click_output_kml(self):
-        """ Set the KML output"""
-        self.prj.params.write_kml = self.output_kml.isChecked()
-        QtCore.QSettings().setValue("qax_export_kml", self.prj.params.write_kml)
-
-    def click_output_shp(self):
-        """ Set the Shapefile output"""
-        self.prj.params.write_shp = self.output_shp.isChecked()
-        QtCore.QSettings().setValue("qax_export_shp", self.prj.params.write_shp)
-
     def click_output_project_folder(self):
         """ Set the output project folder"""
-        self.prj.params.project_folder = self.output_prj_folder.isChecked()
-        QtCore.QSettings().setValue("qax_export_project_folder", self.prj.params.project_folder)
+        self.prj.create_project_folder = self.output_prj_folder.isChecked()
+        QtCore.QSettings().setValue(
+            "qax_export_project_folder", self.prj.create_project_folder)
 
     def click_output_subfolders(self):
         """ Set the output in sub-folders"""
-        self.prj.params.subfolders = self.output_subfolders.isChecked()
-        QtCore.QSettings().setValue("qax_export_subfolders", self.prj.params.subfolders)
+        self.prj.per_tool_folders = self.output_subfolders.isChecked()
+        QtCore.QSettings().setValue(
+            "qax_export_subfolders", self.prj.per_tool_folders)
 
     def click_add_folder(self):
         """ Read the grids provided by the user"""
@@ -389,8 +382,10 @@ class MainTab(QtWidgets.QMainWindow):
 
         # ask the output folder
         # noinspection PyCallByClass
-        selection = QtWidgets.QFileDialog.getExistingDirectory(self, "Set output folder",
-                                                               QtCore.QSettings().value("qa_export_folder"),)
+        selection = QtWidgets.QFileDialog.getExistingDirectory(
+            self,
+            "Set output folder",
+            QtCore.QSettings().value("qa_export_folder"),)
         if selection == "":
             logger.debug('setting output folder: aborted')
             return
@@ -418,37 +413,41 @@ class MainTab(QtWidgets.QMainWindow):
                 return
 
         try:
-            self.prj.outputs.output_folder = Path(selection)
-
-        except Exception as e:  # more general case that catches all the exceptions
-            msg = '<b>Error setting the output folder to \"%s\".</b>' % selection
+            self.prj.output_folder = Path(selection)
+        except Exception as e:
+            # more general case that catches all the exceptions
+            msg = '<b>Error setting the output folder to \"{}\".</b>'.format(
+                selection)
             msg += '<br><br><font color=\"red\">%s</font>' % e
             # noinspection PyCallByClass,PyArgumentList
-            QtWidgets.QMessageBox.critical(self, "Output Folder Error", msg, QtWidgets.QMessageBox.Ok)
+            QtWidgets.QMessageBox.critical(
+                self, "Output Folder Error", msg, QtWidgets.QMessageBox.Ok)
             logger.debug('output folder NOT set: %s' % selection)
             return
 
         self.output_folder.clear()
         new_item = QtWidgets.QListWidgetItem()
-        new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'folder.png')))
-        new_item.setText("%s" % self.prj.outputs.output_folder)
+        new_item.setIcon(
+            QtGui.QIcon(os.path.join(self.parent_win.media, 'folder.png')))
+        new_item.setText("{}".format(self.prj.output_folder))
         new_item.setFont(GuiSettings.console_font())
         new_item.setForeground(GuiSettings.console_fg_color())
         self.output_folder.addItem(new_item)
 
-        QtCore.QSettings().setValue("qax_export_folder", self.prj.outputs.output_folder)
+        QtCore.QSettings().setValue(
+            "qax_export_folder", self.prj.output_folder)
 
-        logger.debug("new output folder: %s" % self.prj.outputs.output_folder)
+        logger.debug("new output folder: {}".format(self.prj.output_folder))
 
     def click_default_output(self):
         """ Set default output data folder """
-        self.prj.outputs.output_folder = self.prj.outputs.default_output_folder()
-        self._add_folder(selection=self.prj.outputs.output_folder)
+        self.prj.output_folder = self.prj.default_output_folder()
+        self._add_folder(selection=self.prj.output_folder)
 
     def click_open_output(self):
         """ Open output data folder """
-        logger.debug('open output folder: %s' % self.prj.outputs.output_folder)
-        self.prj.outputs.open_output_folder()
+        logger.debug('open output folder: {}'.format(self.prj.output_folder))
+        self.prj.open_output_folder()
 
     def _on_generate_checks(self):
         """ Read the feature files provided by the user"""
@@ -477,20 +476,20 @@ class MainTab(QtWidgets.QMainWindow):
             self._add_json(selection=selection)
 
     def _add_json(self, selection):
+        self.prj.qa_json = Path(selection)
 
-        self.prj.inputs.json_path = selection
-
+    def _on_qa_json_changed(self, new_path: Path):
         self._update_json_list()
-        self.json_loaded()
 
     def _update_json_list(self):
         """ update the FF list widget """
         self.qa_json.clear()
-        if self.prj.inputs.json_path is not None:
+        if self.prj.qa_json is not None:
             new_item = QtWidgets.QListWidgetItem()
-            if os.path.splitext(self.prj.inputs.json_path)[-1] == ".json":
-                new_item.setIcon(QtGui.QIcon(os.path.join(self.parent_win.media, 'json.png')))
-            new_item.setText(str(self.prj.inputs.json_path))
+            if self.prj.qa_json.suffix == ".json":
+                new_item.setIcon(QtGui.QIcon(
+                    os.path.join(self.parent_win.media, 'json.png')))
+            new_item.setText(str(self.prj.qa_json))
             new_item.setFont(GuiSettings.console_font())
             new_item.setForeground(GuiSettings.console_fg_color())
             self.qa_json.addItem(new_item)
@@ -498,75 +497,16 @@ class MainTab(QtWidgets.QMainWindow):
     def make_json_context_menu(self, pos):
         logger.debug('JSON context menu')
 
-        remove_act = QtWidgets.QAction("Remove file", self, statusTip="Remove the JSON file",
-                                       triggered=self.remove_json_file)
+        remove_act = QtWidgets.QAction(
+            "Remove file",
+            self,
+            statusTip="Remove the JSON file",
+            triggered=self.remove_json_file)
 
         menu = QtWidgets.QMenu(parent=self)
-        # noinspection PyArgumentList
         menu.addAction(remove_act)
-        # noinspection PyArgumentList
         menu.exec_(self.qa_json.mapToGlobal(pos))
 
     def remove_json_file(self):
         logger.debug("user want to remove JSON file")
-
-        self.prj.inputs.json_path = None
-        self.json_unloaded()
-        self._update_json_list()
-
-    # interaction methods
-
-    # def raw_loaded(self):
-    #     logger.debug("raw loaded")
-    #     self.has_raw = True
-    #     self.button_generate_checks.setEnabled(True)
-    #
-    # def raw_unloaded(self):
-    #     logger.debug("raw unloaded")
-    #     self.has_raw = False
-    #     if not self.has_ff and not self.has_dtm:
-    #         self.button_generate_checks.setDisabled(True)
-    #
-    # def dtm_loaded(self):
-    #     logger.debug("DTM loaded")
-    #     self.has_dtm = True
-    #     self.button_generate_checks.setEnabled(True)
-    #
-    # def dtm_unloaded(self):
-    #     logger.debug("DTM unloaded")
-    #     self.has_dtm = False
-    #     if not self.has_ff and not self.has_ff:
-    #         self.button_generate_checks.setDisabled(True)
-    #
-    # def ff_loaded(self):
-    #     logger.debug("FF loaded")
-    #     self.has_ff = True
-    #     self.button_generate_checks.setEnabled(True)
-    #
-    # def ff_unloaded(self):
-    #     logger.debug("FF unloaded")
-    #     self.has_ff = False
-    #     if not self.has_raw and not self.has_dtm:
-    #         self.button_generate_checks.setDisabled(True)
-
-    def enc_loaded(self):
-        logger.debug("ENC loaded")
-        self.has_enc = True
-
-    def enc_unloaded(self):
-        logger.debug("ENC unloaded")
-        self.has_enc = False
-
-    def json_loaded(self):
-        logger.debug("JSON loaded")
-        self.has_json = True
-        self.parent_win.enable_mate()
-        self.parent_win.enable_qc_tools()
-        self.parent_win.enable_ca_tools()
-
-    def json_unloaded(self):
-        logger.debug("JSON unloaded")
-        self.has_json = False
-        self.parent_win.disable_mate()
-        self.parent_win.disable_qc_tools()
-        self.parent_win.disable_ca_tools()
+        self.prj.qa_json = None
