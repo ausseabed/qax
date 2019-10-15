@@ -46,7 +46,9 @@ class FlierFinderQaxPlugin(QaxCheckToolPlugin):
         )
         cr2 = QaxCheckReference(
             id="54321a",
-            name="Placeholder flier finder checks - with a really long name to test scrolling; really really long",
+            name=(
+                "Placeholder flier finder checks - with a really long "
+                "name to test scrolling; really really long"),
             data_level="survey_products",
             description="This is only for test purposes",
             supported_file_types=FlierFinderQaxPlugin.supported_file_types
