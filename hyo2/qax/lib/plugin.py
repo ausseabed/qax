@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, NoReturn, Optional
+from typing import Dict, List, NoReturn, Optional, Callable
 import importlib
 import re
 
@@ -346,11 +346,36 @@ class QaxCheckToolPlugin():
         """ returns a list of checks that are provided by this check tool.
         Each check includes a list of what file formats it supports and what
         data level it belongs too.
+
+        * Must be implemented by plugin. *
         """
         raise NotImplementedError
 
-    def run(self, qajson: Dict) -> NoReturn:
+    def run(
+            self,
+            qajson: QaJsonRoot,
+            progress_callback: Callable = None
+            ) -> NoReturn:
+        """ Runs the checks implemented within the check tool plugin.
+
+        * Must be implemented by plugin. *
+
+        :param QaJsonRoot qajson: QA JSON definition including the definition
+            of what checks to run and what the inputs to those checks are (
+            files and parameters).
+        :progress_callback Callable: A reference to a function that will be
+            passed a reference to a check tool plugin and a float (between 0.0
+            and 1.0) representing the progress of the check tool execution.
+            Optional.
+        """
         raise NotImplementedError
+
+    def stop(self):
+        """ When called the implementing check tool should stop execution. This
+        is an optional method; not overwriting will mean the check will run
+        to completion.
+        """
+        pass
 
 
 class QaxProfilePlugins():

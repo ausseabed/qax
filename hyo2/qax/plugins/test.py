@@ -1,8 +1,9 @@
-from typing import List, Dict, NoReturn
+from typing import List, Dict, NoReturn, Callable
+import time
 
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference, \
     QaxFileType
-from hyo2.qax.lib.qa_json import QaJsonParam
+from hyo2.qax.lib.qa_json import QaJsonParam, QaJsonRoot
 
 
 class FlierFinderQaxPlugin(QaxCheckToolPlugin):
@@ -28,6 +29,7 @@ class FlierFinderQaxPlugin(QaxCheckToolPlugin):
         # name of the check tool
         self.name = 'Flier Finder'
         self._check_references = self._build_check_references()
+        self.stopped = False
 
     def _build_check_references(self) -> List[QaxCheckReference]:
         cr = QaxCheckReference(
@@ -54,8 +56,23 @@ class FlierFinderQaxPlugin(QaxCheckToolPlugin):
     def checks(self) -> List[QaxCheckReference]:
         return self._check_references
 
-    def run(self, qajson: Dict) -> NoReturn:
-        print("Running Flier finder")
+    def run(
+            self,
+            qajson: QaJsonRoot,
+            progress_callback: Callable = None
+            ) -> NoReturn:
+        self.stopped = False
+        print("Start flier finder checks")
+        max_val = 20
+        for i in range(0, max_val):
+            if self.stopped:
+                return
+            time.sleep(0.5)
+            progress_callback(self, i/max_val)
+        print("End flier finder checks")
+
+    def stop(self):
+        self.stopped = True
 
 
 class HolidayFinderQaxPlugin(QaxCheckToolPlugin):
@@ -81,6 +98,7 @@ class HolidayFinderQaxPlugin(QaxCheckToolPlugin):
         # name of the check tool
         self.name = 'Holiday Finder'
         self._check_references = self._build_check_references()
+        self.stopped = False
 
     def _build_check_references(self) -> List[QaxCheckReference]:
         cr = QaxCheckReference(
@@ -95,8 +113,23 @@ class HolidayFinderQaxPlugin(QaxCheckToolPlugin):
     def checks(self) -> List[QaxCheckReference]:
         return self._check_references
 
-    def run(self, qajson: Dict) -> NoReturn:
-        print("Running Holiday finder")
+    def run(
+            self,
+            qajson: QaJsonRoot,
+            progress_callback: Callable = None
+            ) -> NoReturn:
+        self.stopped = False
+        print("Start holiday finder checks")
+        max_val = 20
+        for i in range(0, max_val):
+            if self.stopped:
+                return
+            time.sleep(0.5)
+            progress_callback(self, i/max_val)
+        print("End holiday finder checks")
+
+    def stop(self):
+        self.stopped = True
 
 
 class CoverageCheckQaxPlugin(QaxCheckToolPlugin):
@@ -132,6 +165,7 @@ class CoverageCheckQaxPlugin(QaxCheckToolPlugin):
         # name of the check tool
         self.name = 'Coverage checker'
         self._check_references = self._build_check_references()
+        self.stopped = False
 
     def _build_check_references(self) -> List[QaxCheckReference]:
         cr = QaxCheckReference(
@@ -146,5 +180,20 @@ class CoverageCheckQaxPlugin(QaxCheckToolPlugin):
     def checks(self) -> List[QaxCheckReference]:
         return self._check_references
 
-    def run(self, qajson: Dict) -> NoReturn:
-        print("Running coverage check")
+    def run(
+            self,
+            qajson: QaJsonRoot,
+            progress_callback: Callable = None
+            ) -> NoReturn:
+        self.stopped = False
+        print("Start Coverage checker checks")
+        max_val = 10
+        for i in range(0, max_val):
+            if self.stopped:
+                return
+            time.sleep(0.5)
+            progress_callback(self, i/max_val)
+        print("End Coverage checker checks")
+
+    def stop(self):
+        self.stopped = True

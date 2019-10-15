@@ -8,7 +8,7 @@ from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.checks_tab import ChecksTab
 from hyo2.qax.app.widgets.qax.main_tab import MainTab
 from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
-from hyo2.qax.app.widgets.qax.run_tab import RunTab
+from hyo2.qax.app.widgets.qax.run_tab import RunTab, QtCheckExecutor
 from hyo2.qax.app.widgets.widget import AbstractWidget
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxPlugins
@@ -92,6 +92,7 @@ class QAXWidget(AbstractWidget):
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
 
         self.tab_run = RunTab()
+        self.tab_run.run_checks.connect(self._on_execute_checks)
         self.idx_run = self.tabs.insertTab(
             1, self.tab_run,
             QtGui.QIcon(os.path.join(self.media, 'play.png')), "")
@@ -220,6 +221,21 @@ class QAXWidget(AbstractWidget):
                     root, check_id, params)
 
         return root
+
+    def _on_execute_checks(self):
+        """ the run checks """
+        logger.debug('executing checks ...')
+        qa_json = self._build_qa_json()
+
+        # only the selected ones
+        check_tool_plugins = [
+            QaxPlugins.instance().get_plugin(
+                self.profile.name, config_check_tool.plugin_class)
+            for config_check_tool in self.tab_inputs.selected_check_tools
+        ]
+
+        executor = QtCheckExecutor(qa_json, check_tool_plugins)
+        self.tab_run.run_executor(executor)
 
     def change_tabs(self, index):
         self.tabs.setCurrentIndex(index)
