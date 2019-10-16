@@ -79,10 +79,6 @@ class QAXWidget(AbstractWidget):
         self.tabs.setTabPosition(QtWidgets.QTabWidget.South)
         # main tab
         self.tab_inputs = MainTab(parent_win=self, prj=self.prj)
-        self.tabs.setStyleSheet(
-            "QTabBar::tab:first { margin-right:20px;}"
-            "QTabBar::tab:last { margin-left:20px;}"
-        )
         self.tab_inputs.profile_selected.connect(self._on_profile_selected)
         self.tab_inputs.generate_checks.connect(self._on_generate_checks)
         # noinspection PyArgumentList
@@ -160,6 +156,11 @@ class QAXWidget(AbstractWidget):
         old_index = self.tabs.indexOf(self.tab_run)
         new_index = self.tabs.count() - 1
         self.tabs.tabBar().moveTab(old_index, new_index)
+
+        self.tabs.setStyleSheet(
+            "QTabBar::tab:first { margin-right:20px;}"
+            "QTabBar::tab:last { margin-left:20px;}"
+        )
 
     def _on_profile_selected(self, profile: QaxConfigProfile):
         self.profile = profile
