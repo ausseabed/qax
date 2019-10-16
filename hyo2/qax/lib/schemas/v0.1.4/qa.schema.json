@@ -189,6 +189,9 @@
         "status": {
           "type": "string",
           "enum": ["draft", "queued", "running", "aborted", "failed", "completed"]
+        },
+        "error": {
+          "type": "string"
         }
       },
       "required": [

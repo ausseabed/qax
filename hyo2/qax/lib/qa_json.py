@@ -68,14 +68,16 @@ class QaJsonExecution:
         instance = cls(
             start=data['start'] if 'start' in data else None,
             end=data['end'] if 'end' in data else None,
-            status=data['status'] if 'status' in data else None
+            status=data['status'] if 'status' in data else None,
+            error=data['error'] if 'error' in data else None
         )
         return instance
 
-    def __init__(self, start: str, end: str, status: str):
+    def __init__(self, start: str, end: str, status: str, error: str):
         self.start = start
         self.end = end
         self.status = status
+        self.error = error
 
     def to_dict(self):
         dict = {
@@ -85,6 +87,8 @@ class QaJsonExecution:
             dict['start'] = self.start
         if self.end is not None:
             dict['end'] = self.end
+        if self.error is not None:
+            dict['error'] = self.error
         return dict
 
 
@@ -189,7 +193,7 @@ class QaJsonOutputs:
 
     @classmethod
     def from_dict(cls, data: Dict) -> 'QaJsonOutputs':
-        files = []
+        files = None
         if 'files' in data:
             files = [
                 QaJsonFile.from_dict(file_dict)
@@ -208,12 +212,12 @@ class QaJsonOutputs:
 
     def __init__(
             self,
-            execution: QaJsonExecution,
-            files: List[QaJsonFile],
-            count: int,
-            percentage: float,
-            message: str,
-            qa_pass: str):
+            execution: QaJsonExecution = None,
+            files: List[QaJsonFile] = None,
+            count: int = None,
+            percentage: float = None,
+            message: str = None,
+            qa_pass: str = None):
         self.execution = execution
         self.files = files
         self.count = count
@@ -223,9 +227,10 @@ class QaJsonOutputs:
 
     def to_dict(self):
         dict = {
-            'execution': QaJsonExecution.to_dict(self.execution),
-            'files': [file.to_dict() for file in self.files],
+            'execution': QaJsonExecution.to_dict(self.execution)
         }
+        if self.files is not None:
+            dict['files'] = [file.to_dict() for file in self.files]
         if self.count is not None:
             dict['count'] = self.count
         if self.percentage is not None:
