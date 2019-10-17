@@ -33,7 +33,7 @@ class MainTab(QtWidgets.QMainWindow):
 
         # store a project reference
         self.prj = prj
-        self.prj.qa_json_changed.connect(self._on_qa_json_changed)
+        self.prj.qa_json_path_changed.connect(self._on_qa_json_path_changed)
         self.parent_win = parent_win
         self.media = self.parent_win.media
 
@@ -476,20 +476,20 @@ class MainTab(QtWidgets.QMainWindow):
             self._add_json(selection=selection)
 
     def _add_json(self, selection):
-        self.prj.qa_json = Path(selection)
+        self.prj.qa_json_path = Path(selection)
 
-    def _on_qa_json_changed(self, new_path: Path):
+    def _on_qa_json_path_changed(self, new_path: Path):
         self._update_json_list()
 
     def _update_json_list(self):
         """ update the FF list widget """
         self.qa_json.clear()
-        if self.prj.qa_json is not None:
+        if self.prj.qa_json_path is not None:
             new_item = QtWidgets.QListWidgetItem()
-            if self.prj.qa_json.suffix == ".json":
+            if self.prj.qa_json_path.suffix == ".json":
                 new_item.setIcon(QtGui.QIcon(
                     os.path.join(self.parent_win.media, 'json.png')))
-            new_item.setText(str(self.prj.qa_json))
+            new_item.setText(str(self.prj.qa_json_path))
             new_item.setFont(GuiSettings.console_font())
             new_item.setForeground(GuiSettings.console_fg_color())
             self.qa_json.addItem(new_item)
@@ -509,4 +509,4 @@ class MainTab(QtWidgets.QMainWindow):
 
     def remove_json_file(self):
         logger.debug("user want to remove JSON file")
-        self.prj.qa_json = None
+        self.prj.qa_json_path = None

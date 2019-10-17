@@ -12,6 +12,7 @@ from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin
 from hyo2.qax.lib.check_executor import CheckExecutor
 from hyo2.qax.lib.qa_json import QaJsonRoot
+from hyo2.qax.lib.project import QAXProject
 
 logger = logging.getLogger(__name__)
 
@@ -60,9 +61,9 @@ class RunTab(QtWidgets.QMainWindow):
 
     run_checks = QtCore.Signal()
 
-    def __init__(self):
+    def __init__(self, prj: QAXProject):
         super(RunTab, self).__init__()
-
+        self.prj = prj
         self.check_executor = None
 
         self.panel = QtWidgets.QFrame()
@@ -178,6 +179,7 @@ class RunTab(QtWidgets.QMainWindow):
     @QtCore.Slot()
     def _on_checks_complete(self):
         self.set_run_stop_buttons_enabled(False)
+        self.prj.qa_json = self.check_executor.qa_json
 
     @QtCore.Slot(str)
     def _on_status_change(self, status):

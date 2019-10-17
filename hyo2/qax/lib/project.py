@@ -24,7 +24,8 @@ class QAXProject(QtCore.QObject):
     This includes option settings, QA JSON details are persisted elsewhere.
     """
 
-    qa_json_changed = QtCore.Signal(Path)
+    qa_json_changed = QtCore.Signal(QaJsonRoot)
+    qa_json_path_changed = QtCore.Signal(Path)
 
     @classmethod
     def default_output_folder(cls):
@@ -37,7 +38,8 @@ class QAXProject(QtCore.QObject):
     def __init__(self):
         super(QAXProject, self).__init__()
 
-        self._qa_json = None
+        self._qa_json = None  # QaJsonRoot
+        self._qa_json_path = None
         self._create_project_folder = False
         self._per_tool_folders = False
         self._output_folder = QAXProject.default_output_folder()
@@ -46,13 +48,22 @@ class QAXProject(QtCore.QObject):
         self._i = QAXInputs()
 
     @property
-    def qa_json(self) -> Optional[Path]:
+    def qa_json(self) -> Optional[QaJsonRoot]:
         return self._qa_json
 
     @qa_json.setter
-    def qa_json(self, value: Optional[Path]) -> NoReturn:
+    def qa_json(self, value: Optional[QaJsonRoot]) -> NoReturn:
         self._qa_json = value
         self.qa_json_changed.emit(self._qa_json)
+
+    @property
+    def qa_json_path(self) -> Optional[Path]:
+        return self._qa_json_path
+
+    @qa_json_path.setter
+    def qa_json_path(self, value: Optional[Path]) -> NoReturn:
+        self._qa_json_path = value
+        self.qa_json_path_changed.emit(self._qa_json_path)
 
     @property
     def create_project_folder(self) -> bool:
@@ -85,8 +96,8 @@ class QAXProject(QtCore.QObject):
             logger.warning('unable to define the output folder to open')
 
     def get_qa_json_path(self) -> Path:
-        if self.qa_json is not None:
-            return self.qa_json
+        if self.qa_json_path is not None:
+            return self.qa_json_path
         if self.output_folder is not None:
             return self.output_folder.joinpath('qa.json')
         if QAXProject.default_output_folder() is not None:
@@ -95,10 +106,10 @@ class QAXProject(QtCore.QObject):
 
     def save_qa_json(self, qa_json: QaJsonRoot) -> NoReturn:
         path = self.get_qa_json_path()
-        if self.qa_json is None or str(path) != str(self.qa_json):
+        if self.qa_json_path is None or str(path) != str(self.qa_json_path):
             # then set the qa json path to fire events so the ui updates
             # to show where the qa json file was written
-            self.qa_json = path
+            self.qa_json_path = path
         logger.debug("save json to {}".format(path))
         with open(str(path), "w") as file:
             json.dump(qa_json.to_dict(), file, indent=4)
