@@ -2,7 +2,9 @@ from PySide2 import QtCore, QtGui, QtWidgets
 from typing import Optional, NoReturn
 import json
 import logging
+import os
 
+from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.lib.qa_json import QaJsonRoot
 from hyo2.qax.lib.project import QAXProject
 
@@ -40,6 +42,9 @@ class ResultTab(QtWidgets.QMainWindow):
         self.json_viewer = None
         self.score_board_group = None
         self.score_board = None
+
+        self.cross_icon = QtGui.QIcon(GuiSettings.icon_path("cross.png"))
+        self.tick_icon = QtGui.QIcon(GuiSettings.icon_path("tick.png"))
 
     @property
     def qa_json(self) -> Optional[QaJsonRoot]:
@@ -154,9 +159,10 @@ class ResultTab(QtWidgets.QMainWindow):
             QtWidgets.QAbstractItemView.ExtendedSelection)
         self.score_board.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
 
-        self.score_board.setColumnCount(7)
+        self.score_board.setColumnCount(5)
         self.score_board.setHorizontalHeaderLabels(
-            ["ID", "Check", "Group", "Input", "Output", "Status", "Action"])
+            ["ID", "Check", "Input", "Status", "QA Pass"])
+
         checks = qa_json_dict['qa'][self.qa_group]['checks']
         logger.debug("checks: %s" % checks)
         nr_of_checks = len(checks)
@@ -174,53 +180,51 @@ class ResultTab(QtWidgets.QMainWindow):
             item1 = QtWidgets.QTableWidgetItem(check_name)
             self.score_board.setItem(idx, 1, item1)
 
-            item2 = QtWidgets.QTableWidgetItem(checks[idx]['info']['group']['name'])
-            self.score_board.setItem(idx, 2, item2)
             if len(checks[idx]['inputs']['files']) == 0:
-                item3 = QtWidgets.QTableWidgetItem("Not provided")
+                file_item = QtWidgets.QTableWidgetItem("")
             else:
-                item3 = QtWidgets.QTableWidgetItem(checks[idx]['inputs']['files'][0]['path'])
-            self.score_board.setItem(idx, 3, item3)
-            output_txt = str()
-            has_count = False
-            # has_percentage = False
-            try:
-                count_txt = "count: %d" % checks[idx]['outputs']['count']
-                has_count = True
-                output_txt += count_txt
-            except KeyError as e:
-                logger.debug("skipping count for #%d: %s" % (idx, e))
-            try:
-                percentage_txt = "percentage: %.2f" % checks[idx]['outputs']['percentage']
-                # has_percentage = True
-                if has_count:
-                    output_txt += ", "
-                output_txt += percentage_txt
-            except KeyError as e:
-                logger.debug("skipping grade for #%d: %s" % (idx, e))
-            item4 = QtWidgets.QTableWidgetItem(output_txt)
-            self.score_board.setItem(idx, 4, item4)
+                full_path = checks[idx]['inputs']['files'][0]['path']
+                _, file_name = os.path.split(full_path)
+                file_item = QtWidgets.QTableWidgetItem(file_name)
+            self.score_board.setItem(idx, 2, file_item)
+
             try:
                 status = checks[idx]['outputs']['execution']['status']
-                item5 = QtWidgets.QTableWidgetItem(status)
+                status_item = QtWidgets.QTableWidgetItem(status)
                 if status in ["aborted", "failed"]:
-                    item5.setBackground(QtGui.QColor(200, 100, 100, 50))
+                    status_item.setBackground(QtGui.QColor(200, 100, 100, 50))
                 elif status in ["draft", "queued", "running"]:
-                    item5.setBackground(QtGui.QColor(200, 200, 100, 50))
+                    status_item.setBackground(QtGui.QColor(200, 200, 100, 50))
                 else:
-                    item5.setBackground(QtGui.QColor(100, 200, 100, 50))
-                self.score_board.setItem(idx, 5, item5)
-            except KeyError as e:
-                logger.debug("skipping grade for #%d: %s" % (idx, e))
-            try:
-                item6 = QtWidgets.QPushButton('Run')
-                # noinspection PyUnresolvedReferences
-                item6.clicked.connect(self.on_button_clicked)
-                self.score_board.setCellWidget(idx, 6, item6)
+                    status_item.setBackground(QtGui.QColor(100, 200, 100, 50))
+                self.score_board.setItem(idx, 3, status_item)
             except KeyError as e:
                 logger.debug("skipping grade for #%d: %s" % (idx, e))
 
+            qa_pass = ""
+            try:
+                qa_pass = checks[idx]['outputs']['qa_pass']
+            except KeyError as e:
+                logger.debug("skipping qa_pass for #%d: %s" % (idx, e))
+            if qa_pass == "no":
+                qa_pass_item = QtWidgets.QTableWidgetItem(self.cross_icon, "")
+            elif qa_pass == "yes":
+                qa_pass_item = QtWidgets.QTableWidgetItem(self.tick_icon, "")
+            else:
+                qa_pass_item = QtWidgets.QTableWidgetItem("")
+            self.score_board.setItem(idx, 4, qa_pass_item)
+
         vbox.addWidget(self.score_board)
+
+        self.score_board.setColumnWidth(0, 60)
+        self.score_board.horizontalHeader().setSectionResizeMode(
+            1, QtWidgets.QHeaderView.ResizeToContents)
+        self.score_board.horizontalHeader().setSectionResizeMode(
+            2, QtWidgets.QHeaderView.Stretch)
+        self.score_board.horizontalHeader().setSectionResizeMode(
+            3, QtWidgets.QHeaderView.ResizeToContents)
+        self.score_board.horizontalHeader().setSectionResizeMode(
+            4, QtWidgets.QHeaderView.ResizeToContents)
 
         self.on_set_view()
 
