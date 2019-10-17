@@ -182,8 +182,9 @@ class QAXWidget(AbstractWidget):
     def _on_generate_checks(self, path: Path):
         """ Read the feature files provided by the user"""
         logger.debug('generate checks ...')
-        qajson = self._build_qa_json()
-        self.prj.save_qa_json(qajson)
+        qa_json = self._build_qa_json()
+        self.prj.qa_json = qa_json
+        self.prj.save_qa_json()
         #
         # import json
         # print("----- QA JSON -----")

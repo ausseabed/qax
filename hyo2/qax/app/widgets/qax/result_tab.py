@@ -31,6 +31,8 @@ class ResultTab(QtWidgets.QMainWindow):
 
         self.set_view = None
         self.cur_view = 'Score Board'
+        self.set_data_level = None
+        self.qa_group = None
         self.force_reload = None
         self.save_as = None
         self.execute_all = None
@@ -57,7 +59,6 @@ class ResultTab(QtWidgets.QMainWindow):
         """
         self.display_json()
 
-
     def display_json(self):
         # logger.debug("displaying js: %s" % self.prj.inputs.qa_json.js)
         qa_json_dict = self.qa_json.to_dict()
@@ -67,6 +68,7 @@ class ResultTab(QtWidgets.QMainWindow):
         self.vbox.deleteLater()
 
         button_width = 120
+        button_height = 35
 
         # ui
         self.panel = QtWidgets.QFrame()
@@ -76,8 +78,30 @@ class ResultTab(QtWidgets.QMainWindow):
 
         hbox = QtWidgets.QHBoxLayout()
         self.vbox.addLayout(hbox)
+
+        hbox.addWidget(QtWidgets.QLabel("Data level:"))
+        possible_dl_names = ['raw_data', 'survey_products', 'chart_adequacy']
+        data_level_names = [
+            name
+            for name in possible_dl_names
+            if getattr(self.qa_json.qa, name) is not None
+        ]
+        self.set_data_level = QtWidgets.QComboBox()
+        self.set_data_level.setFixedHeight(button_height)
+        self.set_data_level.addItems(data_level_names)
+        if self.qa_group in data_level_names:
+            self.set_data_level.setCurrentText(self.qa_group)
+        elif len(data_level_names) > 0:
+            self.qa_group = data_level_names[0]
+            self.set_data_level.setCurrentText(self.qa_group)
+
+        # noinspection PyUnresolvedReferences
+        self.set_data_level.currentTextChanged.connect(self.on_set_data_level)
+        hbox.addWidget(self.set_data_level)
+
         hbox.addStretch()
         self.set_view = QtWidgets.QComboBox()
+        self.set_view.setFixedHeight(button_height)
         self.set_view.addItems(['Json Text', 'Score Board'])
         self.set_view.setCurrentText(self.cur_view)
         # noinspection PyUnresolvedReferences
@@ -87,11 +111,11 @@ class ResultTab(QtWidgets.QMainWindow):
 
         self.save_as = QtWidgets.QPushButton()
         self.save_as.setFixedWidth(button_width)
+        self.save_as.setFixedHeight(button_height)
         self.save_as.setText("Save as")
         # noinspection PyUnresolvedReferences
         self.save_as.clicked.connect(self.on_save_as)
         hbox.addWidget(self.save_as)
-        hbox.addStretch()
 
         # Json Text
         self.json_text_group = QtWidgets.QGroupBox("Json Text")
@@ -101,8 +125,13 @@ class ResultTab(QtWidgets.QMainWindow):
         self.vbox.addWidget(self.json_text_group)
         vbox = QtWidgets.QVBoxLayout()
         self.json_text_group.setLayout(vbox)
+
         self.json_viewer = QtWidgets.QTextEdit()
-        self.json_viewer.setText(json.dumps(qa_json_dict['qa'][self.qa_group], indent=4))
+        font = QtGui.QFont("Courier")
+        font.setStyleHint(QtGui.QFont.TypeWriter)
+        self.json_viewer.setCurrentFont(font)
+        self.json_viewer.setText(
+            json.dumps(qa_json_dict['qa'][self.qa_group], indent=4))
         self.json_viewer.setReadOnly(True)
         vbox.addWidget(self.json_viewer)
 
@@ -135,11 +164,22 @@ class ResultTab(QtWidgets.QMainWindow):
         for idx in range(nr_of_checks):
             item0 = QtWidgets.QTableWidgetItem(checks[idx]['info']['id'])
             self.score_board.setItem(idx, 0, item0)
-            item1 = QtWidgets.QTableWidgetItem("%s [v.%s]" % (checks[idx]['info']['name'], checks[idx]['info']['version']))
+
+            check_name = checks[idx]['info']['name']
+            try:
+                check_name = "{} [v.{}]".format(
+                    check_name, checks[idx]['info']['version'])
+            except Exception as e:
+                check_name = "{} [no version]".format(check_name)
+            item1 = QtWidgets.QTableWidgetItem(check_name)
             self.score_board.setItem(idx, 1, item1)
+
             item2 = QtWidgets.QTableWidgetItem(checks[idx]['info']['group']['name'])
             self.score_board.setItem(idx, 2, item2)
-            item3 = QtWidgets.QTableWidgetItem(checks[idx]['inputs']['files'][0]['path'])
+            if len(checks[idx]['inputs']['files']) == 0:
+                item3 = QtWidgets.QTableWidgetItem("Not provided")
+            else:
+                item3 = QtWidgets.QTableWidgetItem(checks[idx]['inputs']['files'][0]['path'])
             self.score_board.setItem(idx, 3, item3)
             output_txt = str()
             has_count = False
@@ -195,6 +235,10 @@ class ResultTab(QtWidgets.QMainWindow):
         elif self.cur_view == "Score Board":
             self.json_text_group.setHidden(True)
             self.score_board_group.setVisible(True)
+
+    def on_set_data_level(self):
+        self.qa_group = self.set_data_level.currentText()
+        self._update()
 
     def on_save_as(self):
         logger.debug("save as")

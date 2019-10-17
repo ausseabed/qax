@@ -104,7 +104,7 @@ class QAXProject(QtCore.QObject):
             return QAXProject.default_output_folder().joinpath('qa.json')
         raise RuntimeError("could not construct qa json path")
 
-    def save_qa_json(self, qa_json: QaJsonRoot) -> NoReturn:
+    def save_qa_json(self) -> NoReturn:
         path = self.get_qa_json_path()
         if self.qa_json_path is None or str(path) != str(self.qa_json_path):
             # then set the qa json path to fire events so the ui updates
@@ -112,7 +112,7 @@ class QAXProject(QtCore.QObject):
             self.qa_json_path = path
         logger.debug("save json to {}".format(path))
         with open(str(path), "w") as file:
-            json.dump(qa_json.to_dict(), file, indent=4)
+            json.dump(self.qa_json.to_dict(), file, indent=4)
 
 
     @property
