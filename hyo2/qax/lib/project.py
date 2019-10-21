@@ -35,7 +35,8 @@ class QaCheckSummary():
             summary = summaries[nid]
         else:
             summary = QaCheckSummary(
-                id=check.info.id, name=check.info.name, data_level=data_level)
+                id=check.info.id, name=check.info.name,
+                version=check.info.version, data_level=data_level)
             summaries[nid] = summary
 
         if (check.outputs is not None and check.outputs.execution is not None):
@@ -66,14 +67,18 @@ class QaCheckSummary():
 
         return list(summaries.values())
 
-    def __init__(self, id: str, name: str, data_level: str):
+    def __init__(self, id: str, name: str, version: str, data_level: str):
         """ Constructor
 
         :param str id: id of the check that is summarised by this object
         :param str name: name of the check that is summarised by this object
+        :param str version: version of the check that is summarised by this
+            object
+        :param str data_level: data level where the check was found
         """
         self.id = id
         self.name = name
+        self.version = version
         self.data_level = data_level
         self.total_executions = 0
         self.failed_executions = 0
