@@ -1,3 +1,4 @@
+import os
 import sys
 import traceback
 from PySide2 import QtCore, QtWidgets
@@ -33,8 +34,13 @@ QtCore.qInstallMessageHandler(qt_custom_handler)
 def gui(dev_mode=False):
     """Run the QAX gui"""
 
-    sys.argv.append("--disable-web-security")  # temporary fix for CORS warning (QTBUG-70228)
+    # temporary fix for CORS warning (QTBUG-70228)
+    sys.argv.append("--disable-web-security")
+    # stop auto scaling on windows
+    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     app = QtWidgets.QApplication(sys.argv)
+    # stop auto scaling on windows - part 2
+    app.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
     app.setStyleSheet(AppStyle.load_stylesheet())
 
     config = QaxConfig()
