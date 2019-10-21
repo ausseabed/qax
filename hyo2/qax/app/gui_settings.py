@@ -1,7 +1,10 @@
+from appdirs import user_data_dir
 from PySide2 import QtGui
 from typing import Optional
 import logging
 import os
+
+from hyo2.qax.app import app_info
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +44,16 @@ class GuiSettings:
     def media():
         here = GuiSettings.here()
         return os.path.join(here, "media")
+
+    @staticmethod
+    def config_default():
+        here = GuiSettings.here()
+        return os.path.join(here, "config")
+
+    @staticmethod
+    def config():
+        udd = user_data_dir(appname=app_info.app_name)
+        return os.path.join(udd, 'config')
 
     @staticmethod
     def icon_path(icon: str) -> Optional[str]:

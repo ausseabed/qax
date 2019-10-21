@@ -1,12 +1,14 @@
 import os
 import sys
 import traceback
+from pathlib import Path
 from PySide2 import QtCore, QtWidgets
 
 import logging
 
 from hyo2.abc.app.app_style import AppStyle
 from hyo2.abc.lib.logging import set_logging
+from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.mainwin import MainWin
 from hyo2.qax.lib.config import QaxConfig
 from hyo2.qax.lib.plugin import QaxPlugins
@@ -43,7 +45,17 @@ def gui(dev_mode=False):
     app.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
     app.setStyleSheet(AppStyle.load_stylesheet())
 
-    config = QaxConfig()
+    cfg_dir = GuiSettings.config()
+    # setup user editable config directory
+    if not os.path.isdir(cfg_dir):
+        # config does not exist, so copy out default settings
+        logger.info("Copying default config to {}".format(cfg_dir))
+        import shutil
+        shutil.copytree(GuiSettings.config_default(), cfg_dir)
+    else:
+        logger.info("Using existing config {}".format(cfg_dir))
+
+    config = QaxConfig(Path(cfg_dir))
     config.load()
     plugins = QaxPlugins()
     plugins.load(config)
