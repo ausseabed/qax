@@ -64,64 +64,7 @@ class ResultTab(QtWidgets.QMainWindow):
         """
         self.display_json()
 
-    def display_json(self):
-        # logger.debug("displaying js: %s" % self.prj.inputs.qa_json.js)
-        qa_json_dict = self.qa_json.to_dict()
-
-        # UI code taken from `checks_tab.py`
-        self.panel.deleteLater()
-        self.vbox.deleteLater()
-
-        button_width = 120
-        button_height = 35
-
-        # ui
-        self.panel = QtWidgets.QFrame()
-        self.setCentralWidget(self.panel)
-        self.vbox = QtWidgets.QVBoxLayout()
-        self.panel.setLayout(self.vbox)
-
-        hbox = QtWidgets.QHBoxLayout()
-        self.vbox.addLayout(hbox)
-
-        hbox.addWidget(QtWidgets.QLabel("Data level:"))
-        possible_dl_names = ['raw_data', 'survey_products', 'chart_adequacy']
-        data_level_names = [
-            name
-            for name in possible_dl_names
-            if getattr(self.qa_json.qa, name) is not None
-        ]
-        self.set_data_level = QtWidgets.QComboBox()
-        self.set_data_level.setFixedHeight(button_height)
-        self.set_data_level.addItems(data_level_names)
-        if self.qa_group in data_level_names:
-            self.set_data_level.setCurrentText(self.qa_group)
-        elif len(data_level_names) > 0:
-            self.qa_group = data_level_names[0]
-            self.set_data_level.setCurrentText(self.qa_group)
-
-        # noinspection PyUnresolvedReferences
-        self.set_data_level.currentTextChanged.connect(self.on_set_data_level)
-        hbox.addWidget(self.set_data_level)
-
-        hbox.addStretch()
-        self.set_view = QtWidgets.QComboBox()
-        self.set_view.setFixedHeight(button_height)
-        self.set_view.addItems(['Json Text', 'Score Board'])
-        self.set_view.setCurrentText(self.cur_view)
-        # noinspection PyUnresolvedReferences
-        self.set_view.currentTextChanged.connect(self.on_set_view)
-        hbox.addWidget(self.set_view)
-        hbox.setSpacing(16)
-
-        self.save_as = QtWidgets.QPushButton()
-        self.save_as.setFixedWidth(button_width)
-        self.save_as.setFixedHeight(button_height)
-        self.save_as.setText("Save as")
-        # noinspection PyUnresolvedReferences
-        self.save_as.clicked.connect(self.on_save_as)
-        hbox.addWidget(self.save_as)
-
+    def add_json_view(self, qa_json_dict):
         # Json Text
         self.json_text_group = QtWidgets.QGroupBox("Json Text")
         self.json_text_group.setStyleSheet(
@@ -140,6 +83,7 @@ class ResultTab(QtWidgets.QMainWindow):
         self.json_viewer.setReadOnly(True)
         vbox.addWidget(self.json_viewer)
 
+    def add_score_board_view(self, qa_json_dict):
         # Score Board
         self.score_board_group = QtWidgets.QGroupBox("Score Board")
         self.score_board_group.setStyleSheet(
@@ -225,6 +169,67 @@ class ResultTab(QtWidgets.QMainWindow):
             3, QtWidgets.QHeaderView.ResizeToContents)
         self.score_board.horizontalHeader().setSectionResizeMode(
             4, QtWidgets.QHeaderView.ResizeToContents)
+
+    def display_json(self):
+        # logger.debug("displaying js: %s" % self.prj.inputs.qa_json.js)
+        qa_json_dict = self.qa_json.to_dict()
+
+        # UI code taken from `checks_tab.py`
+        self.panel.deleteLater()
+        self.vbox.deleteLater()
+
+        button_width = 120
+        button_height = 35
+
+        # ui
+        self.panel = QtWidgets.QFrame()
+        self.setCentralWidget(self.panel)
+        self.vbox = QtWidgets.QVBoxLayout()
+        self.panel.setLayout(self.vbox)
+
+        hbox = QtWidgets.QHBoxLayout()
+        self.vbox.addLayout(hbox)
+
+        hbox.addWidget(QtWidgets.QLabel("Data level:"))
+        possible_dl_names = ['raw_data', 'survey_products', 'chart_adequacy']
+        data_level_names = [
+            name
+            for name in possible_dl_names
+            if getattr(self.qa_json.qa, name) is not None
+        ]
+        self.set_data_level = QtWidgets.QComboBox()
+        self.set_data_level.setFixedHeight(button_height)
+        self.set_data_level.addItems(data_level_names)
+        if self.qa_group in data_level_names:
+            self.set_data_level.setCurrentText(self.qa_group)
+        elif len(data_level_names) > 0:
+            self.qa_group = data_level_names[0]
+            self.set_data_level.setCurrentText(self.qa_group)
+
+        # noinspection PyUnresolvedReferences
+        self.set_data_level.currentTextChanged.connect(self.on_set_data_level)
+        hbox.addWidget(self.set_data_level)
+
+        hbox.addStretch()
+        self.set_view = QtWidgets.QComboBox()
+        self.set_view.setFixedHeight(button_height)
+        self.set_view.addItems(['Json Text', 'Score Board'])
+        self.set_view.setCurrentText(self.cur_view)
+        # noinspection PyUnresolvedReferences
+        self.set_view.currentTextChanged.connect(self.on_set_view)
+        hbox.addWidget(self.set_view)
+        hbox.setSpacing(16)
+
+        self.save_as = QtWidgets.QPushButton()
+        self.save_as.setFixedWidth(button_width)
+        self.save_as.setFixedHeight(button_height)
+        self.save_as.setText("Save as")
+        # noinspection PyUnresolvedReferences
+        self.save_as.clicked.connect(self.on_save_as)
+        hbox.addWidget(self.save_as)
+
+        self.add_json_view(qa_json_dict)
+        self.add_score_board_view(qa_json_dict)
 
         self.on_set_view()
 
