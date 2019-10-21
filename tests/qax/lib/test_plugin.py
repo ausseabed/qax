@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Dict, NoReturn, List
 import unittest
 
-from hyo2.qax.lib.config import QaxConfigCheckTool
+from hyo2.qax.lib.config import QaxConfigCheckTool, QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference
 from hyo2.qax.lib.plugin import QaxFileType, QaxFileGroup
 from hyo2.qax.lib.plugin import QaxPlugins
@@ -95,6 +95,22 @@ class TestQaxPlugins(unittest.TestCase):
             'pluginClass': 'tests.qax.lib.test_plugin.MyPlugin'
         }
     )
+    check_tool_profile = QaxConfigProfile.from_dict(
+        {
+            'name': 'test profile',
+            'checkTools': [
+                {
+                    'name': 'test check tool',
+                    'pluginClass': 'tests.qax.lib.test_plugin.MyPlugin'
+                },
+                {
+                    'name': 'test check tool other',
+                    'pluginClass': 'tests.qax.lib.test_plugin.MyOtherPlugin'
+                }
+            ]
+        }
+    )
+
     check_tool_config_other = QaxConfigCheckTool.from_dict(
         {
             'name': 'test check tool other',
@@ -105,6 +121,7 @@ class TestQaxPlugins(unittest.TestCase):
     def test_load_plugin(self):
         plugins = QaxPlugins()
         check_tool_plugin = plugins._load_plugin(
+            TestQaxPlugins.check_tool_profile,
             TestQaxPlugins.check_tool_config)
         self.assertIsInstance(check_tool_plugin, MyPlugin)
 
@@ -191,8 +208,10 @@ class TestQaxPlugins(unittest.TestCase):
         qa_json = QaJsonRoot(qa=None)
         plugins = QaxPlugins()
         check_tool_plugin = plugins._load_plugin(
+            TestQaxPlugins.check_tool_profile,
             TestQaxPlugins.check_tool_config)
         check_tool_plugin_other = plugins._load_plugin(
+            TestQaxPlugins.check_tool_profile,
             TestQaxPlugins.check_tool_config_other)
 
         check_tool_plugin.update_qa_json(qa_json)

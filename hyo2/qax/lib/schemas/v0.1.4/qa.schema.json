@@ -128,7 +128,7 @@
         "qa_pass": {
           "type": "string",
           "enum": ["yes", "no"]
-        },
+        }
       },
       "required": [
         "execution"
