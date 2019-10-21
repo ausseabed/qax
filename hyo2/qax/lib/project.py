@@ -6,16 +6,91 @@ from pathlib import Path
 from PySide2 import QtCore
 import traceback
 import logging
-from typing import Optional, NoReturn
+from typing import Optional, NoReturn, List
 from jsonschema import validate, ValidationError, SchemaError, Draft7Validator
 from hyo2.abc.lib.helper import Helper
 from hyo2.qax.lib import lib_info
 
 from hyo2.qax.lib.inputs import QAXInputs
 from hyo2.qax.lib.params import QAXParams
-from hyo2.qax.lib.qa_json import QaJsonRoot
+from hyo2.qax.lib.qa_json import QaJsonRoot, QaJsonCheck
 
 logger = logging.getLogger(__name__)
+
+
+class QaCheckSummary():
+    """ Class defines properties that make up a summary of a single QA
+    check that may have been run multiple times.
+    """
+
+    @classmethod
+    def __process_check_summary(
+            cls,
+            data_level: str,
+            check: QaJsonCheck,
+            summaries: dict) -> NoReturn:
+        # a name and id tuple is used to reference the summaries
+        nid = (check.info.id, check.info.name)
+        if nid in summaries:
+            summary = summaries[nid]
+        else:
+            summary = QaCheckSummary(
+                id=check.info.id, name=check.info.name, data_level=data_level)
+            summaries[nid] = summary
+
+        if (check.outputs is not None and check.outputs.execution is not None):
+            summary.total_executions += 1
+            if check.outputs.execution.status == 'failed':
+                summary.failed_executions += 1
+                summary.failed_execution_files.extend(check.inputs.files)
+            if check.outputs.qa_pass == 'no':
+                summary.failed_qa_pass += 1
+                summary.failed_qa_files.extend(check.inputs.files)
+
+    @classmethod
+    def get_summary(cls, qa_json: QaJsonRoot) -> List['QaCheckSummary']:
+        """ Builds a list of check summaries from the qa json object
+        """
+        summaries = {}  # tuple of check id and name used as key
+        for check in qa_json.qa.raw_data.checks:
+            QaCheckSummary.__process_check_summary(
+                'raw_data', check, summaries)
+        for check in qa_json.qa.survey_products.checks:
+            QaCheckSummary.__process_check_summary(
+                'survey_products', check, summaries)
+
+        if qa_json.qa.chart_adequacy is not None:
+            for check in qa_json.qa.chart_adequacy.checks:
+                QaCheckSummary.__process_check_summary(
+                    'chart_adequacy', check, summaries)
+
+        return list(summaries.values())
+
+    def __init__(self, id: str, name: str, data_level: str):
+        """ Constructor
+
+        :param str id: id of the check that is summarised by this object
+        :param str name: name of the check that is summarised by this object
+        """
+        self.id = id
+        self.name = name
+        self.data_level = data_level
+        self.total_executions = 0
+        self.failed_executions = 0
+        self.failed_execution_files = []
+        self.failed_qa_pass = 0
+        self.failed_qa_files = []
+
+    def __repr__(self) -> str:
+        return (
+            "id = {} \n"
+            "name = {} \n"
+            "total_executions = {} \n"
+            "failed_executions = {} \n"
+            "failed_qa_pass = {} \n"
+        ).format(
+            self.id, self.name, self.total_executions, self.failed_executions,
+            self.failed_qa_pass)
 
 
 # inherits from QObject to support signals
@@ -114,6 +189,8 @@ class QAXProject(QtCore.QObject):
         with open(str(path), "w") as file:
             json.dump(self.qa_json.to_dict(), file, indent=4)
 
+    def get_summary(self) -> List[QaCheckSummary]:
+        return QaCheckSummary.get_summary(self.qa_json)
 
     @property
     def params(self) -> QAXParams:
@@ -133,9 +210,6 @@ class QAXProject(QtCore.QObject):
 
     def clear_inputs(self):
         self._i = QAXInputs()
-
-
-
 
     def execute_all(self, qa_group: str = "survey_products"):
         checks = self.inputs.qa_json.js['qa'][qa_group]['checks']
