@@ -114,8 +114,8 @@ class TestQaCheckSummary(unittest.TestCase):
 
     def test_get_summary(self):
         summaries = QaCheckSummary.get_summary(TestQaCheckSummary.qa_json)
+
         summary_01 = next((s for s in summaries if s.id == "1"), None)
-        print(summary_01)
         self.assertEqual(summary_01.total_executions, 3)
         self.assertEqual(summary_01.failed_executions, 0)
         self.assertEqual(summary_01.failed_qa_pass, 1)
