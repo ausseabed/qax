@@ -40,7 +40,7 @@ setup(
     package_data={
         "": [
             "media/*.png", "media/*.ico", "media/*.icns", "media/*.txt",
-            "config/*.json", "media/LICENSE"],
+            "config/*.json", "media/LICENSE", "schemas/**/*.json"],
     },
     zip_safe=False,
     setup_requires=[
