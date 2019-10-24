@@ -5,7 +5,7 @@ syntax: glob
 *.*~
 .DS_Store
 
-# Byte-compiled / optimized 
+# Byte-compiled / optimized
 __pycache__/
 *.pyc
 *.pyo
@@ -65,3 +65,6 @@ examples/.ipynb_checkpoints/
 data/download/
 data/temp/
 data/output/
+
+# Installation file artefacts
+install/Output
