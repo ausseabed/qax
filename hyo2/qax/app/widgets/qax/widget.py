@@ -37,28 +37,17 @@ class QAXWidget(AbstractWidget):
         # - output folder
         export_folder = settings.value("qax_export_folder")
         if (export_folder is None) or (not os.path.exists(export_folder)):
-            settings.setValue("qax_export_folder", str(self.prj.outputs.output_folder))
+            settings.setValue("qax_export_folder", str(self.prj.output_folder))
         else:  # folder exists
             self.prj.output_folder = Path(export_folder)
-        # - shp
-        export_shp = settings.value("qax_export_shp")
-        if export_shp is None:
-            settings.setValue("qax_export_shp", self.prj.params.write_shp)
-        else:  # exists
-            self.prj.params.write_shp = (export_shp == "true")
-        # - kml
-        export_kml = settings.value("qax_export_kml")
-        if export_kml is None:
-            settings.setValue("qax_export_kml", self.prj.params.write_kml)
-        else:  # exists
-            self.prj.params.write_kml = (export_kml == "true")
+
         # - import
         import_folder = settings.value("ff_import_folder")
         if (import_folder is None) or (not os.path.exists(import_folder)):
-            settings.setValue("ff_import_folder", str(self.prj.outputs.output_folder))
+            settings.setValue("ff_import_folder", str(self.prj.output_folder))
         import_folder = settings.value("dtm_import_folder")
         if (import_folder is None) or (not os.path.exists(import_folder)):
-            settings.setValue("dtm_import_folder", str(self.prj.outputs.output_folder))
+            settings.setValue("dtm_import_folder", str(self.prj.output_folder))
         # - project folder
         export_project_folder = settings.value("qax_export_project_folder")
         if export_project_folder is None:
