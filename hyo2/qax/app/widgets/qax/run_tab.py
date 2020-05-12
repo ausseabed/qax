@@ -11,7 +11,7 @@ from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin
 from hyo2.qax.lib.check_executor import CheckExecutor
-from hyo2.qax.lib.qa_json import QaJsonRoot
+from ausseabed.qajson.model import QajsonRoot
 from hyo2.qax.lib.project import QAXProject
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ class QtCheckExecutor(QtCore.QThread, CheckExecutor):
 
     def __init__(
             self,
-            qa_json: QaJsonRoot,
+            qa_json: QajsonRoot,
             check_tools: List[QaxCheckToolPlugin]):
         super(QtCheckExecutor, self).__init__()
         CheckExecutor.__init__(self, qa_json, check_tools)

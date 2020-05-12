@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 from typing import Optional
-from hyo2.qax.lib.qa_json import QAJson
+from ausseabed.qajson.parser import QajsonParser
 
 logger = logging.getLogger(__name__)
 
@@ -16,11 +16,11 @@ class QAXInputs:
         self._enc_paths = list()
 
     @property
-    def qa_json(self) -> Optional[QAJson]:
+    def qa_json(self) -> Optional[QajsonParser]:
         return self._qa_json
 
     @qa_json.setter
-    def qa_json(self, value: QAJson) -> None:
+    def qa_json(self, value: QajsonParser) -> None:
         self._qa_json = value
 
     @property
@@ -34,7 +34,7 @@ class QAXInputs:
         if value is None:
             self._qa_json = None
             return
-        self._qa_json = QAJson(path=value)
+        self._qa_json = QajsonParser(path=value)
 
     @property
     def raw_paths(self) -> list:

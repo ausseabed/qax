@@ -3,7 +3,7 @@ import time
 
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference, \
     QaxFileType
-from hyo2.qax.lib.qa_json import QaJsonParam, QaJsonRoot
+from ausseabed.qajson.model import QajsonParam, QajsonRoot
 
 
 class FlierFinderQaxPlugin(QaxCheckToolPlugin):
@@ -39,9 +39,9 @@ class FlierFinderQaxPlugin(QaxCheckToolPlugin):
             description="Identifies outliers in grided data products",
             supported_file_types=FlierFinderQaxPlugin.supported_file_types,
             default_input_params=[
-                QaJsonParam("Height threshold", "32.3"),
-                QaJsonParam("Algorithm", "nearest"),
-                QaJsonParam("Max flier count", 20),
+                QajsonParam("Height threshold", "32.3"),
+                QajsonParam("Algorithm", "nearest"),
+                QajsonParam("Max flier count", 20),
             ]
         )
 
@@ -52,7 +52,7 @@ class FlierFinderQaxPlugin(QaxCheckToolPlugin):
 
     def run(
             self,
-            qajson: QaJsonRoot,
+            qajson: QajsonRoot,
             progress_callback: Callable = None
             ) -> NoReturn:
         self.stopped = False
@@ -109,7 +109,7 @@ class HolidayFinderQaxPlugin(QaxCheckToolPlugin):
 
     def run(
             self,
-            qajson: QaJsonRoot,
+            qajson: QajsonRoot,
             progress_callback: Callable = None
             ) -> NoReturn:
         self.stopped = False
@@ -176,7 +176,7 @@ class CoverageCheckQaxPlugin(QaxCheckToolPlugin):
 
     def run(
             self,
-            qajson: QaJsonRoot,
+            qajson: QajsonRoot,
             progress_callback: Callable = None
             ) -> NoReturn:
         self.stopped = False

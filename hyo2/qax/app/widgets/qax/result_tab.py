@@ -5,7 +5,7 @@ import logging
 import os
 
 from hyo2.qax.app.gui_settings import GuiSettings
-from hyo2.qax.lib.qa_json import QaJsonRoot
+from ausseabed.qajson.model import QajsonRoot
 from hyo2.qax.lib.project import QAXProject
 
 logger = logging.getLogger(__name__)
@@ -53,15 +53,15 @@ class ResultTab(QtWidgets.QMainWindow):
         self.tick_icon = QtGui.QIcon(GuiSettings.icon_path("tick.png"))
 
     @property
-    def qa_json(self) -> Optional[QaJsonRoot]:
+    def qa_json(self) -> Optional[QajsonRoot]:
         return self._qa_json
 
     @qa_json.setter
-    def qa_json(self, value: QaJsonRoot) -> NoReturn:
+    def qa_json(self, value: QajsonRoot) -> NoReturn:
         self._qa_json = value
         self._update()
 
-    def _on_qa_json_changed(self, qa_json: QaJsonRoot) -> NoReturn:
+    def _on_qa_json_changed(self, qa_json: QajsonRoot) -> NoReturn:
         self._qa_json = qa_json
         self._update()
 

@@ -203,7 +203,7 @@ class MainWin(QtWidgets.QMainWindow):
 
     def do(self):
         logger.warning("DEV MODE")
-        from hyo2.qax.lib.qa_json import QAJson
-        self.tab_qax.tab_inputs._add_json(QAJson.example_paths()[-1])
+        from ausseabed.qajson.parser import QajsonParser
+        self.tab_qax.tab_inputs._add_json(QajsonParser.example_paths()[-1])
         self.tab_qax.change_tabs(self.tab_qax.idx_qc_tools)
         self.tab_qax.tab_qc_tools.display_json()

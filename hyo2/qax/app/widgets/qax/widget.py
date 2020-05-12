@@ -14,7 +14,7 @@ from hyo2.qax.app.widgets.widget import AbstractWidget
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxPlugins
 from hyo2.qax.lib.project import QAXProject
-from hyo2.qax.lib.qa_json import QAJson, QaJsonRoot
+from ausseabed.qajson.model import QajsonRoot
 
 logger = logging.getLogger(__name__)
 
@@ -181,12 +181,12 @@ class QAXWidget(AbstractWidget):
         # print("-----         -----")
 
     # QA JSON methods
-    def _build_qa_json(self) -> QaJsonRoot:
+    def _build_qa_json(self) -> QajsonRoot:
         """
         Builds a QA JSON root object based on the information currently
         entered into the user interface.
         """
-        root = QaJsonRoot(None)
+        root = QajsonRoot(None)
 
         # update the qajson object with the check tool details
         for config_check_tool in self.tab_inputs.selected_check_tools:

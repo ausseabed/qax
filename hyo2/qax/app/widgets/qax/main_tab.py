@@ -10,7 +10,6 @@ from hyo2.qax.app.widgets.qax.filegroup_groupbox \
     import FileGroupGroupBox
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxPlugins, QaxFileGroup
-from hyo2.qax.lib.qa_json import QAJson, QaJsonRoot
 
 # Use NSURL as a workaround to pyside/Qt4 behaviour for dragging and dropping
 # on OSx

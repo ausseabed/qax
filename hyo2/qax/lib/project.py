@@ -13,7 +13,7 @@ from hyo2.qax.lib import lib_info
 
 from hyo2.qax.lib.inputs import QAXInputs
 from hyo2.qax.lib.params import QAXParams
-from hyo2.qax.lib.qa_json import QaJsonRoot, QaJsonCheck
+from ausseabed.qajson.model import QajsonRoot, QajsonCheck
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class QaCheckSummary():
     def __process_check_summary(
             cls,
             data_level: str,
-            check: QaJsonCheck,
+            check: QajsonCheck,
             summaries: dict) -> NoReturn:
         # a name and id tuple is used to reference the summaries
         nid = (check.info.id, check.info.name)
@@ -49,7 +49,7 @@ class QaCheckSummary():
                 summary.failed_qa_files.extend(check.inputs.files)
 
     @classmethod
-    def get_summary(cls, qa_json: QaJsonRoot) -> List['QaCheckSummary']:
+    def get_summary(cls, qa_json: QajsonRoot) -> List['QaCheckSummary']:
         """ Builds a list of check summaries from the qa json object
         """
         summaries = {}  # tuple of check id and name used as key
@@ -104,7 +104,7 @@ class QAXProject(QtCore.QObject):
     This includes option settings, QA JSON details are persisted elsewhere.
     """
 
-    qa_json_changed = QtCore.Signal(QaJsonRoot)
+    qa_json_changed = QtCore.Signal(QajsonRoot)
     qa_json_path_changed = QtCore.Signal(Path)
 
     @classmethod
@@ -118,7 +118,7 @@ class QAXProject(QtCore.QObject):
     def __init__(self):
         super(QAXProject, self).__init__()
 
-        self._qa_json = None  # QaJsonRoot
+        self._qa_json = None  # QajsonRoot
         self._qa_json_path = None
         self._create_project_folder = False
         self._per_tool_folders = False
@@ -128,11 +128,11 @@ class QAXProject(QtCore.QObject):
         self._i = QAXInputs()
 
     @property
-    def qa_json(self) -> Optional[QaJsonRoot]:
+    def qa_json(self) -> Optional[QajsonRoot]:
         return self._qa_json
 
     @qa_json.setter
-    def qa_json(self, value: Optional[QaJsonRoot]) -> NoReturn:
+    def qa_json(self, value: Optional[QajsonRoot]) -> NoReturn:
         self._qa_json = value
         self.qa_json_changed.emit(self._qa_json)
 

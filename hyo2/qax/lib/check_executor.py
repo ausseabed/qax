@@ -1,6 +1,6 @@
 from PySide2 import QtCore
 from typing import List
-from .qa_json import QaJsonRoot
+from ausseabed.qajson.model import QajsonRoot
 from .plugin import QaxCheckToolPlugin
 
 
@@ -12,7 +12,7 @@ class CheckExecutor():
 
     def __init__(
             self,
-            qa_json: QaJsonRoot,
+            qa_json: QajsonRoot,
             check_tools: List[QaxCheckToolPlugin]):
         self.qa_json = qa_json
         self.check_tools = check_tools

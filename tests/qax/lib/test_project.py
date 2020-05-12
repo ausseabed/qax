@@ -2,15 +2,16 @@ from pathlib import Path
 import os
 import unittest
 
-from hyo2.qax.lib.qa_json import QAJson, QaJsonRoot, QaJsonQa, QaJsonQa, \
-    QaJsonDataLevel, QaJsonCheck, QaJsonOutputs, QaJsonInputs, QaJsonInfo, \
-    QaJsonParam, QaJsonExecution, QaJsonGroup, QaJsonFile
+from ausseabed.qajson.parser import QajsonParser
+from ausseabed.qajson.model import QajsonRoot, QajsonQa, QajsonQa, \
+    QajsonDataLevel, QajsonCheck, QajsonOutputs, QajsonInputs, QajsonInfo, \
+    QajsonParam, QajsonExecution, QajsonGroup, QajsonFile
 from hyo2.qax.lib.project import QaCheckSummary
 
 
 class TestQaCheckSummary(unittest.TestCase):
 
-    qa_json = QaJsonRoot.from_dict({
+    qa_json = QajsonRoot.from_dict({
         "qa": {
             "version": "0.1.4",
             "raw_data": {

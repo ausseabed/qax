@@ -2,10 +2,10 @@ from PySide2 import QtCore, QtGui, QtWidgets
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.lib.plugin import QaxCheckReference
-from hyo2.qax.lib.qa_json import QaJsonParam
+from ausseabed.qajson.model import QajsonParam
 
 
-def get_param_widget(param: QaJsonParam, parent=None) -> 'CheckParamWidget':
+def get_param_widget(param: QajsonParam, parent=None) -> 'CheckParamWidget':
     """ Returns a `CheckParamWidget` of the correct type for the given
     param. Factory method.
     """
@@ -27,23 +27,23 @@ class CheckParamWidget(QtWidgets.QWidget):
     data.
     """
 
-    def __init__(self, param: QaJsonParam, parent=None):
+    def __init__(self, param: QajsonParam, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
 
         self._param = param
         self.label_min_width = 200
 
-    def param(self) -> QaJsonParam:
+    def param(self) -> QajsonParam:
         raise NotImplementedError(
             "Must implement in param function of child class to return "
-            "correct value type within an QaJsonParam")
+            "correct value type within an QajsonParam")
 
 
 class CheckParamStringWidget(CheckParamWidget):
     """ Supports parameters with string value types
     """
 
-    def __init__(self, param: QaJsonParam, parent=None):
+    def __init__(self, param: QajsonParam, parent=None):
         super().__init__(param, parent=parent)
 
         hbox = QtWidgets.QHBoxLayout()
@@ -60,8 +60,8 @@ class CheckParamStringWidget(CheckParamWidget):
         self.lineedit_value.setText(self._param.value)
         hbox.addWidget(self.lineedit_value)
 
-    def param(self) -> QaJsonParam:
-        return QaJsonParam(
+    def param(self) -> QajsonParam:
+        return QajsonParam(
             name=self._param.name,
             value=self.lineedit_value.text()
         )
@@ -71,7 +71,7 @@ class CheckParamIntWidget(CheckParamWidget):
     """ Supports parameters with int value types
     """
 
-    def __init__(self, param: QaJsonParam, parent=None):
+    def __init__(self, param: QajsonParam, parent=None):
         super().__init__(param, parent=parent)
 
         hbox = QtWidgets.QHBoxLayout()
@@ -88,8 +88,8 @@ class CheckParamIntWidget(CheckParamWidget):
         self.lineedit_value.setText(str(self._param.value))
         hbox.addWidget(self.lineedit_value)
 
-    def param(self) -> QaJsonParam:
-        return QaJsonParam(
+    def param(self) -> QajsonParam:
+        return QajsonParam(
             name=self._param.name,
             value=int(self.lineedit_value.text())
         )
@@ -99,7 +99,7 @@ class CheckParamUnknownWidget(CheckParamWidget):
     """ Supports parameters with string value types
     """
 
-    def __init__(self, param: QaJsonParam, parent=None):
+    def __init__(self, param: QajsonParam, parent=None):
         super().__init__(param, parent=parent)
 
         hbox = QtWidgets.QHBoxLayout()
@@ -112,8 +112,8 @@ class CheckParamUnknownWidget(CheckParamWidget):
         label_name.setStyleSheet(GuiSettings.stylesheet_check_param_name())
         hbox.addWidget(label_name)
 
-    def param(self) -> QaJsonParam:
-        return QaJsonParam(
+    def param(self) -> QajsonParam:
+        return QajsonParam(
             name=self._param.name,
             value=None
         )

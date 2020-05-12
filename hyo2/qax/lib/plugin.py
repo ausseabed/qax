@@ -4,8 +4,9 @@ import importlib
 import re
 
 from hyo2.qax.lib.config import QaxConfig, QaxConfigCheckTool, QaxConfigProfile
-from hyo2.qax.lib.qa_json import QaJsonRoot, QaJsonQa, QaJsonDataLevel, \
-    QaJsonParam, QAJson, QaJsonCheck, QaJsonInfo, QaJsonGroup, QaJsonFile
+from ausseabed.qajson.model import QajsonRoot, QajsonQa, QajsonDataLevel, \
+    QajsonParam, QajsonCheck, QajsonInfo, QajsonGroup, QajsonFile
+from ausseabed.qajson.parser import QajsonParser
 
 """ Module defines the architecture and utility functions/classes for the
 QAX check tool plugin system. A check tool must implement the QAX check tool
@@ -161,7 +162,7 @@ class QaxCheckReference():
             data_level: str,
             description: str = None,
             supported_file_types: List[QaxFileType] = [],
-            default_input_params: List[QaJsonParam] = [],
+            default_input_params: List[QajsonParam] = [],
             version: str = None
             ):
         """
@@ -176,7 +177,7 @@ class QaxCheckReference():
         :param str description: Optional description of the check
         :param List[QaxFileType] supported_file_types: list of file types
             supported by this check tool.
-        :param List[QaJsonParam] default_input_params: list of the
+        :param List[QajsonParam] default_input_params: list of the
             input parameters and their default values.
         :param str version: version identifier of the check
         """
@@ -225,8 +226,8 @@ class QaxCheckToolPlugin():
 
     def _get_or_add_check(
             self,
-            data_level: QaJsonDataLevel,
-            check_reference: QaxCheckReference) -> QaJsonCheck:
+            data_level: QajsonDataLevel,
+            check_reference: QaxCheckReference) -> QajsonCheck:
         """ If a check exists it will be returned, otherwise a new check will
         be created, added, and then returned.
         """
@@ -234,29 +235,29 @@ class QaxCheckToolPlugin():
         if matching_check is not None:
             return matching_check
 
-        check_info = QaJsonInfo(
+        check_info = QajsonInfo(
             id=check_reference.id,
             name=check_reference.name,
             description=check_reference.description,
             version=check_reference.version,
-            group=QaJsonGroup("", "", ""),
+            group=QajsonGroup("", "", ""),
         )
 
-        new_check = QaJsonCheck(info=check_info, inputs=None, outputs=None)
+        new_check = QajsonCheck(info=check_info, inputs=None, outputs=None)
         data_level.checks.append(new_check)
         return new_check
 
-    def update_qa_json(self, qa_json: QaJsonRoot) -> NoReturn:
+    def update_qa_json(self, qa_json: QajsonRoot) -> NoReturn:
         """ Includes this plugins checks into the `qa_json` object based on
         the checks this plugin provides
         """
         if qa_json.qa is None:
             # assume schema naming convention is
             #  `some_path/v0.1.2/qa.schema.json` or similar
-            last_path = QAJson.schema_paths()[-1]
+            last_path = QajsonParser.schema_paths()[-1]
             version = last_path.parent.name[1:]
             # if no qa object, initialise the minimum spec
-            qa_json.qa = QaJsonQa(
+            qa_json.qa = QajsonQa(
                 version=version,
                 raw_data=None,
                 survey_products=None,
@@ -270,7 +271,7 @@ class QaxCheckToolPlugin():
             self._get_or_add_check(data_level, check_ref)
 
     def update_qa_json_input_files(
-            self, qa_json: QaJsonRoot, files: List[Path]) -> NoReturn:
+            self, qa_json: QajsonRoot, files: List[Path]) -> NoReturn:
         """ Updates the input definitions included in the qa_json object
         to include the `files` list. Files are only added to a check if the
         check already exists in the `qa_json` object, and the check supports
@@ -298,15 +299,15 @@ class QaxCheckToolPlugin():
                 # onto next check.
                 continue
             supported_files = [
-                QaJsonFile(path=str(f), description=None)
+                QajsonFile(path=str(f), description=None)
                 for f in files if check_ref.supports_file(f)]
             inputs.files.extend(supported_files)
 
     def update_qa_json_input_params(
             self,
-            qa_json: QaJsonRoot,
+            qa_json: QajsonRoot,
             check_id: str,
-            params: List[QaJsonParam]) -> NoReturn:
+            params: List[QajsonParam]) -> NoReturn:
         """ Updates the input definitions included in the qa_json object
         to include the `params` list. Parameters are only added to a check if
         the check already exists in the `qa_json` object, and the check id
@@ -355,14 +356,14 @@ class QaxCheckToolPlugin():
 
     def run(
             self,
-            qajson: QaJsonRoot,
+            qajson: QajsonRoot,
             progress_callback: Callable = None
             ) -> NoReturn:
         """ Runs the checks implemented within the check tool plugin.
 
         * Must be implemented by plugin. *
 
-        :param QaJsonRoot qajson: QA JSON definition including the definition
+        :param QajsonRoot qajson: QA JSON definition including the definition
             of what checks to run and what the inputs to those checks are (
             files and parameters).
         :progress_callback Callable: A reference to a function that will be
@@ -387,7 +388,7 @@ class QaxProfilePlugins():
     def __init__(self, plugins: List[QaxCheckToolPlugin]):
         self.plugins = plugins
 
-    def update_qa_json(self, qa_json: QaJsonRoot) -> NoReturn:
+    def update_qa_json(self, qa_json: QajsonRoot) -> NoReturn:
         """ Refer to docstring for QaxProfile. This function simply runs
         the equivalent QaxProfile function for each plugin.
         """
@@ -395,7 +396,7 @@ class QaxProfilePlugins():
             plugin.update_qa_json(qa_json)
 
     def update_qa_json_input_files(
-            self, qa_json: QaJsonRoot, files: List[Path]) -> NoReturn:
+            self, qa_json: QajsonRoot, files: List[Path]) -> NoReturn:
         """ Refer to docstring for QaxProfile. This function simply runs
         the equivalent QaxProfile function for each plugin.
         """
@@ -404,9 +405,9 @@ class QaxProfilePlugins():
 
     def update_qa_json_input_params(
             self,
-            qa_json: QaJsonRoot,
+            qa_json: QajsonRoot,
             check_id: str,
-            params: List[QaJsonParam]) -> NoReturn:
+            params: List[QajsonParam]) -> NoReturn:
         """ Refer to docstring for QaxProfile. This function simply runs
         the equivalent QaxProfile function for each plugin.
         """
