@@ -161,4 +161,6 @@ class QaxConfig:
             profile = self.__load_config(config_file)
             self.profiles.append(profile)
 
+        self.profiles.sort(key=lambda x: x.name, reverse=False)
+
         QaxConfig._instance = self

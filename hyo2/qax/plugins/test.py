@@ -34,9 +34,9 @@ class FlierFinderQaxPlugin(QaxCheckToolPlugin):
     def _build_check_references(self) -> List[QaxCheckReference]:
         cr = QaxCheckReference(
             id="54321",
-            name="Placeholder flier finder checks",
+            name="Flier finder checks",
             data_level="survey_products",
-            description="This is only for test purposes",
+            description="Identifies outliers in grided data products",
             supported_file_types=FlierFinderQaxPlugin.supported_file_types,
             default_input_params=[
                 QaJsonParam("Height threshold", "32.3"),
@@ -44,16 +44,8 @@ class FlierFinderQaxPlugin(QaxCheckToolPlugin):
                 QaJsonParam("Max flier count", 20),
             ]
         )
-        cr2 = QaxCheckReference(
-            id="54321a",
-            name=(
-                "Placeholder flier finder checks - with a really long "
-                "name to test scrolling; really really long"),
-            data_level="survey_products",
-            description="This is only for test purposes",
-            supported_file_types=FlierFinderQaxPlugin.supported_file_types
-        )
-        return [cr, cr2]
+
+        return [cr]
 
     def checks(self) -> List[QaxCheckReference]:
         return self._check_references
@@ -105,9 +97,9 @@ class HolidayFinderQaxPlugin(QaxCheckToolPlugin):
     def _build_check_references(self) -> List[QaxCheckReference]:
         cr = QaxCheckReference(
             id="654321",
-            name="Placeholder holiday finder checks",
+            name="Holiday finder checks",
             data_level="survey_products",
-            description="This is only for test purposes",
+            description="Identifies areas of missing data",
             supported_file_types=HolidayFinderQaxPlugin.supported_file_types
         )
         return [cr]
@@ -174,7 +166,7 @@ class CoverageCheckQaxPlugin(QaxCheckToolPlugin):
             id="654321",
             name="Coverage checker",
             data_level="survey_products",
-            description="This is only for test purposes",
+            description="Confirms coverage of data across expected area",
             supported_file_types=CoverageCheckQaxPlugin.supported_file_types
         )
         return [cr]

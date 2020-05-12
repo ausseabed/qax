@@ -46,8 +46,7 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
 
         self.profile_combobox.currentIndexChanged.connect(self.on_set_profile)
         hbox.addWidget(self.profile_combobox)
-        self.profile_combobox.setMinimumWidth(300)
-        self.profile_combobox.setFixedWidth(300)
+        self.setStyleSheet("QComboBox { min-width:300px; }")
 
         self.profile_description_label = QtWidgets.QLabel("")
         hbox.addWidget(self.profile_description_label)
