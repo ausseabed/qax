@@ -44,9 +44,12 @@ class QaCheckSummary():
             if check.outputs.execution.status == 'failed':
                 summary.failed_executions += 1
                 summary.failed_execution_files.extend(check.inputs.files)
-            if check.outputs.qa_pass == 'no':
-                summary.failed_qa_pass += 1
-                summary.failed_qa_files.extend(check.inputs.files)
+            if check.outputs.check_state == 'fail':
+                summary.failed_check_state += 1
+                summary.failed_check_state_files.extend(check.inputs.files)
+            if check.outputs.check_state == 'warning':
+                summary.warning_check_state += 1
+                summary.warning_check_state_files.extend(check.inputs.files)
 
     @classmethod
     def get_summary(cls, qa_json: QajsonRoot) -> List['QaCheckSummary']:
@@ -83,8 +86,10 @@ class QaCheckSummary():
         self.total_executions = 0
         self.failed_executions = 0
         self.failed_execution_files = []
-        self.failed_qa_pass = 0
-        self.failed_qa_files = []
+        self.failed_check_state = 0
+        self.failed_check_state_files = []
+        self.warning_check_state = 0
+        self.warning_check_state_files = []
 
     def __repr__(self) -> str:
         return (
@@ -92,10 +97,10 @@ class QaCheckSummary():
             "name = {} \n"
             "total_executions = {} \n"
             "failed_executions = {} \n"
-            "failed_qa_pass = {} \n"
+            "failed_check_state = {} \n"
         ).format(
             self.id, self.name, self.total_executions, self.failed_executions,
-            self.failed_qa_pass)
+            self.failed_check_state)
 
 
 # inherits from QObject to support signals

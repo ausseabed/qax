@@ -119,9 +119,9 @@ class TestQaCheckSummary(unittest.TestCase):
         summary_01 = next((s for s in summaries if s.id == "1"), None)
         self.assertEqual(summary_01.total_executions, 3)
         self.assertEqual(summary_01.failed_executions, 0)
-        self.assertEqual(summary_01.failed_qa_pass, 1)
+        self.assertEqual(summary_01.failed_check_state, 1)
 
         summary_02 = next((s for s in summaries if s.id == "2"), None)
         self.assertEqual(summary_02.total_executions, 1)
         self.assertEqual(summary_02.failed_executions, 1)
-        self.assertEqual(summary_02.failed_qa_pass, 0)
+        self.assertEqual(summary_02.failed_check_state, 0)

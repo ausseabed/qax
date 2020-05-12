@@ -17,6 +17,7 @@ class ResultTab(QtWidgets.QMainWindow):
     """
 
     color_fail = QtGui.QColor(200, 100, 100, 50)
+    color_warning = QtGui.QColor(255, 213, 0, 50)
     color_ok = QtGui.QColor(100, 200, 100, 50)
     color_in_progress = QtGui.QColor(200, 200, 100, 50)
 
@@ -51,6 +52,7 @@ class ResultTab(QtWidgets.QMainWindow):
 
         self.cross_icon = QtGui.QIcon(GuiSettings.icon_path("cross.png"))
         self.tick_icon = QtGui.QIcon(GuiSettings.icon_path("tick.png"))
+        self.warning_icon = QtGui.QIcon(GuiSettings.icon_path("warning.png"))
 
     @property
     def qa_json(self) -> Optional[QajsonRoot]:
@@ -90,9 +92,9 @@ class ResultTab(QtWidgets.QMainWindow):
             QtWidgets.QAbstractItemView.ExtendedSelection)
         self.summary_table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
 
-        self.summary_table.setColumnCount(4)
+        self.summary_table.setColumnCount(5)
         self.summary_table.setHorizontalHeaderLabels(
-            ["Check", "Total runs", "Failed runs", "QA Fails"])
+            ["Check", "Total runs", "Failed runs", "QA Fails", "QA Warning"])
 
         summaries = self.prj.get_summary()
 
@@ -115,16 +117,23 @@ class ResultTab(QtWidgets.QMainWindow):
             total_failed_runs_item = QtWidgets.QTableWidgetItem(
                 "{}".format(summary.failed_executions))
             total_failed_runs_item.setTextAlignment(QtCore.Qt.AlignRight)
-            self.summary_table.setItem(idx, 2, total_failed_runs_item)
             if summary.failed_executions != 0:
-                total_failed_qa_item.setBackground(ResultTab.color_fail)
+                total_failed_runs_item.setBackground(ResultTab.color_fail)
+            self.summary_table.setItem(idx, 2, total_failed_runs_item)
 
             total_failed_qa_item = QtWidgets.QTableWidgetItem(
-                "{}".format(summary.failed_qa_pass))
+                "{}".format(summary.failed_check_state))
             total_failed_qa_item.setTextAlignment(QtCore.Qt.AlignRight)
-            self.summary_table.setItem(idx, 3, total_failed_qa_item)
-            if summary.failed_qa_pass != 0:
+            if summary.failed_check_state != 0:
                 total_failed_qa_item.setBackground(ResultTab.color_fail)
+            self.summary_table.setItem(idx, 3, total_failed_qa_item)
+
+            total_warn_qa_item = QtWidgets.QTableWidgetItem(
+                "{}".format(summary.warning_check_state))
+            total_warn_qa_item.setTextAlignment(QtCore.Qt.AlignRight)
+            if summary.warning_check_state != 0:
+                total_warn_qa_item.setBackground(ResultTab.color_warning)
+            self.summary_table.setItem(idx, 4, total_warn_qa_item)
 
         vbox.addWidget(self.summary_table)
 
@@ -136,6 +145,8 @@ class ResultTab(QtWidgets.QMainWindow):
             2, QtWidgets.QHeaderView.ResizeToContents)
         self.summary_table.horizontalHeader().setSectionResizeMode(
             3, QtWidgets.QHeaderView.ResizeToContents)
+        self.summary_table.horizontalHeader().setSectionResizeMode(
+            4, QtWidgets.QHeaderView.ResizeToContents)
 
     def add_json_view(self, qa_json_dict):
         # Json Text
@@ -218,18 +229,20 @@ class ResultTab(QtWidgets.QMainWindow):
             except KeyError as e:
                 logger.debug("skipping grade for #%d: %s" % (idx, e))
 
-            qa_pass = ""
+            check_state = ""
             try:
-                qa_pass = checks[idx]['outputs']['qa_pass']
+                check_state = checks[idx]['outputs']['check_state']
             except KeyError as e:
-                logger.debug("skipping qa_pass for #%d: %s" % (idx, e))
-            if qa_pass == "no":
-                qa_pass_item = QtWidgets.QTableWidgetItem(self.cross_icon, "")
-            elif qa_pass == "yes":
-                qa_pass_item = QtWidgets.QTableWidgetItem(self.tick_icon, "")
+                logger.debug("skipping check_state for #%d: %s" % (idx, e))
+            if check_state == "fail":
+                check_state_item = QtWidgets.QTableWidgetItem(self.cross_icon, "")
+            elif check_state == "pass":
+                check_state_item = QtWidgets.QTableWidgetItem(self.tick_icon, "")
+            elif check_state == "warning":
+                check_state_item = QtWidgets.QTableWidgetItem(self.warning_icon, "")
             else:
-                qa_pass_item = QtWidgets.QTableWidgetItem("")
-            self.score_board.setItem(idx, 4, qa_pass_item)
+                check_state_item = QtWidgets.QTableWidgetItem("")
+            self.score_board.setItem(idx, 4, check_state_item)
 
         vbox.addWidget(self.score_board)
 
