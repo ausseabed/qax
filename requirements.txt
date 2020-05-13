@@ -2,6 +2,7 @@ coveralls
 jsonschema
 pytest
 pytest-cov
+setuptools==44.*
 git+git://github.com/hydroffice/hyo2_abc.git@master#egg=hyo2.abc
 git+git://github.com/ausseabed/qajson.git@master#egg=ausseabed.qajson
 git+git://github.com/ausseabed/pyall.git@master#egg=pyall
