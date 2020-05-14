@@ -28,16 +28,32 @@ jobs:
             conda install python=3.7
             Write-Host "$env:CONDA_ROOT"
       - run:
+          name: Download GitHub based dependencies
+          command: |
+            $client = new-object System.Net.WebClient
+            $client.DownloadFile("https://github.com/ausseabed/qajson/archive/master.zip","C:\tmp\ausseabed.qajson.zip")
+            $client.DownloadFile("https://github.com/ausseabed/pyall/archive/master.zip","C:\tmp\pyall.zip")
+            $client.DownloadFile("https://github.com/ausseabed/hyo2_mate/archive/master.zip","C:\tmp\hyo2.mate.zip")
+            $client.DownloadFile("https://github.com/hydroffice/hyo2_abc/archive/master.zip","C:\tmp\hyo2.abc.zip")
+      - run:
           name: Activate the qax conda environment, update the version and install the package
           command: |
             Write-Host "$env:CONDA_ROOT"
-            conda install -y --upgrade certifi
+            conda install -y -c conda-forge certifi
             conda install -y -c conda-forge --file requirements_conda.txt
             conda install -y -c conda-forge --no-deps cartopy
-            pip install --trusted-host github.com -r requirements.txt
+            pip install coveralls
+            pip install jsonschema
+            pip install pytest
+            pip install pytest-cov
+            pip install setuptools==44.*
+            pip install C:\tmp\ausseabed.qajson.zip
+            pip install C:\tmp\pyall.zip
+            pip install C:\tmp\hyo2.mate.zip
+            pip install C:\tmp\hyo2.abc.zip
             pip install pypiwin32
             conda install -y -c conda-forge  --no-deps pyproj
-            pip install --trusted-host github.com --no-deps git+https://github.com/hydroffice/hyo2_abc.git@master#egg=hyo2.abc
+            pip install C:\tmp\hyo2.abc.zip
             pip install .
       - run:
           name: Pack the environment and save it in the workspace
