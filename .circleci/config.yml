@@ -28,6 +28,7 @@ jobs:
           name: Activate the qax conda environment, update the version and install the package
           command: |
             conda activate qax
+            pip install --upgrade certifi
             conda install -y pip
             conda install -y -c conda-forge --file requirements_conda.txt
             conda install -y -c conda-forge --no-deps cartopy
@@ -39,6 +40,7 @@ jobs:
       - run:
           name: Pack the environment and save it in the workspace
           command: |
+            conda activate qax
             pip install pyinstaller
             pyinstaller .\install\cli.spec
 
