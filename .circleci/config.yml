@@ -31,7 +31,7 @@ jobs:
           name: Activate the qax conda environment, update the version and install the package
           command: |
             Write-Host "$env:CONDA_ROOT"
-            pip install --upgrade certifi
+            conda install -y --upgrade certifi
             conda install -y -c conda-forge --file requirements_conda.txt
             conda install -y -c conda-forge --no-deps cartopy
             pip install --trusted-host github.com -r requirements.txt
@@ -46,7 +46,7 @@ jobs:
             pip install pyinstaller
             pyinstaller .\install\cli.spec
             New-Item -Path "C:\circleci-workspace\artifacts" -Name "logfiles" -ItemType "directory"
-            Move-Item -Path .\dist -Destination C:\circleci-workspace\artifacts\dist
+            Move-Item dist -Destination C:\circleci-workspace\artifacts
       - persist_to_workspace:
           root: C:\circleci-workspace\
           paths: artifacts
