@@ -1,0 +1,70 @@
+version: 2.1
+
+orbs:
+  win: circleci/windows@2.2.0
+
+jobs:
+  build:
+    executor: win/default
+    steps:
+      - attach_workspace:
+          at: C:\circleci-workspace
+      - checkout
+      - run:
+          name: Download Miniconda and save in tmp
+          command: |
+            $client = new-object System.Net.WebClient
+            $client.DownloadFile("https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe","C:\tmp\Miniconda3-latest-Windows-x86_64.exe")
+      - run:
+          name: Run Miniconda installer in silent mode
+          command: |
+            C:\tmp\Miniconda3-latest-Windows-x86_64.exe /InstallationType=JustMe /RegisterPython=0 /S /D=%UserProfile%\Miniconda3
+      - run:
+          name: Update conda, install pack and create the riverlines environment from the environment.yml file
+          command: |
+            conda update conda
+            conda create -n qax python=3.7
+      - run:
+          name: Activate the qax conda environment, update the version and install the package
+          command: |
+            conda activate qax
+            conda install -y pip
+            conda install -y -c conda-forge --file requirements_conda.txt
+            conda install -y -c conda-forge --no-deps cartopy
+            pip install -r requirements.txt
+            pip install pypiwin32
+            conda install -y -c conda-forge  --no-deps pyproj
+            pip install --no-deps git+git://github.com/hydroffice/hyo2_abc.git@master#egg=hyo2.abc
+            pip install .
+      - run:
+          name: Pack the environment and save it in the workspace
+          command: |
+            pip install pyinstaller
+            pyinstaller .\install\cli.spec
+
+            New-Item -Path "C:\circleci-workspace\artifacts" -Name "logfiles" -ItemType "directory"
+            Move-Item -Path .\dist -Destination C:\circleci-workspace\artifacts\dist
+      - persist_to_workspace:
+          root: C:\circleci-workspace\
+          paths: artifacts
+
+  # publish-github-release:
+  #   docker:
+  #     - image: cibuilds/github:0.10
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/circleci-workspace
+  #     - run:
+  #         name: "Publish Release to github"
+  #         command: |
+  #           VERSION=${CIRCLE_TAG}
+  #           ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/circleci-workspace/artifacts/
+
+workflows:
+  version: 2
+  Windows_Workflow:
+    jobs:
+      - build
+      # - publish-github-release:
+      #     requires:
+      #        - build
