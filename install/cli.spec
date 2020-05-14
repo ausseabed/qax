@@ -6,7 +6,9 @@ import os
 spec_root = os.path.abspath(SPECPATH)
 qax_root = os.path.abspath(os.path.join(SPECPATH, '..'))
 
-conda_prefix = os.environ['CONDA_PREFIX']
+print(os.environ)
+
+conda_prefix = os.environ['CONDA_ROOT']
 epsg_data = os.path.abspath(os.path.join(conda_prefix , 'Library\\share\\epsg'))
 
 qt_platforms = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\platforms'))
