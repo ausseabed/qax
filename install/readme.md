@@ -12,7 +12,24 @@ Not particularly well covered. Suggest starting with miniconda (on Windows) and 
 
 Move on to step 2 when qax runs in this environment.
 
-TODO: write conda env definition to better support this stage.
+The following command sequence should work, maybe.
+
+    conda create -y -n qax python=3.7
+    conda activate qax
+
+    conda install -y pip
+    conda install -y -c conda-forge --file requirements_conda.txt
+    conda install -y -c conda-forge --no-deps cartopy
+    pip install -r requirements.txt
+    pip install pypiwin32
+    conda install -y -c conda-forge  --no-deps pyproj
+
+    pip install --no-deps git+git://github.com/hydroffice/hyo2_abc.git@master#egg=hyo2.abc
+
+    pip install .
+
+    pip install pyinstaller
+
 
 
 ## Step 2: pyinstaller
@@ -21,7 +38,7 @@ TODO: write conda env definition to better support this stage.
 
 Run the spec file from this directory.
 
-    pyinstaller cli.spec
+    pyinstaller install/cli.spec
 
 This will produce a `dist` and `build` directory. The dist directory is the 'redistributable directory'.
 

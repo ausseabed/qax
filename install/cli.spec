@@ -8,6 +8,12 @@ qax_root = os.path.abspath(os.path.join(SPECPATH, '..'))
 
 conda_prefix = os.environ['CONDA_PREFIX']
 epsg_data = os.path.abspath(os.path.join(conda_prefix , 'Library\\share\\epsg'))
+
+qt_platforms = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\platforms'))
+qt_webengine_res = os.path.abspath(os.path.join(conda_prefix , 'Library\\resources\\*'))
+qt_webengine = os.path.abspath(os.path.join(conda_prefix , 'Library\\bin\\QtWebEngineProcess.exe'))
+
+
 bin_dir = os.path.abspath(os.path.join(conda_prefix , 'Library\\bin'))
 hooks_dir = os.path.join(spec_root ,'hooks')
 
@@ -16,7 +22,12 @@ block_cipher = None
 a = Analysis(['cli.py'],
              pathex=[qax_root, bin_dir],
              binaries=[],
-             datas=[(epsg_data ,"Library\\share\\.")],
+             datas=[
+                 (epsg_data ,"Library\\share\\."),
+                 (qt_platforms ,"platforms"),
+                 (qt_webengine_res ,"."),
+                 (qt_webengine ,"."),
+             ],
              hiddenimports=['PySide2.QtPrintSupport','PySide2.QtWebChannel','PySide2.QtWebEngineCore', 'pyproj', 'hyo2.abc', 'hyo2.mate','hyo2.qax','hyo2.mate.qax.plugin', 'hyo2.qax.plugins.test'],
              hookspath=[hooks_dir],
              runtime_hooks=[],

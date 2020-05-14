@@ -1,6 +1,5 @@
-PySide2
 GDAL==2.3.3
+PySide2
 appdirs
 numpy
 jsonschema
-cartopy
