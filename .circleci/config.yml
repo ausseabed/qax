@@ -37,7 +37,7 @@ jobs:
             pip install --trusted-host github.com -r requirements.txt
             pip install pypiwin32
             conda install -y -c conda-forge  --no-deps pyproj
-            pip install --trusted-host github.com --no-deps git+git://github.com/hydroffice/hyo2_abc.git@master#egg=hyo2.abc
+            pip install --trusted-host github.com --no-deps git+https://github.com/hydroffice/hyo2_abc.git@master#egg=hyo2.abc
             pip install .
       - run:
           name: Pack the environment and save it in the workspace

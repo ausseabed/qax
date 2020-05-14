@@ -8,7 +8,7 @@ qax_root = os.path.abspath(os.path.join(SPECPATH, '..'))
 
 print(os.environ)
 
-conda_prefix = os.environ['CONDA_ROOT']
+conda_prefix = 'c:\\tools\\miniconda3'
 epsg_data = os.path.abspath(os.path.join(conda_prefix , 'Library\\share\\epsg'))
 
 qt_platforms = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\platforms'))
