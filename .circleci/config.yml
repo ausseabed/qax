@@ -8,8 +8,6 @@ jobs:
     executor:
       name: win/default
       shell: powershell.exe
-    environment:
-      CONDA_PREFIX: "conda_prefix_env_var"
     steps:
       - attach_workspace:
           at: C:\circleci-workspace
