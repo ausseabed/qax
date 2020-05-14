@@ -5,7 +5,11 @@ orbs:
 
 jobs:
   build:
-    executor: win/default
+    executor:
+      name: win/default
+      shell: powershell.exe
+    environment:
+      CONDA_PREFIX: "conda_prefix_env_var"
     steps:
       - attach_workspace:
           at: C:\circleci-workspace
@@ -24,14 +28,13 @@ jobs:
           command: |
             conda update conda
             conda create -n qax python=3.7
-            $env:CONDA_PREFIX
+            Write-Host "$env:CONDA_PREFIX"
       - run:
           name: Activate the qax conda environment, update the version and install the package
           command: |
             conda activate qax
-            $env:CONDA_PREFIX
+            Write-Host "$env:CONDA_PREFIX"
             pip install --upgrade certifi
-            conda install -y pip
             conda install -y -c conda-forge --file requirements_conda.txt
             conda install -y -c conda-forge --no-deps cartopy
             pip install --trusted-host github.com -r requirements.txt
@@ -43,7 +46,7 @@ jobs:
           name: Pack the environment and save it in the workspace
           command: |
             conda activate qax
-            $env:CONDA_PREFIX
+            Write-Host "$env:CONDA_PREFIX"
             pip install pyinstaller
             pyinstaller .\install\cli.spec
             New-Item -Path "C:\circleci-workspace\artifacts" -Name "logfiles" -ItemType "directory"
