@@ -57,14 +57,14 @@ jobs:
       - run:
           name: Install PyInstaller and use it to build qax distribution, then zip
           command: |
-            Write-Host "$env:CONDA_ROOT"
+            $env:CIRCLE_TAG > '.\install\version.txt'
             pip install pyinstaller
             pyinstaller .\install\cli.spec
             ls
             ls C:\Users\circleci\project\dist
             New-Item -Path "C:\circleci-workspace\artifacts" -Name "logfiles" -ItemType "directory"
             Add-Type -assembly "system.io.compression.filesystem"
-            [io.compression.zipfile]::CreateFromDirectory("C:\Users\circleci\project\dist\qax", "C:\circleci-workspace\artifacts\qax_dist.zip")
+            [io.compression.zipfile]::CreateFromDirectory("C:\Users\circleci\project\dist\qax", "C:\circleci-workspace\artifacts\qax_dist_$env:CIRCLE_TAG.zip")
       - run:
           name: Download innosetup and create install directory
           command: |
@@ -87,23 +87,33 @@ jobs:
           root: C:\circleci-workspace\
           paths: artifacts
 
-  # publish-github-release:
-  #   docker:
-  #     - image: cibuilds/github:0.10
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/circleci-workspace
-  #     - run:
-  #         name: "Publish Release to github"
-  #         command: |
-  #           VERSION=${CIRCLE_TAG}
-  #           ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/circleci-workspace/artifacts/
+  publish-github-release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - attach_workspace:
+          at: ~/circleci-workspace
+      - run:
+          name: "Publish Release to github"
+          command: |
+            VERSION=${CIRCLE_TAG}
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/circleci-workspace/artifacts/
 
 workflows:
   version: 2
   Windows_Workflow:
     jobs:
-      - build
-      # - publish-github-release:
-      #     requires:
-      #        - build
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - publish-github-release:
+          requires:
+             - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
