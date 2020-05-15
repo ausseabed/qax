@@ -22,7 +22,7 @@ jobs:
           command: |
             C:\tmp\Miniconda3-latest-Windows-x86_64.exe /InstallationType=JustMe /RegisterPython=0 /S /D=%UserProfile%\Miniconda3
       - run:
-          name: Update conda, install pack and create the riverlines environment from the environment.yml file
+          name: Update conda, install qax environment
           command: |
             conda update conda
             conda install python=3.7
@@ -50,40 +50,72 @@ jobs:
             pip install C:\tmp\ausseabed.qajson.zip
             pip install C:\tmp\pyall.zip
             pip install C:\tmp\hyo2.mate.zip
-            pip install C:\tmp\hyo2.abc.zip
             pip install pypiwin32
-            conda install -y -c conda-forge  --no-deps pyproj
-            pip install C:\tmp\hyo2.abc.zip
+            conda install -y -c conda-forge --no-deps pyproj
+            pip install --no-deps C:\tmp\hyo2.abc.zip
             pip install .
       - run:
-          name: Pack the environment and save it in the workspace
+          name: Install PyInstaller and use it to build qax distribution, then zip
           command: |
-            Write-Host "$env:CONDA_ROOT"
             pip install pyinstaller
             pyinstaller .\install\cli.spec
+            ls
+            ls C:\Users\circleci\project\dist
             New-Item -Path "C:\circleci-workspace\artifacts" -Name "logfiles" -ItemType "directory"
-            Move-Item dist -Destination C:\circleci-workspace\artifacts
+            Add-Type -assembly "system.io.compression.filesystem"
+            [io.compression.zipfile]::CreateFromDirectory("C:\Users\circleci\project\dist\qax", "C:\circleci-workspace\artifacts\qax_dist_$env:CIRCLE_TAG.zip")
+      - run:
+          name: Download innosetup and create install directory
+          command: |
+            $client = new-object System.Net.WebClient
+            $client.DownloadFile("https://jrsoftware.org/download.php/is.exe","C:\tmp\is.exe")
+            New-Item -Path "C:\tmp" -Name "innosetup" -ItemType "directory"
+      - run:
+          name: Run innosetup installer in silent mode
+          command: |
+            C:\tmp\is.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="C:\tmp\innosetup\"
+      - run:
+          name: Run innosetup
+          command: |
+            "#define MyAppVersion `"$env:CIRCLE_TAG`"" | out-file -Encoding ascii -filepath ./install/version.txt
+            ls .\install
+            get-content .\install\version.txt
+            C:\tmp\innosetup\ISCC.exe .\install\qax.iss
+            Move-Item C:\Users\circleci\project\install\Output\* -Destination C:\circleci-workspace\artifacts
+            ls C:\circleci-workspace\artifacts
+      - store_artifacts:
+          path: C:\circleci-workspace\artifacts\
       - persist_to_workspace:
           root: C:\circleci-workspace\
           paths: artifacts
 
-  # publish-github-release:
-  #   docker:
-  #     - image: cibuilds/github:0.10
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/circleci-workspace
-  #     - run:
-  #         name: "Publish Release to github"
-  #         command: |
-  #           VERSION=${CIRCLE_TAG}
-  #           ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/circleci-workspace/artifacts/
+  publish-github-release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - attach_workspace:
+          at: ~/circleci-workspace
+      - run:
+          name: "Publish Release to github"
+          command: |
+            VERSION=${CIRCLE_TAG}
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/circleci-workspace/artifacts/
 
 workflows:
   version: 2
   Windows_Workflow:
     jobs:
-      - build
-      # - publish-github-release:
-      #     requires:
-      #        - build
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - publish-github-release:
+          requires:
+             - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
