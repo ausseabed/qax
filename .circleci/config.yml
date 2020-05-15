@@ -66,9 +66,24 @@ jobs:
             Add-Type -assembly "system.io.compression.filesystem"
             [io.compression.zipfile]::CreateFromDirectory("C:\Users\circleci\project\dist\qax", "C:\circleci-workspace\artifacts\qax_dist.zip")
             Move-Item C:\Users\circleci\project\dist -Destination C:\circleci-workspace\artifacts
+      - run:
+          name: Download innosetup and create install directory
+          command: |
+            $client = new-object System.Net.WebClient
+            $client.DownloadFile("https://jrsoftware.org/download.php/is.exe","C:\tmp\is.exe")
+            New-Item -Path "C:\tmp" -Name "innosetup" -ItemType "directory"
+      - run:
+          name: Run innosetup installer in silent mode
+          command: |
+            C:\tmp\is.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="C:\tmp\innosetup\"
+      - run:
+          name: Run innosetup
+          command: |
+            C:\tmp\innosetup\ISCC.exe .\install\qax.iss
+            Move-Item C:\Users\circleci\project\install\Output\qax_setup.exe -Destination C:\circleci-workspace\artifacts
+            ls C:\circleci-workspace\artifacts
       - store_artifacts:
-          path: C:\circleci-workspace\artifacts\qax_dist.zip
-          destination: artifacts
+          path: C:\circleci-workspace\artifacts\
       - persist_to_workspace:
           root: C:\circleci-workspace\
           paths: artifacts

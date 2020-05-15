@@ -21,7 +21,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-LicenseFile=dist\qax\hyo2\qax\app\media\LICENSE
+LicenseFile=..\dist\qax\hyo2\qax\app\media\LICENSE
 OutputBaseFilename=qax_setup
 Compression=lzma
 SolidCompression=yes
@@ -30,7 +30,7 @@ SolidCompression=yes
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "dist\qax\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+Source: "..\dist\qax\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 
 [Icons]
 Name: "{group}\QAX"; Filename: "{app}\qax.exe"; WorkingDir: "{app}"; IconFilename: "{app}\qax.exe"
