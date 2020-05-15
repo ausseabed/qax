@@ -22,7 +22,7 @@ jobs:
           command: |
             C:\tmp\Miniconda3-latest-Windows-x86_64.exe /InstallationType=JustMe /RegisterPython=0 /S /D=%UserProfile%\Miniconda3
       - run:
-          name: Update conda, install pack and create the riverlines environment from the environment.yml file
+          name: Update conda, install qax environment
           command: |
             conda update conda
             conda install python=3.7
@@ -64,6 +64,9 @@ jobs:
             ls C:\Users\circleci\project\dist
             New-Item -Path "C:\circleci-workspace\artifacts" -Name "logfiles" -ItemType "directory"
             Move-Item C:\Users\circleci\project\dist -Destination C:\circleci-workspace\artifacts
+      - store_artifacts:
+          path: C:\circleci-workspace\
+          destination: artifacts
       - persist_to_workspace:
           root: C:\circleci-workspace\
           paths: artifacts
