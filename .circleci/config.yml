@@ -50,10 +50,9 @@ jobs:
             pip install C:\tmp\ausseabed.qajson.zip
             pip install C:\tmp\pyall.zip
             pip install C:\tmp\hyo2.mate.zip
-            pip install C:\tmp\hyo2.abc.zip
             pip install pypiwin32
-            conda install -y -c conda-forge  --no-deps pyproj
-            pip install C:\tmp\hyo2.abc.zip
+            conda install -y -c conda-forge --no-deps pyproj
+            pip install --no-deps C:\tmp\hyo2.abc.zip
             pip install .
       - run:
           name: Pack the environment and save it in the workspace
@@ -61,8 +60,10 @@ jobs:
             Write-Host "$env:CONDA_ROOT"
             pip install pyinstaller
             pyinstaller .\install\cli.spec
+            ls
+            ls C:\Users\circleci\project\dist
             New-Item -Path "C:\circleci-workspace\artifacts" -Name "logfiles" -ItemType "directory"
-            Move-Item dist -Destination C:\circleci-workspace\artifacts
+            Move-Item C:\Users\circleci\project\dist -Destination C:\circleci-workspace\artifacts
       - persist_to_workspace:
           root: C:\circleci-workspace\
           paths: artifacts
