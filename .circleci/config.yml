@@ -65,7 +65,6 @@ jobs:
             New-Item -Path "C:\circleci-workspace\artifacts" -Name "logfiles" -ItemType "directory"
             Add-Type -assembly "system.io.compression.filesystem"
             [io.compression.zipfile]::CreateFromDirectory("C:\Users\circleci\project\dist\qax", "C:\circleci-workspace\artifacts\qax_dist.zip")
-            Move-Item C:\Users\circleci\project\dist -Destination C:\circleci-workspace\artifacts
       - run:
           name: Download innosetup and create install directory
           command: |
