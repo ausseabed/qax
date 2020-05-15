@@ -3,10 +3,7 @@
 
 #define MyAppName "QAX"
 
-#define VerFile FileOpen("version.txt")
-#define MyAppVersion FileRead(VerFile)
-#expr FileClose(VerFile)
-#undef VerFile
+#include "version.txt"
 
 #define MyAppPublisher "AusSeabed Development Team"
 #define MyAppURL "https://github.com/ausseabed/hyo2_qax"

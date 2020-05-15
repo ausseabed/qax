@@ -57,7 +57,6 @@ jobs:
       - run:
           name: Install PyInstaller and use it to build qax distribution, then zip
           command: |
-            $env:CIRCLE_TAG > '.\install\version.txt'
             pip install pyinstaller
             pyinstaller .\install\cli.spec
             ls
@@ -78,8 +77,11 @@ jobs:
       - run:
           name: Run innosetup
           command: |
+            "#define MyAppVersion `"$env:CIRCLE_TAG`"" | out-file -Encoding ascii -filepath ./install/version.txt
+            ls .\install
+            get-content .\install\version.txt
             C:\tmp\innosetup\ISCC.exe .\install\qax.iss
-            Move-Item C:\Users\circleci\project\install\Output\qax_setup.exe -Destination C:\circleci-workspace\artifacts
+            Move-Item C:\Users\circleci\project\install\Output\* -Destination C:\circleci-workspace\artifacts
             ls C:\circleci-workspace\artifacts
       - store_artifacts:
           path: C:\circleci-workspace\artifacts\
