@@ -57,13 +57,16 @@ class QaxFileType:
     def formatted_name(self):
         return "{} (*.{})".format(self.name, self.extension)
 
-    def supports_file(self, file_path: Path) -> bool:
+    def supports_file(self, file_path: Path, file_group: str) -> bool:
         """ Returns True if the file_path file's extension matches
-        `self.extenstion`.
+        `self.extension` and the file_group matches `self.extension`.
         """
         extension = file_path.suffix
         extension = extension.lstrip('.')
-        return extension == self.extension
+        return (
+            ((extension == self.extension) or (self.extension == '*')) and
+            file_group == self.group
+        )
 
     def __repr__(self):
         msg = super().__repr__()
@@ -189,11 +192,11 @@ class QaxCheckReference():
         self.default_input_params = default_input_params
         self.version = version
 
-    def supports_file(self, file_path: Path) -> bool:
+    def supports_file(self, file_path: Path, file_group: str) -> bool:
         """ Returns True if the file_path file is supported by this check tool.
         """
         for supported_file_type in self.supported_file_types:
-            if supported_file_type.supports_file(file_path):
+            if supported_file_type.supports_file(file_path, file_group):
                 return True
         return False
 
@@ -271,7 +274,7 @@ class QaxCheckToolPlugin():
             self._get_or_add_check(data_level, check_ref)
 
     def update_qa_json_input_files(
-            self, qa_json: QajsonRoot, files: List[Path]) -> NoReturn:
+            self, qa_json: QajsonRoot, files: List) -> NoReturn:
         """ Updates the input definitions included in the qa_json object
         to include the `files` list. Files are only added to a check if the
         check already exists in the `qa_json` object, and the check supports
@@ -299,8 +302,10 @@ class QaxCheckToolPlugin():
                 # onto next check.
                 continue
             supported_files = [
-                QajsonFile(path=str(f), description=None)
-                for f in files if check_ref.supports_file(f)]
+                QajsonFile(path=str(f), file_type=f_group, description=None)
+                for (f, f_group) in files if check_ref.supports_file(f, f_group)]
+
+            print(supported_files)
             inputs.files.extend(supported_files)
 
     def update_qa_json_input_params(

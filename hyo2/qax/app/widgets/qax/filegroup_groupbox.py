@@ -344,7 +344,10 @@ class FileGroupGroupBox(QtWidgets.QGroupBox):
                 ), None)
             if matching_fg is None:
                 continue
-            paths = [Path(fn) for fn in fgwidget.selected_files]
+            paths = ([
+                (Path(fn), fgwidget.file_group.name)
+                for fn in fgwidget.selected_files
+            ])
             all_files.extend(paths)
 
         return all_files
