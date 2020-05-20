@@ -25,7 +25,7 @@ class TestQaCheckSummary(unittest.TestCase):
                         },
                         "inputs": {
                             "files": [
-                                {"path": "file1.txt"}
+                                {"path": "file1.txt", "file_type": "Raw Files"}
                             ]
                         },
                         "outputs": {
@@ -36,7 +36,7 @@ class TestQaCheckSummary(unittest.TestCase):
                                 "status": "completed"
                             },
                             "files": [],
-                            "qa_pass": "yes"
+                            "check_state": "pass"
                         }
                     },
                     {
@@ -48,7 +48,7 @@ class TestQaCheckSummary(unittest.TestCase):
                         },
                         "inputs": {
                             "files": [
-                                {"path": "file3.txt"}
+                                {"path": "file3.txt", "file_type": "Raw Files"}
                             ]
                         },
                         "outputs": {
@@ -59,7 +59,7 @@ class TestQaCheckSummary(unittest.TestCase):
                                 "status": "completed"
                             },
                             "files": [],
-                            "qa_pass": "yes"
+                            "check_state": "pass"
                         }
                     },
                     {
@@ -71,7 +71,7 @@ class TestQaCheckSummary(unittest.TestCase):
                         },
                         "inputs": {
                             "files": [
-                                {"path": "file4.txt"}
+                                {"path": "file4.txt", "file_type": "Raw Files"}
                             ]
                         },
                         "outputs": {
@@ -82,7 +82,7 @@ class TestQaCheckSummary(unittest.TestCase):
                                 "status": "completed"
                             },
                             "files": [],
-                            "qa_pass": "no"
+                            "check_state": "fail"
                         }
                     },
                     {
@@ -94,7 +94,7 @@ class TestQaCheckSummary(unittest.TestCase):
                         },
                         "inputs": {
                             "files": [
-                                {"path": "file2.txt"}
+                                {"path": "file2.txt", "file_type": "Raw Files"}
                             ]
                         },
                         "outputs": {

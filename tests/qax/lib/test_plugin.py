@@ -205,7 +205,7 @@ class TestQaxPlugins(unittest.TestCase):
         self.assertIsNone(matching_file_type)
 
     def test_qa_json_generation(self):
-        qa_json = QaJsonRoot(qa=None)
+        qa_json = QajsonRoot(qa=None)
         plugins = QaxPlugins()
         check_tool_plugin = plugins._load_plugin(
             TestQaxPlugins.check_tool_profile,
@@ -218,9 +218,9 @@ class TestQaxPlugins(unittest.TestCase):
         check_tool_plugin_other.update_qa_json(qa_json)
 
         files = [
-            Path('/my/test/bagfile.bag'),
-            Path('/my/test/csarfile.csar'),
-            Path('/my/test/shpfile.shp'),
+            (Path('/my/test/bagfile.bag'), 'Raw Files'),
+            (Path('/my/test/csarfile.csar'), 'Raw Files'),
+            (Path('/my/test/shpfile.shp'), 'Raw Files'),
         ]
         check_tool_plugin.update_qa_json_input_files(qa_json, files)
         check_tool_plugin_other.update_qa_json_input_files(qa_json, files)
