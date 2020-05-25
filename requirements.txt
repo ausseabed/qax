@@ -1,5 +1,6 @@
 coveralls
 jsonschema
+geojson
 pytest
 pytest-cov
 setuptools==44.*

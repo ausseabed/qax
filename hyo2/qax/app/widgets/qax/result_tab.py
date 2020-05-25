@@ -192,7 +192,7 @@ class ResultTab(QtWidgets.QMainWindow):
             ["ID", "Check", "Input", "Status", "QA Pass"])
 
         checks = qa_json_dict['qa'][self.qa_group]['checks']
-        logger.debug("checks: %s" % checks)
+
         nr_of_checks = len(checks)
         self.score_board.setRowCount(nr_of_checks)
         for idx in range(nr_of_checks):
