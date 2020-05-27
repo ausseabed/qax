@@ -32,6 +32,11 @@ def qt_custom_handler(error_type: QtCore.QtMsgType, error_context: QtCore.QMessa
 
 QtCore.qInstallMessageHandler(qt_custom_handler)
 
+# There's a Qt issue that causes seg faults when app is defined within a
+# function, so do it here.
+# more details https://stackoverflow.com/a/57792609/5416735
+app = QtWidgets.QApplication(sys.argv)
+
 
 def gui(dev_mode=False):
     """Run the QAX gui"""
@@ -40,7 +45,7 @@ def gui(dev_mode=False):
     sys.argv.append("--disable-web-security")
     # stop auto scaling on windows
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    app = QtWidgets.QApplication(sys.argv)
+
     # stop auto scaling on windows - part 2
     app.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
     app.setStyleSheet(AppStyle.load_stylesheet())
