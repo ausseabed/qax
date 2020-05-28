@@ -8,21 +8,24 @@ from hyo2.abc.app.qt_progress import QtProgress
 logger = logging.getLogger(__name__)
 
 
-class AbstractWidget(QtWidgets.QMainWindow):
+class AbstractWidget(QtWidgets.QWidget):
 
     abstract_here = os.path.abspath(os.path.join(os.path.dirname(__file__)))  # to be overloaded
 
     def __init__(self, main_win):
-        QtWidgets.QMainWindow.__init__(self)
+        QtWidgets.QWidget.__init__(self)
 
         self.main_win = main_win
         self.media = self.main_win.media
 
-        self.setContentsMargins(0, 0, 0, 0)
-
-        # add a frame
-        self.frame = QtWidgets.QFrame()
-        self.setCentralWidget(self.frame)
+        # self.setContentsMargins(0, 0, 0, 0)
+        #
+        # # add a frame
+        # self.vbox = QtWidgets.QVBoxLayout()
+        # self.setLayout(self.vbox)
+        #
+        # self.frame = QtWidgets.QFrame()
+        # self.vbox.addWidget(self.frame)
 
         # progress dialog
         self.progress = QtProgress(parent=self)

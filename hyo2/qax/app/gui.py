@@ -48,7 +48,7 @@ def gui(dev_mode=False):
 
     # stop auto scaling on windows - part 2
     app.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
-    app.setStyleSheet(AppStyle.load_stylesheet())
+    # app.setStyleSheet(AppStyle.load_stylesheet())
 
     cfg_dir = GuiSettings.config()
     # setup user editable config directory

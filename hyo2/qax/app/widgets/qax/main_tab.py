@@ -2,6 +2,7 @@ import os
 import logging
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2.QtWidgets import QSizePolicy
 from hyo2.abc.lib.helper import Helper
 
 from hyo2.qax.app.gui_settings import GuiSettings
@@ -20,7 +21,7 @@ if Helper.is_darwin():
 logger = logging.getLogger(__name__)
 
 
-class MainTab(QtWidgets.QMainWindow):
+class MainTab(QtWidgets.QWidget):
 
     here = os.path.abspath(os.path.dirname(__file__))
 
@@ -28,13 +29,13 @@ class MainTab(QtWidgets.QMainWindow):
     generate_checks = QtCore.Signal(Path)
 
     def __init__(self, parent_win, prj):
-        QtWidgets.QMainWindow.__init__(self)
+        QtWidgets.QWidget.__init__(self)
 
         # store a project reference
         self.prj = prj
         self.prj.qa_json_path_changed.connect(self._on_qa_json_path_changed)
         self.parent_win = parent_win
-        self.media = self.parent_win.media
+        # self.media = self.parent_win.media
 
         # aux variables
         self.has_raw = False
@@ -47,10 +48,8 @@ class MainTab(QtWidgets.QMainWindow):
         self.selected_check_tools = []
 
         # ui
-        self.panel = QtWidgets.QFrame()
-        self.setCentralWidget(self.panel)
         self.vbox = QtWidgets.QVBoxLayout()
-        self.panel.setLayout(self.vbox)
+        self.setLayout(self.vbox)
 
         left_space = 100
         vertical_space = 1
@@ -66,6 +65,8 @@ class MainTab(QtWidgets.QMainWindow):
         self.vbox.addWidget(self.profile_selection)
 
         self.file_group_selection = FileGroupGroupBox(self, self.prj)
+        self.file_group_selection.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.vbox.addWidget(self.file_group_selection)
 
         self._on_check_tools_selected(
@@ -78,8 +79,8 @@ class MainTab(QtWidgets.QMainWindow):
         # data outputs
         self.savedData = QtWidgets.QGroupBox(
             "Data outputs [drap-and-drop the desired output folder]")
-        self.savedData.setStyleSheet(
-            "QGroupBox::title { color: rgb(155, 155, 155); }")
+        self.savedData.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.vbox.addWidget(self.savedData)
 
         vbox = QtWidgets.QVBoxLayout()
@@ -93,27 +94,29 @@ class MainTab(QtWidgets.QMainWindow):
         text_add_folder.setMinimumWidth(left_space)
         self.output_folder = QtWidgets.QListWidget()
         hbox.addWidget(self.output_folder)
-        self.output_folder.setMinimumHeight(GuiSettings.single_line_height())
-        self.output_folder.setMaximumHeight(GuiSettings.single_line_height())
         self.output_folder.clear()
         new_item = QtWidgets.QListWidgetItem()
+
         new_item.setIcon(
-            QtGui.QIcon(os.path.join(self.parent_win.media, 'folder.png')))
+            QtGui.QIcon(GuiSettings.icon_path('folder.png')))
         new_item.setText("{}".format(self.prj.output_folder))
         new_item.setFont(GuiSettings.console_font())
-        new_item.setForeground(GuiSettings.console_fg_color())
         self.output_folder.addItem(new_item)
+
         # Enable dropping onto the input ss list
         self.output_folder.setAcceptDrops(True)
         self.output_folder.installEventFilter(self)
         button_add_folder = QtWidgets.QPushButton()
         hbox.addWidget(button_add_folder)
-        button_add_folder.setFixedHeight(GuiSettings.single_line_height())
-        button_add_folder.setFixedWidth(GuiSettings.single_line_height())
         button_add_folder.setText(" .. ")
         button_add_folder.setToolTip('Add (or drag-and-drop) output folder')
         # noinspection PyUnresolvedReferences
         button_add_folder.clicked.connect(self.click_add_folder)
+
+        # size the list to be the same size as the button next to it
+        def resize_output_folder(event):
+            self.output_folder.setFixedHeight(event.size().height())
+        button_add_folder.resizeEvent = resize_output_folder
 
         # open folder
         hbox = QtWidgets.QHBoxLayout()
@@ -122,7 +125,6 @@ class MainTab(QtWidgets.QMainWindow):
 
         text_set_prj_folder = QtWidgets.QLabel("Create project folder: ")
         hbox.addWidget(text_set_prj_folder)
-        text_set_prj_folder.setFixedHeight(GuiSettings.single_line_height())
         self.output_prj_folder = QtWidgets.QCheckBox("")
         self.output_prj_folder.setToolTip(
             'Create a sub-folder with project name')
@@ -133,7 +135,6 @@ class MainTab(QtWidgets.QMainWindow):
 
         text_set_subfolders = QtWidgets.QLabel("Per-tool sub-folders: ")
         hbox.addWidget(text_set_subfolders)
-        text_set_subfolders.setFixedHeight(GuiSettings.single_line_height())
         self.output_subfolders = QtWidgets.QCheckBox("")
         self.output_subfolders.setToolTip('Create a sub-folder for each tool')
         self.output_subfolders.setChecked(self.prj.per_tool_folders)
@@ -145,8 +146,6 @@ class MainTab(QtWidgets.QMainWindow):
 
         button_default_output = QtWidgets.QPushButton()
         hbox.addWidget(button_default_output)
-        button_default_output.setFixedHeight(GuiSettings.single_line_height())
-        # button_open_output.setFixedWidth(GuiSettings.single_line_height())
         button_default_output.setText("Use default")
         button_default_output.setToolTip('Use the default output folder')
         # noinspection PyUnresolvedReferences
@@ -154,8 +153,6 @@ class MainTab(QtWidgets.QMainWindow):
 
         button_open_output = QtWidgets.QPushButton()
         hbox.addWidget(button_open_output)
-        button_open_output.setFixedHeight(GuiSettings.single_line_height())
-        # button_open_output.setFixedWidth(GuiSettings.single_line_height())
         button_open_output.setText("Open folder")
         button_open_output.setToolTip('Open the output folder')
         # noinspection PyUnresolvedReferences
@@ -163,12 +160,12 @@ class MainTab(QtWidgets.QMainWindow):
 
         hbox.addStretch()
 
-        self.vbox.addStretch()
+        # self.vbox.addStretch()
 
         # data outputs
         self.checksSuite = QtWidgets.QGroupBox("Checks suite")
-        self.checksSuite.setStyleSheet(
-            "QGroupBox::title { color: rgb(155, 155, 155); }")
+        self.checksSuite.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.vbox.addWidget(self.checksSuite)
 
         vbox = QtWidgets.QVBoxLayout()
@@ -179,8 +176,6 @@ class MainTab(QtWidgets.QMainWindow):
         hbox.addStretch()
         self.button_generate_checks = QtWidgets.QPushButton()
         hbox.addWidget(self.button_generate_checks)
-        self.button_generate_checks.setFixedHeight(
-            GuiSettings.single_line_height())
         self.button_generate_checks.setText("Generate")
         self.button_generate_checks.setToolTip(
             'Generate the QA JSON checks based on the selected profile')
@@ -192,15 +187,16 @@ class MainTab(QtWidgets.QMainWindow):
         # add folder
         hbox = QtWidgets.QHBoxLayout()
         vbox.addLayout(hbox)
+
         text_add_folder = QtWidgets.QLabel("QA JSON:")
         hbox.addWidget(text_add_folder)
         text_add_folder.setMinimumWidth(left_space)
         self.qa_json = QtWidgets.QListWidget()
         hbox.addWidget(self.qa_json)
-        self.qa_json.setFixedHeight(GuiSettings.single_line_height())
-        # self.qa_json.setMinimumHeight(GuiSettings.single_line_height())
-        # self.qa_json.setMaximumHeight(GuiSettings.single_line_height() * 2)
         self.qa_json.clear()
+
+        self.qa_json.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.qa_json.setSelectionMode(
             QtWidgets.QAbstractItemView.ExtendedSelection)
         self.qa_json.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -211,9 +207,14 @@ class MainTab(QtWidgets.QMainWindow):
         self.qa_json.setAcceptDrops(True)
         self.qa_json.installEventFilter(self)
         button_add_json = QtWidgets.QPushButton()
+
+        # size the list to be the same size as the button next to it
+        def resize_qa_json(event):
+            self.qa_json.setFixedHeight(event.size().height())
+        button_add_json.resizeEvent = resize_qa_json
+
         hbox.addWidget(button_add_json)
-        button_add_json.setFixedHeight(GuiSettings.single_line_height())
-        button_add_json.setFixedWidth(GuiSettings.single_line_height())
+
         button_add_json.setText(" .. ")
         button_add_json.setToolTip('Add (or drag-and-drop) QA JSON')
         # noinspection PyUnresolvedReferences
@@ -430,7 +431,7 @@ class MainTab(QtWidgets.QMainWindow):
             QtGui.QIcon(os.path.join(self.parent_win.media, 'folder.png')))
         new_item.setText("{}".format(self.prj.output_folder))
         new_item.setFont(GuiSettings.console_font())
-        new_item.setForeground(GuiSettings.console_fg_color())
+        #new_item.setForeground(GuiSettings.console_fg_color())
         self.output_folder.addItem(new_item)
 
         QtCore.QSettings().setValue(
@@ -487,10 +488,10 @@ class MainTab(QtWidgets.QMainWindow):
             new_item = QtWidgets.QListWidgetItem()
             if self.prj.qa_json_path.suffix == ".json":
                 new_item.setIcon(QtGui.QIcon(
-                    os.path.join(self.parent_win.media, 'json.png')))
+                    GuiSettings.icon_path('json.png')))
             new_item.setText(str(self.prj.qa_json_path))
             new_item.setFont(GuiSettings.console_font())
-            new_item.setForeground(GuiSettings.console_fg_color())
+            #new_item.setForeground(GuiSettings.console_fg_color())
             self.qa_json.addItem(new_item)
 
     def make_json_context_menu(self, pos):

@@ -1,9 +1,11 @@
 from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2.QtWidgets import QSizePolicy
 from typing import Optional, NoReturn
 import json
 import logging
 import os
 
+from hyo2.qax.app.widgets.qax.scoreboard_details import ScoreboardDetailsWidget
 from hyo2.qax.app.gui_settings import GuiSettings
 from ausseabed.qajson.model import QajsonRoot
 from hyo2.qax.lib.project import QAXProject
@@ -11,7 +13,7 @@ from hyo2.qax.lib.project import QAXProject
 logger = logging.getLogger(__name__)
 
 
-class ResultTab(QtWidgets.QMainWindow):
+class ResultTab(QtWidgets.QWidget):
     """ Displays the results of the check execution based on the contents of
     the qajson object.
     """
@@ -31,10 +33,8 @@ class ResultTab(QtWidgets.QMainWindow):
         self._qa_json = None
 
         # ui
-        self.panel = QtWidgets.QFrame()
-        self.setCentralWidget(self.panel)
         self.vbox = QtWidgets.QVBoxLayout()
-        self.panel.setLayout(self.vbox)
+        self.setLayout(self.vbox)
 
         self.set_view = None
         self.cur_view = 'Summary'
@@ -49,6 +49,8 @@ class ResultTab(QtWidgets.QMainWindow):
         self.score_board = None
         self.summary_group = None
         self.summary_table = None
+        self.scoreboard_details = None
+        self.scoreboard_selected_check = None
 
         self.cross_icon = QtGui.QIcon(GuiSettings.icon_path("cross.png"))
         self.tick_icon = QtGui.QIcon(GuiSettings.icon_path("tick.png"))
@@ -75,8 +77,6 @@ class ResultTab(QtWidgets.QMainWindow):
     def add_summary_view(self):
         # Score Board
         self.summary_group = QtWidgets.QGroupBox("Summary")
-        self.summary_group.setStyleSheet(
-            "QGroupBox::title { color: rgb(155, 155, 155); }")
         self.summary_group.setHidden(True)
         self.vbox.addWidget(self.summary_group)
         vbox = QtWidgets.QVBoxLayout()
@@ -151,8 +151,6 @@ class ResultTab(QtWidgets.QMainWindow):
     def add_json_view(self, qa_json_dict):
         # Json Text
         self.json_text_group = QtWidgets.QGroupBox("Json Text")
-        self.json_text_group.setStyleSheet(
-            "QGroupBox::title { color: rgb(155, 155, 155); }")
         self.json_text_group.setHidden(True)
         self.vbox.addWidget(self.json_text_group)
         vbox = QtWidgets.QVBoxLayout()
@@ -169,13 +167,24 @@ class ResultTab(QtWidgets.QMainWindow):
 
     def add_score_board_view(self, qa_json_dict):
         # Score Board
+        self.score_board_widget = QtWidgets.QWidget()
+
+        self.score_board_widget.setHidden(True)
+        self.vbox.addWidget(self.score_board_widget)
+        sb_vbox = QtWidgets.QVBoxLayout()
+        sb_vbox.setContentsMargins(0, 0, 0, 0)
+        self.score_board_widget.setLayout(sb_vbox)
+
+        splitter = QtWidgets.QSplitter()
+        splitter.setOrientation(QtCore.Qt.Vertical)
+        sb_vbox.addWidget(splitter)
+
         self.score_board_group = QtWidgets.QGroupBox("Score Board")
-        self.score_board_group.setStyleSheet(
-            "QGroupBox::title { color: rgb(155, 155, 155); }")
-        self.score_board_group.setHidden(True)
-        self.vbox.addWidget(self.score_board_group)
+        splitter.addWidget(self.score_board_group)
+
         vbox = QtWidgets.QVBoxLayout()
         self.score_board_group.setLayout(vbox)
+
         self.score_board = QtWidgets.QTableWidget()
         self.score_board.setSortingEnabled(True)
         self.score_board.setEditTriggers(
@@ -256,27 +265,43 @@ class ResultTab(QtWidgets.QMainWindow):
         self.score_board.horizontalHeader().setSectionResizeMode(
             4, QtWidgets.QHeaderView.ResizeToContents)
 
+        self.score_board.clicked.connect(self._on_clicked_scoreboard)
+
+        self.scoreboard_details = ScoreboardDetailsWidget(parent=self)
+        self.scoreboard_details.setVisible(False)
+        splitter.addWidget(self.scoreboard_details)
+
+    def _on_clicked_scoreboard(self, item):
+        selected_row = item.row()
+
+        # to get the right check we must be sure to get the data level that
+        # the user has selected
+        qajson_datalevel = getattr(self.qa_json.qa, self.qa_group)
+        check = self.qa_json.qa.raw_data.checks[selected_row]
+        self.scoreboard_selected_check = check
+        self.scoreboard_details.set_selected_check(
+            self.scoreboard_selected_check)
+        self.scoreboard_details.setVisible(True)
+
     def display_json(self):
         # logger.debug("displaying js: %s" % self.prj.inputs.qa_json.js)
         qa_json_dict = self.qa_json.to_dict()
 
-        # UI code taken from `checks_tab.py`
-        self.panel.deleteLater()
-        self.vbox.deleteLater()
+        while self.vbox.count():
+            child = self.vbox.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
 
-        button_width = 120
-        button_height = 35
-
-        # ui
-        self.panel = QtWidgets.QFrame()
-        self.setCentralWidget(self.panel)
-        self.vbox = QtWidgets.QVBoxLayout()
-        self.panel.setLayout(self.vbox)
-
+        gb = QtWidgets.QGroupBox()
+        # gb.setFixedHeight(40)
         hbox = QtWidgets.QHBoxLayout()
-        self.vbox.addLayout(hbox)
+        gb.setLayout(hbox)
 
-        hbox.addWidget(QtWidgets.QLabel("Data level:"))
+        self.vbox.addWidget(gb)
+
+        data_level_label = QtWidgets.QLabel("Data level:")
+        # data_level_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+        hbox.addWidget(data_level_label)
         possible_dl_names = ['raw_data', 'survey_products', 'chart_adequacy']
         data_level_names = [
             name
@@ -284,7 +309,8 @@ class ResultTab(QtWidgets.QMainWindow):
             if getattr(self.qa_json.qa, name) is not None
         ]
         self.set_data_level = QtWidgets.QComboBox()
-        self.set_data_level.setFixedHeight(button_height)
+        self.set_data_level.setSizePolicy(
+            QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.set_data_level.addItems(data_level_names)
         if self.qa_group in data_level_names:
             self.set_data_level.setCurrentText(self.qa_group)
@@ -298,7 +324,7 @@ class ResultTab(QtWidgets.QMainWindow):
 
         hbox.addStretch()
         self.set_view = QtWidgets.QComboBox()
-        self.set_view.setFixedHeight(button_height)
+        self.set_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.set_view.addItems(['Summary', 'Score Board', 'Json Text'])
         self.set_view.setCurrentText(self.cur_view)
         # noinspection PyUnresolvedReferences
@@ -307,8 +333,6 @@ class ResultTab(QtWidgets.QMainWindow):
         hbox.setSpacing(16)
 
         self.save_as = QtWidgets.QPushButton()
-        self.save_as.setFixedWidth(button_width)
-        self.save_as.setFixedHeight(button_height)
         self.save_as.setText("Save as")
         # noinspection PyUnresolvedReferences
         self.save_as.clicked.connect(self.on_save_as)
@@ -326,15 +350,15 @@ class ResultTab(QtWidgets.QMainWindow):
 
         if self.cur_view == "Json Text":
             self.json_text_group.setVisible(True)
-            self.score_board_group.setHidden(True)
+            self.score_board_widget.setHidden(True)
             self.summary_group.setHidden(True)
         elif self.cur_view == "Score Board":
             self.json_text_group.setHidden(True)
-            self.score_board_group.setVisible(True)
+            self.score_board_widget.setVisible(True)
             self.summary_group.setHidden(True)
         elif self.cur_view == "Summary":
             self.json_text_group.setHidden(True)
-            self.score_board_group.setHidden(True)
+            self.score_board_widget.setHidden(True)
             self.summary_group.setVisible(True)
 
     def on_set_data_level(self):

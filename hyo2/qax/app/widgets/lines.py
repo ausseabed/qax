@@ -13,7 +13,7 @@ class QHLine(QFrame):
         # self.setFrameShadow(QFrame.Sunken)
 
         self.setStyleSheet(
-            "QFrame { background-color: rgb(210, 216, 219); }")
+            "QFrame { border: 1px solid rgb(200, 200, 200);}")
         # hbox = QHBoxLayout()
         #
         # self.setLayout(hbox)

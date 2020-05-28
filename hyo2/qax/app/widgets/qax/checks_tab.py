@@ -8,12 +8,12 @@ from hyo2.abc.lib.helper import Helper
 logger = logging.getLogger(__name__)
 
 
-class ChecksTab(QtWidgets.QMainWindow):
+class ChecksTab(QtWidgets.QWidget):
 
     here = os.path.abspath(os.path.dirname(__file__))
 
     def __init__(self, parent_win, prj, qa_group: str = "survey_products"):
-        QtWidgets.QMainWindow.__init__(self)
+        QtWidgets.QWidget.__init__(self)
 
         # store a project reference
         self.prj = prj
@@ -22,10 +22,8 @@ class ChecksTab(QtWidgets.QMainWindow):
         self.qa_group = qa_group
 
         # ui
-        self.panel = QtWidgets.QFrame()
-        self.setCentralWidget(self.panel)
         self.vbox = QtWidgets.QVBoxLayout()
-        self.panel.setLayout(self.vbox)
+        self.setLayout(self.vbox)
 
         self.set_view = None
         self.cur_view = 'Json Text'
@@ -83,7 +81,6 @@ class ChecksTab(QtWidgets.QMainWindow):
 
         # Json Text
         self.json_text_group = QtWidgets.QGroupBox("Json Text")
-        self.json_text_group.setStyleSheet("QGroupBox::title { color: rgb(155, 155, 155); }")
         self.json_text_group.setHidden(True)
         self.vbox.addWidget(self.json_text_group)
         vbox = QtWidgets.QVBoxLayout()
@@ -95,7 +92,6 @@ class ChecksTab(QtWidgets.QMainWindow):
 
         # Score Board
         self.score_board_group = QtWidgets.QGroupBox("Score Board")
-        self.score_board_group.setStyleSheet("QGroupBox::title { color: rgb(155, 155, 155); }")
         self.score_board_group.setHidden(True)
         self.vbox.addWidget(self.score_board_group)
         vbox = QtWidgets.QVBoxLayout()

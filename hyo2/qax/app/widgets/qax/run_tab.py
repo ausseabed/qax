@@ -57,7 +57,7 @@ class QtCheckExecutor(QtCore.QThread, CheckExecutor):
         self.status_changed.emit(status)
 
 
-class RunTab(QtWidgets.QMainWindow):
+class RunTab(QtWidgets.QWidget):
 
     run_checks = QtCore.Signal()
 
@@ -66,10 +66,8 @@ class RunTab(QtWidgets.QMainWindow):
         self.prj = prj
         self.check_executor = None
 
-        self.panel = QtWidgets.QFrame()
-        self.setCentralWidget(self.panel)
         self.vbox = QtWidgets.QVBoxLayout()
-        self.panel.setLayout(self.vbox)
+        self.setLayout(self.vbox)
 
         # title
         label_name = QtWidgets.QLabel("Run checks")
@@ -98,8 +96,6 @@ class RunTab(QtWidgets.QMainWindow):
 
         # progress section
         self.progress_groupbox = QtWidgets.QGroupBox("Check execution status")
-        self.progress_groupbox.setStyleSheet(
-            "QGroupBox::title { color: rgb(155, 155, 155); }")
         vbox = QtWidgets.QVBoxLayout()
         self.progress_groupbox.setLayout(vbox)
 

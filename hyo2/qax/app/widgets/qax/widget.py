@@ -19,12 +19,12 @@ from ausseabed.qajson.model import QajsonRoot
 logger = logging.getLogger(__name__)
 
 
-class QAXWidget(AbstractWidget):
+class QAXWidget(QtWidgets.QTabWidget):
     # overloading
     here = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 
     def __init__(self, main_win):
-        AbstractWidget.__init__(self, main_win=main_win)
+        QtWidgets.QTabWidget.__init__(self)
         self.prj = QAXProject()
         self.prj.params.progress = QtProgress(self)
 
@@ -62,11 +62,14 @@ class QAXWidget(AbstractWidget):
             self.prj.params.subfolders = (export_subfolders == "true")
 
         # make tabs
-        self.tabs = QtWidgets.QTabWidget()
-        self.setCentralWidget(self.tabs)
-        self.tabs.setContentsMargins(0, 0, 0, 0)
+        self.tabs = self #QtWidgets.QTabWidget()
+
+        # self.vbox = QtWidgets.QVBoxLayout()
+        # self.setLayout(self.vbox)
+        # self.vbox.addWidget(self.tabs)
+        # self.tabs.setContentsMargins(0, 0, 0, 0)
         self.tabs.setIconSize(QtCore.QSize(36, 36))
-        self.tabs.setTabPosition(QtWidgets.QTabWidget.South)
+        # self.tabs.setTabPosition(QtWidgets.QTabWidget.South)
         # main tab
         self.tab_inputs = MainTab(parent_win=self, prj=self.prj)
         self.tab_inputs.profile_selected.connect(self._on_profile_selected)
@@ -74,7 +77,8 @@ class QAXWidget(AbstractWidget):
         # noinspection PyArgumentList
         self.idx_inputs = self.tabs.insertTab(
             0, self.tab_inputs,
-            QtGui.QIcon(os.path.join(self.media, 'qax.png')), "")
+            QtGui.QIcon(GuiSettings.icon_path('qax.png')), "")
+
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
 
         self.tab_run = RunTab(self.prj)
@@ -82,14 +86,14 @@ class QAXWidget(AbstractWidget):
         self.tab_run.run_checks.connect(self._on_execute_checks)
         self.idx_run = self.tabs.insertTab(
             1, self.tab_run,
-            QtGui.QIcon(os.path.join(self.media, 'play.png')), "")
+            QtGui.QIcon(GuiSettings.icon_path('play.png')), "")
         self.tabs.setTabToolTip(self.idx_run, "Run Checks")
 
         self.tab_result = ResultTab(self.prj)
         self.tab_result.objectName = "tab_result"
         self.idx_result = self.tabs.insertTab(
             2, self.tab_result,
-            QtGui.QIcon(os.path.join(self.media, 'result.png')), "")
+            QtGui.QIcon(GuiSettings.icon_path('result.png')), "")
         self.tabs.setTabToolTip(self.idx_result, "View check results")
 
         # # Mate tab
@@ -160,9 +164,9 @@ class QAXWidget(AbstractWidget):
         new_index = self.tabs.count() - 1
         self.tabs.tabBar().moveTab(old_index, new_index)
 
-        self.tabs.setStyleSheet(
-            "QTabBar::tab:first { margin-right:20px;}"
-        )
+        # self.tabs.setStyleSheet(
+        #     "QTabBar::tab:first { margin-right:20px;}"
+        # )
 
     def _on_profile_selected(self, profile: QaxConfigProfile):
         self.profile = profile

@@ -24,6 +24,7 @@ class FileGroupWidget(QtWidgets.QWidget):
 
     def __init__(self, file_group: QaxFileGroup, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
+        self.setMinimumHeight(40)
 
         self.file_group = file_group
         hbox = QtWidgets.QHBoxLayout()
@@ -38,11 +39,14 @@ class FileGroupWidget(QtWidgets.QWidget):
         label_layout = QtWidgets.QVBoxLayout()
         label_layout.setAlignment(QtCore.Qt.AlignTop)
         label = QtWidgets.QLabel("{}:".format(file_group.name))
+        label.setWordWrap(True)
         label.setMinimumWidth(left_space)
+        label.setMaximumWidth(left_space)
         label_layout.addWidget(label)
         hbox.addLayout(label_layout)
 
         self.file_list = QtWidgets.QListWidget()
+        self.file_list.setMinimumHeight(40)
         hbox.addWidget(self.file_list)
         self.file_list.setSelectionMode(
             QtWidgets.QAbstractItemView.ExtendedSelection)
@@ -50,7 +54,6 @@ class FileGroupWidget(QtWidgets.QWidget):
         self.file_list.customContextMenuRequested.connect(
             self.__make_context_menu)
         self.file_list.setAlternatingRowColors(True)
-        self.file_list.setMaximumHeight(100)
         # Enable dropping onto the input ss list
         self.file_list.setAcceptDrops(True)
         self.file_list.installEventFilter(self)
@@ -59,9 +62,9 @@ class FileGroupWidget(QtWidgets.QWidget):
         button_layout.setAlignment(QtCore.Qt.AlignTop)
         self.add_file_button = QtWidgets.QPushButton()
         button_layout.addWidget(self.add_file_button)
-        self.add_file_button.setFixedHeight(GuiSettings.single_line_height())
-        self.add_file_button.setFixedWidth(GuiSettings.single_line_height())
-        self.add_file_button.setText(" + ")
+        # self.add_file_button.setFixedHeight(GuiSettings.single_line_height())
+        # self.add_file_button.setFixedWidth(GuiSettings.single_line_height())
+        self.add_file_button.setText("+")
         self.add_file_button.setToolTip(
             "Add (or drag-and-drop) the survey {} files"
             .format(file_group.name))
@@ -205,7 +208,7 @@ class FileGroupWidget(QtWidgets.QWidget):
             file_item = QtWidgets.QListWidgetItem()
             file_item.setText(selected_file)
             file_item.setFont(GuiSettings.console_font())
-            file_item.setForeground(GuiSettings.console_fg_color())
+            # file_item.setForeground(GuiSettings.console_fg_color())
 
             path = Path(selected_file)
             matching_file_type = self.file_group.matching_file_type(path)
@@ -233,8 +236,6 @@ class FileGroupGroupBox(QtWidgets.QGroupBox):
 
     def __init__(self, parent_win, prj):
         QtWidgets.QGroupBox.__init__(self, "Survey Products")
-        self.setStyleSheet("QGroupBox::title { color: rgb(155, 155, 155); }")
-
         self.prj = prj
         self.parent_win = parent_win
         self.file_group_widgets = []
@@ -252,8 +253,7 @@ class FileGroupGroupBox(QtWidgets.QGroupBox):
         hbox.addStretch()
         self.clear_button = QtWidgets.QPushButton()
         hbox.addWidget(self.clear_button)
-        self.clear_button.setFixedHeight(GuiSettings.single_line_height())
-        # button_clear_data.setFixedWidth(GuiSettings.single_line_height())
+
         self.clear_button.setText("Clear data")
         self.clear_button.setToolTip('Clear all data loaded')
         # noinspection PyUnresolvedReferences
@@ -261,8 +261,6 @@ class FileGroupGroupBox(QtWidgets.QGroupBox):
         # info
         manual_button = QtWidgets.QPushButton()
         hbox.addWidget(manual_button)
-        manual_button.setFixedHeight(GuiSettings.single_line_height())
-        manual_button.setFixedWidth(GuiSettings.single_line_height())
         icon_info = QtCore.QFileInfo(
             os.path.join(GuiSettings.media(), 'small_info.png'))
         manual_button.setIcon(QtGui.QIcon(icon_info.absoluteFilePath()))
@@ -300,6 +298,8 @@ class FileGroupGroupBox(QtWidgets.QGroupBox):
         """ Updates the various lists of files based on the `file_groups`
         list
         """
+        self.setMinimumHeight(40 + 40 * len(file_groups))
+
         if self.no_checks_selected_layout is not None:
             self.no_checks_selected_layout.setParent(None)
             self.no_checks_selected_layout = None

@@ -7,6 +7,7 @@ from urllib.error import URLError
 import socket
 import logging
 from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2.QtCore import QSettings
 
 from hyo2.abc.app.dialogs.exception.exception_dialog import ExceptionDialog
 from hyo2.abc.app.tabs.info.info_tab import InfoTab
@@ -35,6 +36,12 @@ class MainWin(QtWidgets.QMainWindow):
         self.setMinimumSize(QtCore.QSize(500, 500))
         self.resize(QtCore.QSize(920, 840))
 
+        self.settings = QSettings('settings.ini', QSettings.IniFormat)
+        self.resize(QtCore.QSize(
+            int(self.settings.value("qax_app_width", defaultValue=920)),
+            int(self.settings.value("qax_app_height", defaultValue=840)),
+        ))
+
         # noinspection PyArgumentList
         _app = QtCore.QCoreApplication.instance()
         _app.setApplicationName('%s' % self.name)
@@ -55,103 +62,13 @@ class MainWin(QtWidgets.QMainWindow):
             except AttributeError as e:
                 logger.debug("Unable to change app icon: %s" % e)
 
-        # make tabs
-        self.tabs = QtWidgets.QTabWidget()
-        self.setCentralWidget(self.tabs)
-        self.tabs.setIconSize(QtCore.QSize(52, 52))
-        # qaqc tab
-        self.tab_qax = QAXWidget(main_win=self)
-        # noinspection PyArgumentList
-        idx = self.tabs.insertTab(0, self.tab_qax, QtGui.QIcon(app_info.app_icon_path), "")
-        self.tabs.setTabToolTip(idx, "QAX")
-        # info
-        self.tab_info = InfoTab(lib_info=lib_info, app_info=app_info,
-                                with_online_manual=True,
-                                with_offline_manual=True,
-                                with_bug_report=True,
-                                with_hydroffice_link=True,
-                                with_ccom_link=True,
-                                with_noaa_link=True,
-                                with_unh_link=False,
-                                with_license=True,
-                                with_noaa_57=True,
-                                with_ausseabed_link=True,
-                                main_win=self
-                                )
-        # noinspection PyArgumentList
-        idx = self.tabs.insertTab(1, self.tab_info,
-                                  QtGui.QIcon(os.path.join(self.media, 'info.png')), "")
-        self.tabs.setTabToolTip(idx, "Info")
+        self.qax_widget = QAXWidget(main_win=self)
+        self.qax_widget.setDocumentMode(True)
 
-        # init default settings
-        settings = QtCore.QSettings()
-        start_tab = settings.value("start_tab")
-        if (start_tab is None) or (start_tab > 0):
-            start_tab = 0
-            settings.setValue("start_tab", start_tab)
-        self.tabs.setCurrentIndex(start_tab)
-
-        self.statusBar().setStyleSheet("QStatusBar{color:rgba(0,0,0,128);font-size: 8pt;}")
-        self.status_bar_normal_style = self.statusBar().styleSheet()
-        self.statusBar().showMessage("%s" % app_info.app_version, 2000)
-        timer = QtCore.QTimer(self)
-        # noinspection PyUnresolvedReferences
-        timer.timeout.connect(self.update_gui)
-        # noinspection PyArgumentList
-        timer.start(300000)  # 5 mins
-        self.update_gui()
+        self.setCentralWidget(self.qax_widget)
 
     def initialize(self):
-        self.tab_qax.initialize()
-
-    def update_gui(self):
-        msg = str()
-        tokens = list()
-
-        new_release = False
-        new_bugfix = False
-        latest_version = None
-        try:
-            response = urlopen(app_info.app_latest_url, timeout=1)
-            latest_version = response.read().split()[0].decode()
-
-            cur_maj, cur_min, cur_fix = app_info.app_version.split('.')
-            lat_maj, lat_min, lat_fix = latest_version.split('.')
-
-            if int(lat_maj) > int(cur_maj):
-                new_release = True
-
-            elif (int(lat_maj) == int(cur_maj)) and (int(lat_min) > int(cur_min)):
-                new_release = True
-
-            elif (int(lat_maj) == int(cur_maj)) and (int(lat_min) == int(cur_min)) and (int(lat_fix) > int(cur_fix)):
-                new_bugfix = True
-
-        except (URLError, ssl.SSLError, socket.timeout) as e:
-            logger.info("unable to check latest release: %s" % e)
-
-        except ValueError as e:
-            logger.info("unable to parse version: %s" % e)
-
-        if new_release:
-            logger.info("new release available: %s" % latest_version)
-            tokens.append("New release available: %s" % latest_version)
-            self.statusBar().setStyleSheet("QStatusBar{background-color:rgba(255,0,0,128);font-size: 8pt;}")
-
-        elif new_bugfix:
-            logger.info("new bugfix available: %s" % latest_version)
-            tokens.append("New bugfix available: %s" % latest_version)
-            self.statusBar().setStyleSheet("QStatusBar{background-color:rgba(255,255,0,128);font-size: 8pt;}")
-
-        else:
-            self.statusBar().setStyleSheet(self.status_bar_normal_style)
-
-        msg += "|".join(tokens)
-
-        self.statusBar().showMessage(msg, 3000000)
-
-    def change_info_url(self, url):
-        self.tab_info.change_url(url)
+        self.qax_widget.initialize()
 
     def exception_hook(self, ex_type: type, ex_value: BaseException, tb: traceback) -> None:
         sys.__excepthook__(ex_type, ex_value, tb)
@@ -189,21 +106,20 @@ class MainWin(QtWidgets.QMainWindow):
         reply = self.do_you_really_want("Quit", "quit %s" % self.name)
 
         if reply == QtWidgets.QMessageBox.Yes:
-
-            # store current tab
-            settings = QtCore.QSettings()
-            settings.setValue("start_tab", self.tabs.currentIndex())
-
+            # store window size
+            self.settings.setValue("qax_app_width", self.size().width())
+            self.settings.setValue("qax_app_height", self.size().height())
             event.accept()
             super().closeEvent(event)
-
         else:
-
             event.ignore()
 
     def do(self):
         logger.warning("DEV MODE")
         from ausseabed.qajson.parser import QajsonParser
-        self.tab_qax.tab_inputs._add_json(QajsonParser.example_paths()[-1])
-        self.tab_qax.change_tabs(self.tab_qax.idx_qc_tools)
-        self.tab_qax.tab_qc_tools.display_json()
+        print(QajsonParser.example_paths()[-1])
+        from pathlib import Path
+        qajsonparser = QajsonParser(Path(QajsonParser.example_paths()[-1]))
+        self.qax_widget.tab_run.prj.qa_json = qajsonparser.root
+        # self.qax_widget.tab_inputs._add_json(QajsonParser.example_paths()[-1])
+        # self.qax_widget.tab_qc_tools.display_json()

@@ -29,8 +29,6 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         self.config = config
         self.check_tool_checkboxes = []
 
-        self.setStyleSheet("QGroupBox::title { color: rgb(155, 155, 155); }")
-
         vbox = QtWidgets.QVBoxLayout()
         self.setLayout(vbox)
 
@@ -46,7 +44,7 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
 
         self.profile_combobox.currentIndexChanged.connect(self.on_set_profile)
         hbox.addWidget(self.profile_combobox)
-        self.setStyleSheet("QComboBox { min-width:300px; }")
+        self.setStyleSheet("QComboBox { min-width:400px; }")
 
         self.profile_description_label = QtWidgets.QLabel("")
         hbox.addWidget(self.profile_description_label)

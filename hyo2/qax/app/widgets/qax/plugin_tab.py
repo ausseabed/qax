@@ -13,23 +13,21 @@ from hyo2.qax.lib.plugin import QaxCheckToolPlugin
 logger = logging.getLogger(__name__)
 
 
-class PluginTab(QtWidgets.QMainWindow):
+class PluginTab(QtWidgets.QWidget):
 
     def __init__(self, parent_win, prj, plugin: QaxCheckToolPlugin):
-        QtWidgets.QMainWindow.__init__(self)
+        QtWidgets.QWidget.__init__(self)
 
         # store a project reference
         self.prj = prj
         self.parent_win = parent_win
-        self.media = self.parent_win.media
+        # self.media = self.parent_win.media
         self.plugin = plugin
 
         self.check_widgets = []
 
-        self.panel = QtWidgets.QFrame()
-        self.setCentralWidget(self.panel)
         self.vbox = QtWidgets.QVBoxLayout()
-        self.panel.setLayout(self.vbox)
+        self.setLayout(self.vbox)
 
         # title
         label_name = QtWidgets.QLabel(plugin.name)
@@ -37,8 +35,6 @@ class PluginTab(QtWidgets.QMainWindow):
         self.vbox.addWidget(label_name)
 
         self.groupbox_checks = QtWidgets.QGroupBox("Checks")
-        self.groupbox_checks.setStyleSheet(
-            "QGroupBox::title { color: rgb(155, 155, 155); }")
         self.groupbox_checks.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.vbox.addWidget(self.groupbox_checks)
