@@ -111,74 +111,95 @@ Pane {
           longitude: 134.0719485
         }
 
-
-        MapPolyline {
-          line.width: 3
-          line.color: 'green'
-          path: [
-            { latitude: -27, longitude: 153.0 },
-            { latitude: -27, longitude: 154.1 },
-            { latitude: -28, longitude: 153.5 },
-            { latitude: -29, longitude: 153.5 }
-          ]
-        }
-
-        Repeater {
-          model: manager.map_lines
-          MapPolyline {
-            line.width: 3
-            line.color: modelData.color
-            path: modelData.points
-          }
-        }
-
-        MapQuickItem {
-          anchorPoint: Qt.point(2.5, 2.5)
-          coordinate: QtPositioning.coordinate(-28, 153.5)
-          // zoomLevel: 0
-          sourceItem: Rectangle {
-            width:  20
-            height: 20
-            radius: 10
-            border.color: "white"
-            color: "red"
-            border.width: 1
-          }
-        }
-
-        Repeater {
-          model: manager.map_points
-          MapQuickItem{
-            anchorPoint: Qt.point(modelData.size/2, modelData.size/2)
-            coordinate: QtPositioning.coordinate(modelData.coordinate.latitude, modelData.coordinate.longitude)
-            // zoomLevel: 0
-            sourceItem: Rectangle {
-              width:  modelData.size
-              height: modelData.size
-              radius: modelData.size / 2
+        MapItemView {
+          model: markersModel
+          delegate: MapQuickItem{
+            anchorPoint: Qt.point(markerSize/2, markerSize/2)
+            coordinate: QtPositioning.coordinate(markerPosition.x, markerPosition.y)
+            zoomLevel: 0
+            sourceItem: Rectangle{
+              width:  markerSize
+              height: markerSize
+              radius: markerSize/2
               border.color: "white"
-              color: modelData.color
+              color: markerColor
               border.width: 1
             }
           }
         }
 
-        Button {
-            text: "JSON Inline"
-            anchors.margins: 10
-            anchors.bottom: scale.top
-            anchors.top: parent.top
-            anchors.right: parent.right
-            onClicked: {
-                map.clearMapItems();
-                source.data = '{ "type": "FeatureCollection", "features": \
-                    [{ "type": "Feature", "properties": {}, "geometry": { \
-                    "type": "LineString", "coordinates": [[ -27, \
-                    153.0 ], [ -29, 153.5 ]]}}]}'
-            }
+        MapItemView {
+          model: linesModel
+          delegate: MapPolyline{
+            path: lineCoordinates
+            line.width: lineWidth
+            line.color: lineColor
+          }
         }
 
+        // MapPolyline {
+        //   line.width: 3
+        //   line.color: 'green'
+        //   path: [
+        //     { latitude: -27, longitude: 153.0 },
+        //     { latitude: -27, longitude: 154.1 },
+        //     { latitude: -28, longitude: 153.5 },
+        //     { latitude: -29, longitude: 153.5 }
+        //   ]
+        // }
 
+        // Repeater {
+        //   model: manager.map_lines
+        //   MapPolyline {
+        //     line.width: 3
+        //     line.color: modelData.color
+        //     path: modelData.points
+        //   }
+        // }
+
+        // MapQuickItem {
+        //   anchorPoint: Qt.point(2.5, 2.5)
+        //   coordinate: QtPositioning.coordinate(-28, 153.5)
+        //   // zoomLevel: 0
+        //   sourceItem: Rectangle {
+        //     width:  20
+        //     height: 20
+        //     radius: 10
+        //     border.color: "white"
+        //     color: "red"
+        //     border.width: 1
+        //   }
+        // }
+
+        //
+        // Repeater {
+        //   model: manager.map_points
+        //   MapQuickItem{
+        //     anchorPoint: Qt.point(modelData.size/2, modelData.size/2)
+        //     coordinate: QtPositioning.coordinate(modelData.coordinate.latitude, modelData.coordinate.longitude)
+        //     // zoomLevel: 0
+        //     sourceItem: Rectangle {
+        //       width:  modelData.size
+        //       height: modelData.size
+        //       radius: modelData.size / 2
+        //       border.color: "white"
+        //       color: modelData.color
+        //       border.width: 1
+        //     }
+        //   }
+        // }
+
+        Button {
+            id: fitButton
+            text: "Fit"
+            anchors.margins: 10
+            anchors.bottom: parent.bottom
+            anchors.top: scale.top
+            anchors.right: parent.right
+            onClicked: {
+                map.fitViewportToMapItems()
+            }
+        }
 
         Slider {
           id: zoomSlider;
