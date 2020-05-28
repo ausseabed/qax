@@ -110,6 +110,17 @@ Pane {
           latitude: -28.4924595
           longitude: 134.0719485
         }
+        property Rectangle lastSelected: null
+
+        MouseArea {
+          drag.target: parent
+          anchors.fill: parent
+          onClicked: {
+            if (map.lastSelected) {
+              map.lastSelected.state = "";
+            }
+          }
+        }
 
         MapItemView {
           model: markersModel
@@ -118,12 +129,32 @@ Pane {
             coordinate: QtPositioning.coordinate(markerPosition.x, markerPosition.y)
             zoomLevel: 0
             sourceItem: Rectangle{
+              id: markerRect
               width:  markerSize
               height: markerSize
               radius: markerSize/2
               border.color: "white"
               color: markerColor
               border.width: 1
+
+              MouseArea {
+                drag.target: parent
+                anchors.fill: parent
+                onClicked: {
+                  if (map.lastSelected) {
+                    map.lastSelected.state = "";
+                  }
+                  markerRect.state == 'selected' ? markerRect.state = "" : markerRect.state = 'selected';
+                  map.lastSelected = markerRect
+                }
+              }
+
+              states: [
+                State {
+                  name: "selected"
+                  PropertyChanges { target: markerRect; border.width: 4 }
+                }
+              ]
             }
           }
         }
