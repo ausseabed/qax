@@ -112,7 +112,6 @@ Pane {
         property Rectangle lastSelected: null
 
         MouseArea {
-          drag.target: parent
           anchors.fill: parent
           onClicked: {
             manager.selected_properties = {};
@@ -138,7 +137,6 @@ Pane {
               border.width: 1
 
               MouseArea {
-                drag.target: parent
                 anchors.fill: parent
                 onClicked: {
                   manager.selected_properties = markerProperties
