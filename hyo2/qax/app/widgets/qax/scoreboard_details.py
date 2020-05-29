@@ -16,10 +16,14 @@ class Manager(QtCore.QObject):
     messagesChanged = Signal()
     input_files_changed = Signal()
     map_lines_changed = Signal()
+    selected_properties_changed = Signal()
+    selected_properties_table_changed = Signal()
 
     def __init__(self, parent=None):
         super(Manager, self).__init__(parent)
         self._check = None
+        self._selected_properties = {}
+        self._selected_properties_table = []
 
     @Property(str, notify=nameChanged)
     def name(self):
@@ -38,6 +42,49 @@ class Manager(QtCore.QObject):
         if self._check is None:
             return []
         return [f.path for f in self._check.inputs.files]
+
+    @Property('QVariantList', notify=selected_properties_table_changed)
+    def selected_properties_table(self):
+        return self._selected_properties_table
+
+    def get_selected_properties(self):
+        return self._selected_properties
+
+    def set_selected_properties(self, value):
+        # check that a dictionary was previously selected, and that the
+        # keys are the same in old and new selections. This ensures we only
+        # track changes when the same kind of thing is selected.
+        d_1 = self._selected_properties
+        d_2 = value
+        changed_props = {}
+        if (self._selected_properties is not None
+                and set(d_1.keys()) == set(d_2.keys())):
+            changed_props = {
+                k: d_2[k]
+                for k, _ in set(d_2.items()) - set(d_1.items())
+            }
+
+        self._selected_properties = value
+
+        props_table = []
+        import random
+        for key, value in self._selected_properties.items():
+            props_table.append({
+                'key': key,
+                'value': value,
+                'changed': key in changed_props
+            })
+        self._selected_properties_table = props_table
+
+        self.selected_properties_changed.emit()
+        self.selected_properties_table_changed.emit()
+
+    selected_properties = Property(
+        'QVariantMap',
+        fget=get_selected_properties,
+        fset=set_selected_properties,
+        notify=selected_properties_changed
+    )
 
     def set_check(self, check):
         self._check = check

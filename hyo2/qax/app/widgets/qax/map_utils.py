@@ -4,10 +4,11 @@ from PySide2.QtGui import QColor
 
 
 class MarkerItem(object):
-    def __init__(self, position, color=QColor("red"), size=20):
+    def __init__(self, position, color=QColor("red"), size=20, properties={}):
         self._position = position
         self._color = color
         self._size = size
+        self._properties = properties
 
     def position(self):
         return self._position
@@ -26,6 +27,12 @@ class MarkerItem(object):
 
     def setSize(self, value):
         self._size = size
+
+    def properties(self):
+        return self._properties
+
+    def set_properties(self, value):
+        self._properties = value
 
 
 class LineItem(object):
@@ -57,11 +64,13 @@ class MarkersModel(QAbstractListModel):
     PositionRole = Qt.UserRole + 1
     ColorRole = Qt.UserRole + 2
     SizeRole = Qt.UserRole + 3
+    PropertiesRole = Qt.UserRole + 4
 
     _roles = {
         PositionRole: QByteArray(b"markerPosition"),
         ColorRole: QByteArray(b"markerColor"),
-        SizeRole: QByteArray(b"markerSize")
+        SizeRole: QByteArray(b"markerSize"),
+        PropertiesRole: QByteArray(b"markerProperties")
     }
 
     def __init__(self, parent=None):
@@ -85,6 +94,8 @@ class MarkersModel(QAbstractListModel):
             return marker.color()
         elif role == MarkersModel.SizeRole:
             return marker.size()
+        elif role == MarkersModel.PropertiesRole:
+            return marker.properties()
 
         return QVariant()
 
@@ -97,6 +108,8 @@ class MarkersModel(QAbstractListModel):
                 marker.setColor(value)
             if role == MarkersModel.SizeRole:
                 marker.setSize(value)
+            if role == MarkersModel.PropertiesRole:
+                marker.set_properties(value)
             self.dataChanged.emit(index, index)
             return True
         return QAbstractListModel.setData(self, index, value, role)
@@ -140,7 +153,8 @@ class MarkersModel(QAbstractListModel):
 
             new_marker = MarkerItem(
                 QPointF(coordinate[1], coordinate[0]),
-                QColor(color)
+                color=QColor(color),
+                properties=feature['properties']
             )
             new_items.append(new_marker)
 

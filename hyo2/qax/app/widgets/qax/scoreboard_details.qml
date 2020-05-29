@@ -5,9 +5,11 @@ import QtPositioning 5.12
 import QtQuick.Controls 1.4
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.3
+import Qt.labs.qmlmodels 1.0
 
 Pane {
   padding: 0
+  id: mainPane
   // background: Rectangle {
   //   color: "#eeeeee"
   //   // color: "transparent"
@@ -90,9 +92,6 @@ Pane {
 
 
 
-
-
-
     ColumnLayout {
       Layout.fillWidth: true
       Layout.fillHeight: true
@@ -116,6 +115,7 @@ Pane {
           drag.target: parent
           anchors.fill: parent
           onClicked: {
+            manager.selected_properties = {};
             if (map.lastSelected) {
               map.lastSelected.state = "";
             }
@@ -141,6 +141,7 @@ Pane {
                 drag.target: parent
                 anchors.fill: parent
                 onClicked: {
+                  manager.selected_properties = markerProperties
                   if (map.lastSelected) {
                     map.lastSelected.state = "";
                   }
@@ -167,58 +168,6 @@ Pane {
             line.color: lineColor
           }
         }
-
-        // MapPolyline {
-        //   line.width: 3
-        //   line.color: 'green'
-        //   path: [
-        //     { latitude: -27, longitude: 153.0 },
-        //     { latitude: -27, longitude: 154.1 },
-        //     { latitude: -28, longitude: 153.5 },
-        //     { latitude: -29, longitude: 153.5 }
-        //   ]
-        // }
-
-        // Repeater {
-        //   model: manager.map_lines
-        //   MapPolyline {
-        //     line.width: 3
-        //     line.color: modelData.color
-        //     path: modelData.points
-        //   }
-        // }
-
-        // MapQuickItem {
-        //   anchorPoint: Qt.point(2.5, 2.5)
-        //   coordinate: QtPositioning.coordinate(-28, 153.5)
-        //   // zoomLevel: 0
-        //   sourceItem: Rectangle {
-        //     width:  20
-        //     height: 20
-        //     radius: 10
-        //     border.color: "white"
-        //     color: "red"
-        //     border.width: 1
-        //   }
-        // }
-
-        //
-        // Repeater {
-        //   model: manager.map_points
-        //   MapQuickItem{
-        //     anchorPoint: Qt.point(modelData.size/2, modelData.size/2)
-        //     coordinate: QtPositioning.coordinate(modelData.coordinate.latitude, modelData.coordinate.longitude)
-        //     // zoomLevel: 0
-        //     sourceItem: Rectangle {
-        //       width:  modelData.size
-        //       height: modelData.size
-        //       radius: modelData.size / 2
-        //       border.color: "white"
-        //       color: modelData.color
-        //       border.width: 1
-        //     }
-        //   }
-        // }
 
         Button {
             id: fitButton
@@ -252,11 +201,36 @@ Pane {
     }
 
 
+    TableView {
+      id: idtable
+      Layout.fillWidth: true
+      model: manager.selected_properties_table
+
+      TableViewColumn {
+        role: "key"
+        title: "key"
+        width: idtable.width / 2
+      }
+      TableViewColumn {
+        role: "value"
+        title: "value"
+        width: idtable.width / 2
+        delegate: Text {
+          font.bold: {
+            var item = manager.selected_properties_table[styleData.row];
+            if (item) {
+              return item.changed;
+            } else {
+              return false;
+            }
+          }
+          text: styleData.value
+        }
+      }
+    }
+
 
   }
-
-
-
 
 
 }
