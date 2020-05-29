@@ -46,43 +46,83 @@ Pane {
 
           ColumnLayout {
             width: mypane.width - mypane.padding * 2
+            spacing: 14
 
-            Text {
-              text: manager.name
-              font.bold: true
+            RowLayout {
               Layout.fillWidth: true
-            }
-
-
-            Text {
-              text: "Input files:"
-              color: "grey"
-              Layout.fillWidth: true
-            }
-
-            Repeater {
-              model: manager.input_files
               Text {
-                text: modelData
-                wrapMode: Text.Wrap
+                text: manager.name
+                font.bold: true
+              }
+              Item {
                 Layout.fillWidth: true
+              }
+              Text {
+                text: "QA state:"
+              }
+              Text {
+                text: manager.qa_state
+                font.bold: true
               }
             }
 
-            Text {
-              text: "Messages:"
-              color: "grey"
-              Layout.fillWidth: true
-            }
-
-            Repeater {
-              model: manager.messages
+            ColumnLayout {
+              visible: manager.execution_status == 'completed'
+              spacing: 4
               Text {
-                text: modelData
-                wrapMode: Text.Wrap
-                Layout.fillWidth: true
+                text: "Messages:"
+                color: "grey"
+              }
+              Repeater {
+                model: manager.messages
+                TextEdit {
+                  text: modelData
+                  wrapMode: Text.Wrap
+                  Layout.fillWidth: true
+                  readOnly: true
+                  selectByMouse: true
+                }
               }
             }
+
+            ColumnLayout {
+              visible: manager.execution_status == 'failed'
+              spacing: 4
+              Text {
+                text: "Error Messages:"
+                color: "red"
+              }
+              TextEdit {
+                text: manager.execution_error_message
+                wrapMode: Text.Wrap
+                color: "red"
+                opacity: 0.8
+                Layout.fillWidth: true
+                readOnly: true
+                selectByMouse: true
+              }
+            }
+
+            ColumnLayout {
+              spacing: 4
+              Text {
+                text: "Input files:"
+                color: "grey"
+                Layout.fillWidth: true
+              }
+              Repeater {
+                model: manager.input_files
+                TextEdit {
+                  text: modelData
+                  wrapMode: Text.Wrap
+                  Layout.fillWidth: true
+                  readOnly: true
+                  selectByMouse: true
+                }
+              }
+            }
+
+
 
           }
         }

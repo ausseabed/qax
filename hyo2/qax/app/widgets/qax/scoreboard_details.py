@@ -15,6 +15,9 @@ class Manager(QtCore.QObject):
     name_changed = Signal(str)
     messages_changed = Signal()
     input_files_changed = Signal()
+    qa_state_changed = Signal()
+    execution_status_changed = Signal()
+    execution_error_message_state_changed = Signal()
     map_lines_changed = Signal()
     selected_properties_changed = Signal()
     selected_properties_table_changed = Signal()
@@ -30,6 +33,28 @@ class Manager(QtCore.QObject):
         if self._check is None:
             return "n/a"
         return self._check.info.name
+
+    @Property(str, notify=qa_state_changed)
+    def qa_state(self):
+        if self._check is None or self._check.outputs is None:
+            return "n/a"
+        return self._check.outputs.check_state
+
+    @Property(str, notify=qa_state_changed)
+    def execution_status(self):
+        if (self._check is None or
+                self._check.outputs is None or
+                self._check.outputs.execution is None):
+            return "n/a"
+        return self._check.outputs.execution.status
+
+    @Property(str, notify=qa_state_changed)
+    def execution_error_message(self):
+        if (self._check is None or
+                self._check.outputs is None or
+                self._check.outputs.execution is None):
+            return "n/a"
+        return self._check.outputs.execution.error
 
     @Property('QVariantList', notify=messages_changed)
     def messages(self):
@@ -92,6 +117,9 @@ class Manager(QtCore.QObject):
         self._check = check
         self.name_changed.emit(self._check.info.name)
         self.messages_changed.emit()
+        self.qa_state_changed.emit()
+        self.execution_status_changed.emit()
+        self.execution_error_message_state_changed.emit()
         self.input_files_changed.emit()
         self.selected_properties_changed.emit()
         self.selected_properties_table_changed.emit()
