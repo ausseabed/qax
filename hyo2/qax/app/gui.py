@@ -44,10 +44,10 @@ def gui(dev_mode=False):
     # temporary fix for CORS warning (QTBUG-70228)
     sys.argv.append("--disable-web-security")
     # stop auto scaling on windows
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+    # os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
     # stop auto scaling on windows - part 2
-    app.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
+    # app.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
     # app.setStyleSheet(AppStyle.load_stylesheet())
 
     cfg_dir = GuiSettings.config()
