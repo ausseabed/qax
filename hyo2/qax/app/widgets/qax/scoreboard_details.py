@@ -12,8 +12,8 @@ from hyo2.qax.app.widgets.qax.map_utils import MarkerItem, LineItem, \
 
 
 class Manager(QtCore.QObject):
-    nameChanged = Signal(str)
-    messagesChanged = Signal()
+    name_changed = Signal(str)
+    messages_changed = Signal()
     input_files_changed = Signal()
     map_lines_changed = Signal()
     selected_properties_changed = Signal()
@@ -25,13 +25,13 @@ class Manager(QtCore.QObject):
         self._selected_properties = {}
         self._selected_properties_table = []
 
-    @Property(str, notify=nameChanged)
+    @Property(str, notify=name_changed)
     def name(self):
         if self._check is None:
             return "n/a"
         return self._check.info.name
 
-    @Property('QVariantList', notify=messagesChanged)
+    @Property('QVariantList', notify=messages_changed)
     def messages(self):
         if self._check is None:
             return []
@@ -88,8 +88,8 @@ class Manager(QtCore.QObject):
 
     def set_check(self, check):
         self._check = check
-        self.nameChanged.emit(self._check.info.name)
-        self.messagesChanged.emit()
+        self.name_changed.emit(self._check.info.name)
+        self.messages_changed.emit()
         self.input_files_changed.emit()
 
 

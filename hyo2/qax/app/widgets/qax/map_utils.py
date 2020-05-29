@@ -19,13 +19,13 @@ class MarkerItem(object):
     def color(self):
         return self._color
 
-    def setColor(self, value):
+    def set_color(self, value):
         self._color = value
 
     def size(self):
         return self._size
 
-    def setSize(self, value):
+    def set_size(self, value):
         self._size = size
 
     def properties(self):
@@ -44,19 +44,19 @@ class LineItem(object):
     def coordinates(self):
         return self._coordinates
 
-    def setCoordinates(self, value):
+    def set_coordinates(self, value):
         self._coordinates = value
 
     def color(self):
         return self._color
 
-    def setColor(self, value):
+    def set_color(self, value):
         self._color = value
 
     def width(self):
         return self._width
 
-    def setWidth(self, value):
+    def set_width(self, value):
         self._width = size
 
 
@@ -105,9 +105,9 @@ class MarkersModel(QAbstractListModel):
             if role == MarkersModel.PositionRole:
                 marker.setPosition(value)
             if role == MarkersModel.ColorRole:
-                marker.setColor(value)
+                marker.set_color(value)
             if role == MarkersModel.SizeRole:
-                marker.setSize(value)
+                marker.set_size(value)
             if role == MarkersModel.PropertiesRole:
                 marker.set_properties(value)
             self.dataChanged.emit(index, index)
@@ -206,11 +206,11 @@ class LinesModel(QAbstractListModel):
         if index.isValid():
             marker = self._items[index.row()]
             if role == MarkersModel.CoordinatesRole:
-                marker.setCoordinates(value)
+                marker.set_coordinates(value)
             if role == MarkersModel.ColorRole:
-                marker.setColor(value)
+                marker.set_color(value)
             if role == MarkersModel.WidthRole:
-                marker.setWidth(value)
+                marker.set_width(value)
             self.dataChanged.emit(index, index)
             return True
         return QAbstractListModel.setData(self, index, value, role)
