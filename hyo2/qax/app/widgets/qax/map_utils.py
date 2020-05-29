@@ -114,12 +114,12 @@ class MarkersModel(QAbstractListModel):
             return True
         return QAbstractListModel.setData(self, index, value, role)
 
-    def addMarker(self, marker):
+    def add(self, marker):
         self.beginInsertRows(QModelIndex(), self.rowCount(), self.rowCount())
         self._items.append(marker)
         self.endInsertRows()
 
-    def removeAllMarkers(self):
+    def remove_all(self):
         self.beginRemoveRows(QModelIndex(), 0, self.rowCount())
         self._items.clear()
         self.endRemoveRows()
@@ -129,17 +129,7 @@ class MarkersModel(QAbstractListModel):
             return Qt.ItemIsEnabled
         return QAbstractListModel.flags(index) | Qt.ItemIsEditable
 
-    def moveRandom(self, ix):
-        ind = self.index(ix, 0)
-        current_pos = self.data(ind, MarkersModel.PositionRole)
-        next_pos = current_pos + 0.002*QPointF(random() - 0.5, random() - 0.5)
-        self.setData(ind, next_pos, MarkersModel.PositionRole)
-        self.setData(
-            ind,
-            QColor(randint(0, 255), randint(0, 255), randint(0, 255)),
-            MarkersModel.ColorRole)
-
-    def addMarkersFromGeojson(self, geojson, color='red'):
+    def add_from_geojson(self, geojson, color='red'):
         new_items = []
         assert(geojson['type'] == 'FeatureCollection')
         features = geojson['features']
@@ -215,12 +205,12 @@ class LinesModel(QAbstractListModel):
             return True
         return QAbstractListModel.setData(self, index, value, role)
 
-    def addLine(self, line):
+    def add(self, line):
         self.beginInsertRows(QModelIndex(), self.rowCount(), self.rowCount())
         self._items.append(line)
         self.endInsertRows()
 
-    def removeAllLines(self):
+    def remove_all(self):
         self.beginRemoveRows(QModelIndex(), 0, self.rowCount())
         self._items.clear()
         self.endRemoveRows()
@@ -230,7 +220,7 @@ class LinesModel(QAbstractListModel):
             return Qt.ItemIsEnabled
         return QAbstractListModel.flags(index) | Qt.ItemIsEditable
 
-    def addLinesFromGeojson(self, geojson, color='red'):
+    def add_from_geojson(self, geojson, color='red'):
         new_lines = []
         assert(geojson['type'] == 'FeatureCollection')
         features = geojson['features']

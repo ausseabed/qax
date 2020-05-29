@@ -134,11 +134,11 @@ class ScoreboardDetailsWidget(QtWidgets.QGroupBox):
         return check.outputs.data['map']
 
     def set_selected_check(self, check: QajsonCheck):
-        self.markersModel.removeAllMarkers()
-        self.linesModel.removeAllLines()
+        self.markersModel.remove_all()
+        self.linesModel.remove_all()
         geojson = self.get_check_geojson(check)
         if geojson is not None:
-            self.markersModel.addMarkersFromGeojson(geojson)
-            self.linesModel.addLinesFromGeojson(geojson, color='blue')
+            self.markersModel.add_from_geojson(geojson)
+            self.linesModel.add_from_geojson(geojson, color='blue')
 
         self.manager.set_check(check)
