@@ -1,5 +1,8 @@
 syntax: glob
 
+# As written by qax
+settings.ini
+
 # temp files
 *.sh~
 *.*~
