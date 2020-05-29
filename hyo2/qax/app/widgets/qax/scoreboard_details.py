@@ -87,10 +87,14 @@ class Manager(QtCore.QObject):
     )
 
     def set_check(self, check):
+        self._selected_properties = {}
+        self._selected_properties_table = []
         self._check = check
         self.name_changed.emit(self._check.info.name)
         self.messages_changed.emit()
         self.input_files_changed.emit()
+        self.selected_properties_changed.emit()
+        self.selected_properties_table_changed.emit()
 
 
 class ScoreboardDetailsWidget(QtWidgets.QGroupBox):
