@@ -33,7 +33,7 @@ class MainWin(QtWidgets.QMainWindow):
         self.name = app_info.app_name
         self.version = app_info.app_version
         self.setWindowTitle('{} {}'.format(self.name, self.version))
-        self.setMinimumSize(QtCore.QSize(500, 500))
+        self.setMinimumSize(QtCore.QSize(500, 800))
         self.resize(QtCore.QSize(920, 840))
 
         self.settings = QSettings('settings.ini', QSettings.IniFormat)
