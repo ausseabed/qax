@@ -1,4 +1,4 @@
-GDAL==2.3.3
+GDAL==2.4.4
 PySide2
 appdirs
 numpy

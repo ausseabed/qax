@@ -19,10 +19,9 @@ def read(*parts):
 
 
 def find_version(*file_paths):
-    version_file = read(*file_paths)
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M, )
-    if version_match:
-        return version_match.group(1)
+    if os.path.isfile('version.txt'):
+        with open('version.txt', 'r') as file:
+            return file.read()
 
     raise RuntimeError("Unable to find version string.")
 
@@ -40,7 +39,8 @@ setup(
     package_data={
         "": [
             "media/*.png", "media/*.ico", "media/*.icns", "media/*.txt",
-            "config/*.json", "media/LICENSE", "schemas/**/*.json"],
+            "config/*.json", "media/LICENSE", "schemas/**/*.json",
+            "**/*.qml"],
     },
     zip_safe=False,
     setup_requires=[
