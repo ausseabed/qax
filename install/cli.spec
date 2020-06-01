@@ -15,9 +15,12 @@ proj_data = os.path.abspath(os.path.join(conda_prefix , 'Library\\share\\proj'))
 qt_platforms = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\platforms'))
 qt_webengine_res = os.path.abspath(os.path.join(conda_prefix , 'Library\\resources\\*'))
 qt_webengine = os.path.abspath(os.path.join(conda_prefix , 'Library\\bin\\QtWebEngineProcess.exe'))
-qt_libs = os.path.abspath(os.path.join(conda_prefix , 'Library\\bin'))
+qt_libs = os.path.abspath(os.path.join(conda_prefix , 'Library\\bin\\*.dll'))
 qml_libs = os.path.abspath(os.path.join(conda_prefix , 'Library\\qml'))
 pyside2_libs = os.path.abspath(os.path.join(conda_prefix , 'Lib\\site-packages\\PySide2'))
+styles_libs = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\styles'))
+platformthemes_libs = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\platformthemes'))
+geoservices_libs = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\geoservices'))
 
 bin_dir = os.path.abspath(os.path.join(conda_prefix , 'Library\\bin'))
 hooks_dir = os.path.join(spec_root ,'hooks')
@@ -35,6 +38,9 @@ a = Analysis(['cli.py'],
                  (qt_libs ,"."),
                  (qml_libs ,"."),
                  (pyside2_libs, "PySide2"),
+                 (styles_libs, "styles"),
+                 (platformthemes_libs, "plugins\\platformthemes"),
+                 (geoservices_libs, "geoservices"),
                  (r'..\version.txt', "."),
              ],
              hiddenimports=['PySide2.QtPrintSupport','PySide2.QtWebChannel','PySide2.QtWebEngineCore','PySide2.QtQuick', 'pyproj', 'pyproj.datadir', 'hyo2.abc', 'hyo2.mate','hyo2.qax','hyo2.mate.qax.plugin', 'hyo2.qax.plugins.test'],
