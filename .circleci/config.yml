@@ -38,6 +38,8 @@ jobs:
       - run:
           name: Activate the qax conda environment, update the version and install the package
           command: |
+            $env:CIRCLE_TAG | out-file -Encoding ascii -filepath ./version.txt
+            ls
             Write-Host "$env:CONDA_ROOT"
             conda install -y -c conda-forge certifi
             conda install -y -c conda-forge --file requirements_conda.txt
@@ -58,7 +60,6 @@ jobs:
       - run:
           name: Install PyInstaller and use it to build qax distribution, then zip
           command: |
-            $env:CIRCLE_TAG | out-file -Encoding ascii -filepath ./version.txt
             pip install pyinstaller
             pyinstaller .\install\cli.spec
             ls
