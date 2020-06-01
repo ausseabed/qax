@@ -39,17 +39,7 @@ class QaCheckSummary():
                 version=check.info.version, data_level=data_level)
             summaries[nid] = summary
 
-        if (check.outputs is not None and check.outputs.execution is not None):
-            summary.total_executions += 1
-            if check.outputs.execution.status == 'failed':
-                summary.failed_executions += 1
-                summary.failed_execution_files.extend(check.inputs.files)
-            if check.outputs.check_state == 'fail':
-                summary.failed_check_state += 1
-                summary.failed_check_state_files.extend(check.inputs.files)
-            if check.outputs.check_state == 'warning':
-                summary.warning_check_state += 1
-                summary.warning_check_state_files.extend(check.inputs.files)
+        summary.add_check(check)
 
     @classmethod
     def get_summary(cls, qa_json: QajsonRoot) -> List['QaCheckSummary']:
@@ -90,6 +80,26 @@ class QaCheckSummary():
         self.failed_check_state_files = []
         self.warning_check_state = 0
         self.warning_check_state_files = []
+
+        # collection of checks that make up this summary
+        self.checks = []
+
+    def add_check(self, check) -> None:
+        """ Adds a check to this summary
+        """
+        self.checks.append(check)
+
+        if (check.outputs is not None and check.outputs.execution is not None):
+            self.total_executions += 1
+            if check.outputs.execution.status == 'failed':
+                self.failed_executions += 1
+                self.failed_execution_files.extend(check.inputs.files)
+            if check.outputs.check_state == 'fail':
+                self.failed_check_state += 1
+                self.failed_check_state_files.extend(check.inputs.files)
+            if check.outputs.check_state == 'warning':
+                self.warning_check_state += 1
+                self.warning_check_state_files.extend(check.inputs.files)
 
     def __repr__(self) -> str:
         return (

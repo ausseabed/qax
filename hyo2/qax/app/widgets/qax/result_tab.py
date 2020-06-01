@@ -6,6 +6,7 @@ import logging
 import os
 
 from hyo2.qax.app.widgets.qax.scoreboard_details import ScoreboardDetailsWidget
+from hyo2.qax.app.widgets.qax.summary_details import SummaryDetailsWidget
 from hyo2.qax.app.gui_settings import GuiSettings
 from ausseabed.qajson.model import QajsonRoot
 from hyo2.qax.lib.project import QAXProject
@@ -45,8 +46,10 @@ class ResultTab(QtWidgets.QWidget):
         self.execute_all = None
         self.json_text_group = None
         self.json_viewer = None
+        self.score_board_widget = None
         self.score_board_group = None
         self.score_board = None
+        self.summary_widget = None
         self.summary_group = None
         self.summary_table = None
         self.scoreboard_details = None
@@ -75,12 +78,25 @@ class ResultTab(QtWidgets.QWidget):
         self.display_json()
 
     def add_summary_view(self):
-        # Score Board
+        # Summary view
+        self.summary_widget = QtWidgets.QWidget()
+
+        self.summary_widget.setHidden(True)
+        self.vbox.addWidget(self.summary_widget)
+        s_vbox = QtWidgets.QVBoxLayout()
+        s_vbox.setContentsMargins(0, 0, 0, 0)
+        self.summary_widget.setLayout(s_vbox)
+
+        splitter = QtWidgets.QSplitter()
+        splitter.setOrientation(QtCore.Qt.Vertical)
+        s_vbox.addWidget(splitter)
+
         self.summary_group = QtWidgets.QGroupBox("Summary")
-        self.summary_group.setHidden(True)
-        self.vbox.addWidget(self.summary_group)
+        splitter.addWidget(self.summary_group)
+
         vbox = QtWidgets.QVBoxLayout()
         self.summary_group.setLayout(vbox)
+
         self.summary_table = QtWidgets.QTableWidget()
         self.summary_table.setSortingEnabled(True)
         self.summary_table.setEditTriggers(
@@ -147,6 +163,20 @@ class ResultTab(QtWidgets.QWidget):
             3, QtWidgets.QHeaderView.ResizeToContents)
         self.summary_table.horizontalHeader().setSectionResizeMode(
             4, QtWidgets.QHeaderView.ResizeToContents)
+
+        self.summary_table.clicked.connect(self._on_clicked_summary)
+
+        self.summary_details = SummaryDetailsWidget(parent=self)
+        self.summary_details.setVisible(False)
+        splitter.addWidget(self.summary_details)
+
+    def _on_clicked_summary(self, item):
+        selected_row = item.row()
+
+        summaries = self.prj.get_summary()
+        summary = summaries[selected_row]
+        self.summary_details.set_selected_summary(summary)
+        self.summary_details.setVisible(True)
 
     def add_json_view(self, qa_json_dict):
         # Json Text
@@ -351,15 +381,15 @@ class ResultTab(QtWidgets.QWidget):
         if self.cur_view == "Json Text":
             self.json_text_group.setVisible(True)
             self.score_board_widget.setHidden(True)
-            self.summary_group.setHidden(True)
+            self.summary_widget.setHidden(True)
         elif self.cur_view == "Score Board":
             self.json_text_group.setHidden(True)
             self.score_board_widget.setVisible(True)
-            self.summary_group.setHidden(True)
+            self.summary_widget.setHidden(True)
         elif self.cur_view == "Summary":
             self.json_text_group.setHidden(True)
             self.score_board_widget.setHidden(True)
-            self.summary_group.setVisible(True)
+            self.summary_widget.setVisible(True)
 
     def on_set_data_level(self):
         self.qa_group = self.set_data_level.currentText()
