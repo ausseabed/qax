@@ -33,6 +33,7 @@ jobs:
             $client = new-object System.Net.WebClient
             $client.DownloadFile("https://github.com/ausseabed/qajson/archive/master.zip","C:\tmp\ausseabed.qajson.zip")
             $client.DownloadFile("https://github.com/ausseabed/pyall/archive/master.zip","C:\tmp\pyall.zip")
+            $client.DownloadFile("https://github.com/ausseabed/pygsf/archive/master.zip","C:\tmp\pygsf.zip")
             $client.DownloadFile("https://github.com/ausseabed/hyo2_mate/archive/master.zip","C:\tmp\hyo2.mate.zip")
             $client.DownloadFile("https://github.com/hydroffice/hyo2_abc/archive/master.zip","C:\tmp\hyo2.abc.zip")
       - run:
@@ -52,6 +53,7 @@ jobs:
             pip install setuptools==44.*
             pip install C:\tmp\ausseabed.qajson.zip
             pip install C:\tmp\pyall.zip
+            pip install C:\tmp\pygsf.zip
             pip install C:\tmp\hyo2.mate.zip
             pip install pypiwin32
             conda install -y -c conda-forge --no-deps pyproj
