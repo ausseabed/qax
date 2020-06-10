@@ -24,6 +24,8 @@ class MainWin(QtWidgets.QMainWindow):
     here = os.path.abspath(os.path.dirname(__file__))
     media = os.path.join(here, "media")
 
+    exception_signal = QtCore.Signal(list)
+
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
 
@@ -41,6 +43,8 @@ class MainWin(QtWidgets.QMainWindow):
             int(self.settings.value("qax_app_width", defaultValue=920)),
             int(self.settings.value("qax_app_height", defaultValue=840)),
         ))
+
+        self.exception_signal.connect(self.show_exception_dialog)
 
         # noinspection PyArgumentList
         _app = QtCore.QCoreApplication.instance()
@@ -82,7 +86,25 @@ class MainWin(QtWidgets.QMainWindow):
             self.close()
             return
 
-        dlg = ExceptionDialog(app_info=app_info, lib_info=lib_info, ex_type=ex_type, ex_value=ex_value, tb=tb)
+        # Exceptions may be raised from background threads. So use signals
+        # and slots to pass the information that will be presented in the
+        # GUI dialog. It is not possible (causes seg fault) to show a dialog
+        # from a background thread (definately the case on macOS)
+        self.exception_signal.emit(
+            [app_info, lib_info, ex_type, ex_value, tb]
+        )
+
+    @QtCore.Slot(list)
+    def show_exception_dialog(self, params):
+        _app_info, _lib_info, ex_type, ex_value, tb = params
+
+        dlg = ExceptionDialog(
+            app_info=_app_info,
+            lib_info=_lib_info,
+            ex_type=ex_type,
+            ex_value=ex_value,
+            tb=tb
+        )
         ret = dlg.exec_()
         if ret == QtWidgets.QDialog.Rejected:
             if not dlg.user_triggered:
