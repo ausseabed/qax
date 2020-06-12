@@ -50,7 +50,7 @@ class CheckWidget(QtWidgets.QWidget):
             params_label = QtWidgets.QLabel("Parameters")
             params_layout.addWidget(params_label)
             params_label.setStyleSheet(
-                "QLabel { font: 12pt; font-weight: bold; "
+                "QLabel { font-weight: bold; "
                 "padding: 0px 0px 0px 0px;}")
             hbox.addLayout(params_layout)
             for check_param in self.check_reference.default_input_params:

@@ -86,15 +86,15 @@ class GuiSettings:
 
     @staticmethod
     def stylesheet_plugin_tab_titles():
-        return "QLabel { font: 16pt; font-weight: bold; padding: 0px 0px 0px 0px;}"
+        return "QLabel { font-weight: bold; }"
 
     @staticmethod
     def stylesheet_check_titles():
-        return "QLabel { font: 14pt; padding: 0px 0px 0px 0px;}"
+        return "QLabel { padding: 0px 0px 0px 0px;}"
 
     @staticmethod
     def stylesheet_check_param_name():
-        return "QLabel { font: 12pt; padding: 0px 0px 0px 0px;}"
+        return "QLabel { padding: 0px 0px 0px 0px;}"
 
     @staticmethod
     def stylesheet_info_button():
