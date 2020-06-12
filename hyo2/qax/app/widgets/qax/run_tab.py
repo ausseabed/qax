@@ -121,8 +121,12 @@ class RunTab(QtWidgets.QWidget):
         progress_label.setFixedWidth(80)
         hbox.addWidget(progress_label)
         self.progress_bar = QtWidgets.QProgressBar()
+        self.progress_bar.setTextVisible(True)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setAlignment(QtCore.Qt.AlignCenter)
         self.progress_bar.setStyleSheet(
             "QProgressBar::chunk { background-color: lightgrey; }")
+
         hbox.addWidget(self.progress_bar)
 
         self.vbox.addWidget(self.progress_groupbox)
