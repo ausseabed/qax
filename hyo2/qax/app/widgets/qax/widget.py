@@ -8,6 +8,7 @@ from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.checks_tab import ChecksTab
 from hyo2.qax.app.widgets.qax.main_tab import MainTab
 from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
+from hyo2.qax.app.widgets.qax.plugins_tab import PluginsTab
 from hyo2.qax.app.widgets.qax.result_tab import ResultTab
 from hyo2.qax.app.widgets.qax.run_tab import RunTab, QtCheckExecutor
 from hyo2.qax.app.widgets.widget import AbstractWidget
@@ -28,8 +29,6 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.prj = QAXProject()
         self.prj.params.progress = QtProgress(self)
 
-        # includes only the PluginTab instances, one per plugin
-        self.plugin_tabs = []
         self.profile = None  # QaxConfigProfile
 
         # init default settings
@@ -81,96 +80,38 @@ class QAXWidget(QtWidgets.QTabWidget):
 
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
 
+        self.tab_plugins = PluginsTab(parent_win=self, prj=self.prj)
+        self.idx_plugins = self.tabs.insertTab(
+            1, self.tab_plugins,
+            QtGui.QIcon(GuiSettings.icon_path('plugins.png')), "")
+        self.tabs.setTabToolTip(self.idx_plugins, "Plugins")
+
         self.tab_run = RunTab(self.prj)
         self.tab_run.objectName = "tab_run"
         self.tab_run.run_checks.connect(self._on_execute_checks)
         self.idx_run = self.tabs.insertTab(
-            1, self.tab_run,
+            2, self.tab_run,
             QtGui.QIcon(GuiSettings.icon_path('play.png')), "")
         self.tabs.setTabToolTip(self.idx_run, "Run Checks")
 
         self.tab_result = ResultTab(self.prj)
         self.tab_result.objectName = "tab_result"
         self.idx_result = self.tabs.insertTab(
-            2, self.tab_result,
+            3, self.tab_result,
             QtGui.QIcon(GuiSettings.icon_path('result.png')), "")
         self.tabs.setTabToolTip(self.idx_result, "View check results")
 
-        # # Mate tab
-        # self.tab_mate = ChecksTab(parent_win=self, prj=self.prj, qa_group="raw_data")
-        # # noinspection PyArgumentList
-        # self.idx_mate = self.tabs.insertTab(1, self.tab_mate,
-        #                                     QtGui.QIcon(os.path.join(self.media, 'mate.png')), "")
-        # self.tabs.setTabEnabled(self.idx_mate, False)
-        # self.tabs.setTabToolTip(self.idx_mate, "Mate")
-        # # QC Tools tab
-        # self.tab_qc_tools = ChecksTab(parent_win=self, prj=self.prj, qa_group="survey_products")
-        # # noinspection PyArgumentList
-        # self.idx_qc_tools = self.tabs.insertTab(2, self.tab_qc_tools,
-        #                                         QtGui.QIcon(os.path.join(self.media, 'qc_tools.png')), "")
-        # self.tabs.setTabEnabled(self.idx_qc_tools, False)
-        # self.tabs.setTabToolTip(self.idx_qc_tools, "QC Tools")
-        # # CA Tools tab
-        # self.tab_ca_tools = ChecksTab(parent_win=self, prj=self.prj, qa_group="chart_adequacy")
-        # # noinspection PyArgumentList
-        # self.idx_ca_tools = self.tabs.insertTab(3, self.tab_ca_tools,
-        #                                         QtGui.QIcon(os.path.join(self.media, 'ca_tools.png')), "")
-        # self.tabs.setTabEnabled(self.idx_ca_tools, False)
-        # self.tabs.setTabToolTip(self.idx_ca_tools, "CA Tools")
-        # noinspection PyUnresolvedReferences
         self.tabs.currentChanged.connect(self.change_tabs)
 
     def initialize(self):
         self.tab_inputs.initialize()
         # todo: save last selected profile and set here as default.
         self.profile = QaxConfig.instance().profiles[0]
-        self.update_plugin_tabs()
-
-    def update_plugin_tabs(self):
-        """ Updates what plugins are shown in the bottom tabs
-        """
-        for plugin_tab in self.plugin_tabs:
-            plugin_tab.setParent(None)
-        self.plugin_tabs.clear()
-
-        if self.profile is None:
-            return
-
-        # get plugin instances for current profile from singleton
-        plugins = (
-            QaxPlugins.instance().get_profile_plugins(self.profile)
-            .plugins
-        )
-
-        for plugin in plugins:
-            plugin_tab = PluginTab(
-                parent_win=self, prj=self.prj, plugin=plugin)
-            self.plugin_tabs.append(plugin_tab)
-            icon_path = GuiSettings.icon_path(plugin.icon)
-            if icon_path is not None:
-                tab_index = self.tabs.addTab(
-                    plugin_tab, QtGui.QIcon(icon_path), "")
-            else:
-                tab_index = self.tabs.addTab(plugin_tab, plugin.name)
-            self.tabs.setTabToolTip(tab_index, plugin.name)
-
-        # move the run tab so it is *always* the second tab
-        old_index = self.tabs.indexOf(self.tab_run)
-        new_index = self.tabs.count() - 1
-        self.tabs.tabBar().moveTab(old_index, new_index)
-
-        # move the result tab so it is *always* the last tab
-        old_index = self.tabs.indexOf(self.tab_result)
-        new_index = self.tabs.count() - 1
-        self.tabs.tabBar().moveTab(old_index, new_index)
-
-        # self.tabs.setStyleSheet(
-        #     "QTabBar::tab:first { margin-right:20px;}"
-        # )
+        self.tab_plugins.set_profile(self.profile)
 
     def _on_profile_selected(self, profile: QaxConfigProfile):
         self.profile = profile
-        self.update_plugin_tabs()
+        self.tab_plugins.set_profile(self.profile)
 
     def _on_generate_checks(self, path: Path):
         """ Read the feature files provided by the user"""
@@ -212,7 +153,7 @@ class QAXWidget(QtWidgets.QTabWidget):
             plugin_tab = next(
                 (
                     ptab
-                    for ptab in self.plugin_tabs
+                    for ptab in self.tab_plugins.plugin_tabs
                     if ptab.plugin == plugin_check_tool
                 ),
                 None
