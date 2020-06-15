@@ -166,14 +166,14 @@ class FileGroupWidget(QtWidgets.QWidget):
         selections, _ = QtWidgets.QFileDialog.getOpenFileNames(
             self,
             "Add {} file".format(self.file_group.name.lower()),
-            QtCore.QSettings().value(import_folder_name),
+            GuiSettings.settings().value(import_folder_name),
             ";; ".join(filters))
         if len(selections) == 0:
             logger.debug('adding raw: aborted')
             return
         last_open_folder = os.path.dirname(selections[0])
         if os.path.exists(last_open_folder):
-            QtCore.QSettings().setValue(import_folder_name, last_open_folder)
+            GuiSettings.settings().setValue(import_folder_name, last_open_folder)
 
         selected_files = [
             os.path.abspath(selection).replace("\\", "/")

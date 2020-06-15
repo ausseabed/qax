@@ -7,7 +7,6 @@ from urllib.error import URLError
 import socket
 import logging
 from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtCore import QSettings
 
 from hyo2.abc.app.dialogs.exception.exception_dialog import ExceptionDialog
 from hyo2.abc.app.tabs.info.info_tab import InfoTab
@@ -15,6 +14,7 @@ from hyo2.abc.lib.helper import Helper
 from hyo2.qax.lib import lib_info
 from hyo2.qax.app import app_info
 from hyo2.qax.app.widgets.qax.widget import QAXWidget
+from hyo2.qax.app.gui_settings import GuiSettings
 
 logger = logging.getLogger(__name__)
 
@@ -37,12 +37,6 @@ class MainWin(QtWidgets.QMainWindow):
         self.setWindowTitle('{} {}'.format(self.name, self.version))
         self.setMinimumSize(QtCore.QSize(500, 800))
         self.resize(QtCore.QSize(920, 840))
-
-        self.settings = QSettings('settings.ini', QSettings.IniFormat)
-        self.resize(QtCore.QSize(
-            int(self.settings.value("qax_app_width", defaultValue=920)),
-            int(self.settings.value("qax_app_height", defaultValue=840)),
-        ))
 
         self.exception_signal.connect(self.show_exception_dialog)
 
@@ -73,6 +67,12 @@ class MainWin(QtWidgets.QMainWindow):
 
     def initialize(self):
         self.qax_widget.initialize()
+
+        self.settings = GuiSettings.settings()
+        self.resize(QtCore.QSize(
+            int(self.settings.value("qax_app_width", defaultValue=920)),
+            int(self.settings.value("qax_app_height", defaultValue=840)),
+        ))
 
     def exception_hook(self, ex_type: type, ex_value: BaseException, tb: traceback) -> None:
         sys.__excepthook__(ex_type, ex_value, tb)

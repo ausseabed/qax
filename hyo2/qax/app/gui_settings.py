@@ -1,5 +1,5 @@
 from appdirs import user_data_dir
-from PySide2 import QtGui
+from PySide2 import QtGui, QtCore
 from typing import Optional
 import logging
 import os
@@ -54,6 +54,17 @@ class GuiSettings:
     def config():
         udd = user_data_dir(appname=app_info.app_name)
         return os.path.join(udd, 'config')
+
+    @staticmethod
+    def settings_file():
+        config_dir = GuiSettings.config()
+        settings_file = os.path.join(config_dir, 'settings.ini')
+        return settings_file
+
+    @staticmethod
+    def settings() -> QtCore.QSettings:
+        cfg_file = GuiSettings.settings_file()
+        return QtCore.QSettings(cfg_file, QtCore.QSettings.IniFormat)
 
     @staticmethod
     def icon_path(icon: str) -> Optional[str]:

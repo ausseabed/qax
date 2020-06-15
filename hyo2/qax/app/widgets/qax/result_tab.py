@@ -398,7 +398,7 @@ class ResultTab(QtWidgets.QWidget):
     def on_save_as(self):
         logger.debug("save as")
 
-        output_folder = QtCore.QSettings().value("json_export_folder")
+        output_folder = GuiSettings.settings().value("json_export_folder")
         if output_folder is None:
             output_folder = self.prj.outputs.output_folder
         else:
@@ -415,7 +415,7 @@ class ResultTab(QtWidgets.QWidget):
 
         output_path = Path(selection)
         output_folder = output_path.parent
-        QtCore.QSettings().setValue("json_export_folder", str(output_folder))
+        GuiSettings.settings().setValue("json_export_folder", str(output_folder))
 
         self.prj.save_cur_json(path=output_path)
         # self.on_force_reload()

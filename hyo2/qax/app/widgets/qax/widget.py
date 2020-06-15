@@ -32,7 +32,7 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.profile = None  # QaxConfigProfile
 
         # init default settings
-        settings = QtCore.QSettings()
+        settings = GuiSettings.settings()
         # - output folder
         export_folder = settings.value("qax_export_folder")
         if (export_folder is None) or (not os.path.exists(export_folder)):

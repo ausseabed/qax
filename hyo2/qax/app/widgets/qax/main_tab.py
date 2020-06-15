@@ -367,13 +367,13 @@ class MainTab(QtWidgets.QWidget):
     def click_output_project_folder(self):
         """ Set the output project folder"""
         self.prj.create_project_folder = self.output_prj_folder.isChecked()
-        QtCore.QSettings().setValue(
+        GuiSettings.settings().setValue(
             "qax_export_project_folder", self.prj.create_project_folder)
 
     def click_output_subfolders(self):
         """ Set the output in sub-folders"""
         self.prj.per_tool_folders = self.output_subfolders.isChecked()
-        QtCore.QSettings().setValue(
+        GuiSettings.settings().setValue(
             "qax_export_subfolders", self.prj.per_tool_folders)
 
     def click_add_folder(self):
@@ -385,7 +385,7 @@ class MainTab(QtWidgets.QWidget):
         selection = QtWidgets.QFileDialog.getExistingDirectory(
             self,
             "Set output folder",
-            QtCore.QSettings().value("qa_export_folder"),)
+            GuiSettings.settings().value("qa_export_folder"),)
         if selection == "":
             logger.debug('setting output folder: aborted')
             return
@@ -434,7 +434,7 @@ class MainTab(QtWidgets.QWidget):
         #new_item.setForeground(GuiSettings.console_fg_color())
         self.output_folder.addItem(new_item)
 
-        QtCore.QSettings().setValue(
+        GuiSettings.settings().setValue(
             "qax_export_folder", self.prj.output_folder)
 
         logger.debug("new output folder: {}".format(self.prj.output_folder))
@@ -462,14 +462,14 @@ class MainTab(QtWidgets.QWidget):
         # noinspection PyCallByClass
         selections, _ = QtWidgets.QFileDialog.getOpenFileNames(
             self, "Add QA JSON Files",
-            QtCore.QSettings().value("json_import_folder"),
+            GuiSettings.settings().value("json_import_folder"),
             "QA JSON file (*.json);;All files (*.*)")
         if len(selections) == 0:
             logger.debug('adding json: aborted')
             return
         last_open_folder = os.path.dirname(selections[0])
         if os.path.exists(last_open_folder):
-            QtCore.QSettings().setValue("json_import_folder", last_open_folder)
+            GuiSettings.settings().setValue("json_import_folder", last_open_folder)
 
         for selection in selections:
             selection = os.path.abspath(selection).replace("\\", "/")
