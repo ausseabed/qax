@@ -11,6 +11,7 @@ from PySide2.QtGui import QIcon, QKeySequence
 from PySide2.QtWidgets import QAction
 import qtawesome as qta
 
+from hyo2.abc.lib.helper import Helper
 from hyo2.abc.app.dialogs.exception.exception_dialog import ExceptionDialog
 from hyo2.abc.app.tabs.info.info_tab import InfoTab
 from hyo2.abc.lib.helper import Helper
@@ -113,6 +114,14 @@ class MainWin(QtWidgets.QMainWindow):
         quit_action.triggered.connect(self.quitAction)
         fileMenu.addAction(quit_action)
 
+        helpMenu = self.menuBar.addMenu('&Help')
+
+        manual_icon = qta.icon('fa.info-circle')
+        manual_action = QAction(manual_icon, "&Manual", self)
+        manual_action.setStatusTip("Open the manual page")
+        manual_action.triggered.connect(self.open_manual)
+        helpMenu.addAction(manual_action)
+
     def initialize(self):
         self.qax_widget.initialize()
 
@@ -187,6 +196,12 @@ class MainWin(QtWidgets.QMainWindow):
         print("open")
         pass
 
+    def open_manual(self):
+        logger.debug("open manual")
+        Helper.explore_folder(
+            "https://www.hydroffice.org/"
+            "manuals/qax/user_manual_qax_data_inputs.html")
+
     def quitAction(self):
         reply = self.do_you_really_want("Quit", "quit %s" % self.name)
         if reply == QtWidgets.QMessageBox.Yes:
@@ -217,5 +232,3 @@ class MainWin(QtWidgets.QMainWindow):
         from pathlib import Path
         qajsonparser = QajsonParser(Path(QajsonParser.example_paths()[-1]))
         self.qax_widget.tab_run.prj.qa_json = qajsonparser.root
-        # self.qax_widget.tab_inputs._add_json(QajsonParser.example_paths()[-1])
-        # self.qax_widget.tab_qc_tools.display_json()

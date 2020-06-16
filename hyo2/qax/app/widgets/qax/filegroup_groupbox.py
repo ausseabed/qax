@@ -1,4 +1,3 @@
-from hyo2.abc.lib.helper import Helper
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
 from typing import List, NoReturn
@@ -255,30 +254,17 @@ class FileGroupGroupBox(QtWidgets.QGroupBox):
         self.clear_button = QtWidgets.QPushButton()
         hbox.addWidget(self.clear_button)
 
-        self.clear_button.setText("Clear data")
-        self.clear_button.setToolTip('Clear all data loaded')
+        self.clear_button.setText("Clear selected files")
+        self.clear_button.setToolTip('Clear all selected files')
+        self.clear_button.setStyleSheet("padding-left: 20px; padding-right: 20px; padding-top: 10px; padding-bottom: 10px;")
         # noinspection PyUnresolvedReferences
         self.clear_button.clicked.connect(self._click_clear_data)
-        # info
-        manual_button = QtWidgets.QPushButton()
-        hbox.addWidget(manual_button)
-        manual_button.setIcon(qta.icon('fa.info-circle'))
-        manual_button.setToolTip('Open the manual page')
-        manual_button.setFlat(True)
-
-        manual_button.clicked.connect(self._click_open_manual)
         hbox.addStretch()
 
     def _click_clear_data(self):
         logger.debug("clearing selected input files")
         for sp_widget in self.file_group_widgets:
             sp_widget.remove_files()
-
-    def _click_open_manual(self):
-        logger.debug("open manual")
-        Helper.explore_folder(
-            "https://www.hydroffice.org/"
-            "manuals/qax/user_manual_qax_data_inputs.html")
 
     def _on_files_added(self, file_group: QaxFileGroup):
         # propogate events up GUI component tree to parent
