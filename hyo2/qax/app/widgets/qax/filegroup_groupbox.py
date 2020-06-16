@@ -5,6 +5,7 @@ from typing import List, NoReturn
 import logging
 import os
 import re
+import qtawesome as qta
 
 from hyo2.qax.app.gui_settings import GuiSettings
 
@@ -64,7 +65,7 @@ class FileGroupWidget(QtWidgets.QWidget):
         button_layout.addWidget(self.add_file_button)
         # self.add_file_button.setFixedHeight(GuiSettings.single_line_height())
         # self.add_file_button.setFixedWidth(GuiSettings.single_line_height())
-        self.add_file_button.setText("+")
+        self.add_file_button.setIcon(qta.icon('fa.folder-open'))
         self.add_file_button.setToolTip(
             "Add (or drag-and-drop) the survey {} files"
             .format(file_group.name))
@@ -261,15 +262,10 @@ class FileGroupGroupBox(QtWidgets.QGroupBox):
         # info
         manual_button = QtWidgets.QPushButton()
         hbox.addWidget(manual_button)
-        icon_info = QtCore.QFileInfo(
-            os.path.join(GuiSettings.media(), 'small_info.png'))
-        manual_button.setIcon(QtGui.QIcon(icon_info.absoluteFilePath()))
+        manual_button.setIcon(qta.icon('fa.info-circle'))
         manual_button.setToolTip('Open the manual page')
-        manual_button.setStyleSheet(
-            "QPushButton { background-color: rgba(255, 255, 255, 0); }\n"
-            "QPushButton:hover "
-            "{ background-color: rgba(230, 230, 230, 100); }\n")
-        # noinspection PyUnresolvedReferences
+        manual_button.setFlat(True)
+
         manual_button.clicked.connect(self._click_open_manual)
         hbox.addStretch()
 

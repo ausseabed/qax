@@ -5,6 +5,8 @@ from typing import List, NoReturn
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QSizePolicy
+import qtawesome as qta
+
 from hyo2.abc.lib.helper import Helper
 
 from hyo2.qax.app.gui_settings import GuiSettings
@@ -80,14 +82,16 @@ class RunTab(QtWidgets.QWidget):
         self.run_button = QtWidgets.QPushButton()
         self.run_button.setText("Run")
         self.run_button.setFixedWidth(100)
-        self.run_button.setIcon(QtGui.QIcon(
-            GuiSettings.icon_path("play.png")))
+        run_icon = qta.icon('fa.play', color='green')
+        self.run_button.setIcon(run_icon)
         self.run_button.clicked.connect(self.click_run)
         hbox.addWidget(self.run_button)
 
         self.stop_button = QtWidgets.QPushButton()
         self.stop_button.setText("Stop")
         self.stop_button.setFixedWidth(100)
+        stop_icon = qta.icon('fa.stop', color='red')
+        self.stop_button.setIcon(stop_icon)
         self.stop_button.clicked.connect(self.click_stop)
         hbox.addWidget(self.stop_button)
 

@@ -4,6 +4,7 @@ from typing import Optional, NoReturn
 import json
 import logging
 import os
+import qtawesome as qta
 
 from hyo2.qax.app.widgets.qax.scoreboard_details import ScoreboardDetailsWidget
 from hyo2.qax.app.widgets.qax.summary_details import SummaryDetailsWidget
@@ -55,9 +56,9 @@ class ResultTab(QtWidgets.QWidget):
         self.scoreboard_details = None
         self.scoreboard_selected_check = None
 
-        self.cross_icon = QtGui.QIcon(GuiSettings.icon_path("cross.png"))
-        self.tick_icon = QtGui.QIcon(GuiSettings.icon_path("tick.png"))
-        self.warning_icon = QtGui.QIcon(GuiSettings.icon_path("warning.png"))
+        self.cross_icon = qta.icon('fa.close', color='red')
+        self.tick_icon = qta.icon('fa.check', color='green')
+        self.warning_icon = qta.icon('fa.warning', color='orange')
 
     @property
     def qa_json(self) -> Optional[QajsonRoot]:
@@ -281,7 +282,8 @@ class ResultTab(QtWidgets.QWidget):
                 check_state_item = QtWidgets.QTableWidgetItem(self.warning_icon, "")
             else:
                 check_state_item = QtWidgets.QTableWidgetItem("")
-            self.score_board.setItem(idx, 4, check_state_item)
+            check_state_item.setTextAlignment(QtCore.Qt.AlignHCenter)
+            self.score_board.setItem(idx, 4, lbl_item)
 
         vbox.addWidget(self.score_board)
 

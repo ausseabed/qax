@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import logging
 from PySide2 import QtGui, QtCore, QtWidgets
+import qtawesome as qta
 
 from hyo2.abc.app.qt_progress import QtProgress
 from hyo2.qax.app.gui_settings import GuiSettings
@@ -67,7 +68,7 @@ class QAXWidget(QtWidgets.QTabWidget):
         # self.setLayout(self.vbox)
         # self.vbox.addWidget(self.tabs)
         # self.tabs.setContentsMargins(0, 0, 0, 0)
-        self.tabs.setIconSize(QtCore.QSize(36, 36))
+        self.tabs.setIconSize(QtCore.QSize(72, 72))
         # self.tabs.setTabPosition(QtWidgets.QTabWidget.South)
         # main tab
         self.tab_inputs = MainTab(parent_win=self, prj=self.prj)
@@ -76,14 +77,14 @@ class QAXWidget(QtWidgets.QTabWidget):
         # noinspection PyArgumentList
         self.idx_inputs = self.tabs.insertTab(
             0, self.tab_inputs,
-            QtGui.QIcon(GuiSettings.icon_path('qax.png')), "")
+            qta.icon('mdi.file-settings-variant-outline'), "")
 
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
 
         self.tab_plugins = PluginsTab(parent_win=self, prj=self.prj)
         self.idx_plugins = self.tabs.insertTab(
             1, self.tab_plugins,
-            QtGui.QIcon(GuiSettings.icon_path('plugins.png')), "")
+            qta.icon('mdi.format-list-checkbox'), "")
         self.tabs.setTabToolTip(self.idx_plugins, "Plugins")
 
         self.tab_run = RunTab(self.prj)
@@ -91,14 +92,14 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.tab_run.run_checks.connect(self._on_execute_checks)
         self.idx_run = self.tabs.insertTab(
             2, self.tab_run,
-            QtGui.QIcon(GuiSettings.icon_path('play.png')), "")
+            qta.icon('fa.play'), "")
         self.tabs.setTabToolTip(self.idx_run, "Run Checks")
 
         self.tab_result = ResultTab(self.prj)
         self.tab_result.objectName = "tab_result"
         self.idx_result = self.tabs.insertTab(
             3, self.tab_result,
-            QtGui.QIcon(GuiSettings.icon_path('result.png')), "")
+            qta.icon('fa.check'), "")
         self.tabs.setTabToolTip(self.idx_result, "View check results")
 
         self.tabs.currentChanged.connect(self.change_tabs)

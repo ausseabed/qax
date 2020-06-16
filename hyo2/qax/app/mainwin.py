@@ -7,6 +7,9 @@ from urllib.error import URLError
 import socket
 import logging
 from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2.QtGui import QIcon, QKeySequence
+from PySide2.QtWidgets import QAction
+import qtawesome as qta
 
 from hyo2.abc.app.dialogs.exception.exception_dialog import ExceptionDialog
 from hyo2.abc.app.tabs.info.info_tab import InfoTab
@@ -63,7 +66,52 @@ class MainWin(QtWidgets.QMainWindow):
         self.qax_widget = QAXWidget(main_win=self)
         self.qax_widget.setDocumentMode(True)
 
+        self._add_menu_bar()
+
         self.setCentralWidget(self.qax_widget)
+
+    def _add_menu_bar(self):
+        self.menuBar = QtWidgets.QMenuBar(parent=self)
+        self.setMenuBar(self.menuBar)
+
+        fileMenu = self.menuBar.addMenu('&File')
+
+        # New QA JSON
+        new_icon = qta.icon('ei.file-new')
+        new_action = QAction(new_icon, "&New", self)
+        new_action.setShortcuts(QKeySequence.New)
+        new_action.setStatusTip("Create a new QA JSON")
+        new_action.triggered.connect(self.new_qajson)
+        fileMenu.addAction(new_action)
+
+        save_icon = qta.icon('fa.save')
+        save_action = QAction(save_icon, "&Save", self)
+        save_action.setShortcuts(QKeySequence.Save)
+        save_action.setStatusTip("Save QAJSON")
+        save_action.triggered.connect(self.save_qajson)
+        fileMenu.addAction(save_action)
+
+        saveas_icon = qta.icon('fa.save')
+        saveas_action = QAction(saveas_icon, "Save &As...", self)
+        saveas_action.setShortcuts(QKeySequence.SaveAs)
+        saveas_action.setStatusTip("Save QAJSON as")
+        saveas_action.triggered.connect(self.saveas_qajson)
+        fileMenu.addAction(saveas_action)
+
+        open_action = QAction('&Open...', self)
+        open_action.setShortcuts(QKeySequence.Open)
+        open_action.setStatusTip("Open QAJSON")
+        open_action.triggered.connect(self.open_qajson)
+        fileMenu.addAction(open_action)
+
+        fileMenu.addSeparator()
+
+        quit_icon = qta.icon('fa.close')
+        quit_action = QAction(quit_icon, "&Quit", self)
+        quit_action.setShortcuts(QKeySequence.Quit)
+        quit_action.setStatusTip("Quit QAX")
+        quit_action.triggered.connect(self.quitAction)
+        fileMenu.addAction(quit_action)
 
     def initialize(self):
         self.qax_widget.initialize()
@@ -123,18 +171,44 @@ class MainWin(QtWidgets.QMainWindow):
         msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
         return msg_box.exec_()
 
+    def new_qajson(self):
+        print("NEW")
+        pass
+
+    def save_qajson(self):
+        print("save")
+        pass
+
+    def saveas_qajson(self):
+        print("saveas")
+        pass
+
+    def open_qajson(self):
+        print("open")
+        pass
+
+    def quitAction(self):
+        reply = self.do_you_really_want("Quit", "quit %s" % self.name)
+        if reply == QtWidgets.QMessageBox.Yes:
+            # store window size
+            self._persist_exit_settings()
+            QtWidgets.qApp.quit()
+
     def closeEvent(self, event):
         """ actions to be done before close the app """
         reply = self.do_you_really_want("Quit", "quit %s" % self.name)
 
         if reply == QtWidgets.QMessageBox.Yes:
             # store window size
-            self.settings.setValue("qax_app_width", self.size().width())
-            self.settings.setValue("qax_app_height", self.size().height())
+            self._persist_exit_settings()
             event.accept()
             super().closeEvent(event)
         else:
             event.ignore()
+
+    def _persist_exit_settings(self):
+        self.settings.setValue("qax_app_width", self.size().width())
+        self.settings.setValue("qax_app_height", self.size().height())
 
     def do(self):
         logger.warning("DEV MODE")
