@@ -1,12 +1,12 @@
+from ausseabed.qajson.model import QajsonCheck
 from PySide2 import QtCore, QtGui, QtWidgets, QtQuickWidgets
 from PySide2.QtCore import QObject, Signal, Property
-from PySide2.QtQuick import QQuickView
 from PySide2.QtCore import QUrl
 from PySide2.QtGui import QColor
 from PySide2.QtPositioning import QGeoPath, QGeoCoordinate
+from PySide2.QtQuick import QQuickView
 import os
 
-from ausseabed.qajson.model import QajsonCheck
 from hyo2.qax.app.widgets.qax.map_utils import MarkerItem, LineItem, \
     MarkersModel, LinesModel
 
@@ -58,7 +58,7 @@ class Manager(QtCore.QObject):
 
     @Property('QVariantList', notify=messages_changed)
     def messages(self):
-        if self._check is None:
+        if self._check is None or self._check.outputs is None:
             return []
         return self._check.outputs.messages
 

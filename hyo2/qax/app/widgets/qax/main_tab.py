@@ -1,9 +1,11 @@
-import os
-import logging
+from ausseabed.qajson.model import QajsonRoot
+from hyo2.abc.lib.helper import Helper
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QSizePolicy
-from hyo2.abc.lib.helper import Helper
+from typing import Optional, NoReturn, List
+import logging
+import os
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.profile_groupbox import ProfileGroupBox
@@ -11,6 +13,7 @@ from hyo2.qax.app.widgets.qax.filegroup_groupbox \
     import FileGroupGroupBox
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxPlugins, QaxFileGroup
+
 
 # Use NSURL as a workaround to pyside/Qt4 behaviour for dragging and dropping
 # on OSx
@@ -107,3 +110,7 @@ class MainTab(QtWidgets.QWidget):
     def _on_qa_json_path_changed(self, new_path: Path):
         print("_update_json_list")
         print(new_path)
+
+    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+        self.profile_selection.update_ui(qajson)
+        self.file_group_selection.update_ui(qajson)

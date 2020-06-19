@@ -1,12 +1,12 @@
-import os
+from ausseabed.qajson.model import QajsonRoot
 from pathlib import Path
-import logging
 from PySide2 import QtGui, QtCore, QtWidgets
+from typing import Optional, NoReturn, List
+import logging
+import os
 import qtawesome as qta
 
 from hyo2.abc.app.qt_progress import QtProgress
-from hyo2.qax.app.gui_settings import GuiSettings
-from hyo2.qax.app.widgets.qax.checks_tab import ChecksTab
 from hyo2.qax.app.widgets.qax.main_tab import MainTab
 from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
 from hyo2.qax.app.widgets.qax.plugins_tab import PluginsTab
@@ -16,7 +16,7 @@ from hyo2.qax.app.widgets.widget import AbstractWidget
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxPlugins
 from hyo2.qax.lib.project import QAXProject
-from ausseabed.qajson.model import QajsonRoot
+
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +25,9 @@ class QAXWidget(QtWidgets.QTabWidget):
     # overloading
     here = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 
+    # (message, timeout)
+    status_message = QtCore.Signal((str, int))
+
     def __init__(self, main_win):
         QtWidgets.QTabWidget.__init__(self)
         self.prj = QAXProject()
@@ -32,37 +35,8 @@ class QAXWidget(QtWidgets.QTabWidget):
 
         self.profile = None  # QaxConfigProfile
 
-        # init default settings
-        settings = GuiSettings.settings()
-        # - output folder
-        export_folder = settings.value("qax_export_folder")
-        if (export_folder is None) or (not os.path.exists(export_folder)):
-            settings.setValue("qax_export_folder", str(self.prj.output_folder))
-        else:  # folder exists
-            self.prj.output_folder = Path(export_folder)
-
-        # - import
-        import_folder = settings.value("ff_import_folder")
-        if (import_folder is None) or (not os.path.exists(import_folder)):
-            settings.setValue("ff_import_folder", str(self.prj.output_folder))
-        import_folder = settings.value("dtm_import_folder")
-        if (import_folder is None) or (not os.path.exists(import_folder)):
-            settings.setValue("dtm_import_folder", str(self.prj.output_folder))
-        # - project folder
-        export_project_folder = settings.value("qax_export_project_folder")
-        if export_project_folder is None:
-            settings.setValue("qax_export_project_folder", str(self.prj.params.project_folder))
-        else:  # exists
-            self.prj.params.project_folder = (export_project_folder == "true")
-        # - subfolders
-        export_subfolders = settings.value("qax_export_subfolders")
-        if export_subfolders is None:
-            settings.setValue("qax_export_subfolders", self.prj.params.subfolders)
-        else:  # exists
-            self.prj.params.subfolders = (export_subfolders == "true")
-
         # make tabs
-        self.tabs = self #QtWidgets.QTabWidget()
+        self.tabs = self
 
         # self.vbox = QtWidgets.QVBoxLayout()
         # self.setLayout(self.vbox)
@@ -109,6 +83,8 @@ class QAXWidget(QtWidgets.QTabWidget):
         # todo: save last selected profile and set here as default.
         self.profile = QaxConfig.instance().profiles[0]
         self.tab_plugins.set_profile(self.profile)
+
+        self.status_message.emit("Initialised", 1000)
 
     def _on_profile_selected(self, profile: QaxConfigProfile):
         self.profile = profile
@@ -193,3 +169,7 @@ class QAXWidget(QtWidgets.QTabWidget):
 
     def change_info_url(self, url):
         self.main_win.change_info_url(url)
+
+    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+        self.tab_inputs.update_ui(qajson)
+        self.tab_plugins.update_ui(qajson)

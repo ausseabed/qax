@@ -1,8 +1,8 @@
+from ausseabed.qajson.model import QajsonParam
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.lib.plugin import QaxCheckReference
-from ausseabed.qajson.model import QajsonParam
 
 
 def get_param_widget(param: QajsonParam, parent=None) -> 'CheckParamWidget':
@@ -38,6 +38,14 @@ class CheckParamWidget(QtWidgets.QWidget):
             "Must implement in param function of child class to return "
             "correct value type within an QajsonParam")
 
+    @property
+    def value(self):
+        return self.param().value
+
+    @value.setter
+    def value(self, value):
+        raise NotImplementedError("Must implement in child class")
+
 
 class CheckParamStringWidget(CheckParamWidget):
     """ Supports parameters with string value types
@@ -65,6 +73,10 @@ class CheckParamStringWidget(CheckParamWidget):
             name=self._param.name,
             value=self.lineedit_value.text()
         )
+
+    @CheckParamWidget.value.setter
+    def value(self, value):
+        self.lineedit_value.setText(str(value))
 
 
 class CheckParamIntWidget(CheckParamWidget):
@@ -94,6 +106,10 @@ class CheckParamIntWidget(CheckParamWidget):
             value=int(self.lineedit_value.text())
         )
 
+    @CheckParamWidget.value.setter
+    def value(self, value):
+        self.lineedit_value.setText(str(value))
+
 
 class CheckParamUnknownWidget(CheckParamWidget):
     """ Supports parameters with string value types
@@ -117,3 +133,7 @@ class CheckParamUnknownWidget(CheckParamWidget):
             name=self._param.name,
             value=None
         )
+
+    @CheckParamWidget.value.setter
+    def value(self, value):
+        pass

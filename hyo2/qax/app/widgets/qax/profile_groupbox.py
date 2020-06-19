@@ -1,8 +1,9 @@
+from ausseabed.qajson.model import QajsonRoot
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
 from typing import List, NoReturn
-import os
 import logging
+import os
 
 from hyo2.qax.app.widgets.layout import FlowLayout
 from hyo2.qax.app.widgets.lines import QHLine
@@ -115,3 +116,8 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         """ Event handler for user selection change of individual check tool
         """
         self.check_tool_selection_change.emit(self.selected_check_tools())
+
+    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+        # we don't save the profile in the qajson file, so there's nothing we
+        # can do here till qajson is updated
+        pass

@@ -1,17 +1,20 @@
-import json
-import logging
-import os
+from ausseabed.qajson.model import QajsonRoot
+from hyo2.abc.lib.helper import Helper
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QSizePolicy
-from hyo2.abc.lib.helper import Helper
+from typing import Optional, NoReturn, List
+import json
+import logging
+import os
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
+from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxPlugins
-from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
+
 
 logger = logging.getLogger(__name__)
 
@@ -68,3 +71,7 @@ class PluginsTab(QtWidgets.QWidget):
             else:
                 tab_index = self.tabs.addTab(plugin_tab, plugin.name)
             self.tabs.setTabToolTip(tab_index, plugin.name)
+
+    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+        for plugin_tab in self.plugin_tabs:
+            plugin_tab.update_ui(qajson)

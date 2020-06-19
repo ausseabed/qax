@@ -1,19 +1,21 @@
+from ausseabed.qajson.model import QajsonRoot, QajsonCheck
+from ausseabed.qajson.parser import QajsonParser
 from collections import defaultdict
-import json
-import time
-import os
-from pathlib import Path
-from PySide2 import QtCore
-import traceback
-import logging
-from typing import Optional, NoReturn, List
-from jsonschema import validate, ValidationError, SchemaError, Draft7Validator
 from hyo2.abc.lib.helper import Helper
 from hyo2.qax.lib import lib_info
+from jsonschema import validate, ValidationError, SchemaError, Draft7Validator
+from pathlib import Path
+from PySide2 import QtCore
+from typing import Optional, NoReturn, List
+import json
+import logging
+import os
+import time
+import traceback
 
 from hyo2.qax.lib.inputs import QAXInputs
 from hyo2.qax.lib.params import QAXParams
-from ausseabed.qajson.model import QajsonRoot, QajsonCheck
+
 
 logger = logging.getLogger(__name__)
 
@@ -135,8 +137,6 @@ class QAXProject(QtCore.QObject):
 
         self._qa_json = None  # QajsonRoot
         self._qa_json_path = None
-        self._create_project_folder = False
-        self._per_tool_folders = False
         self._output_folder = QAXProject.default_output_folder()
 
         self._p = QAXParams()
@@ -159,22 +159,6 @@ class QAXProject(QtCore.QObject):
     def qa_json_path(self, value: Optional[Path]) -> NoReturn:
         self._qa_json_path = value
         self.qa_json_path_changed.emit(self._qa_json_path)
-
-    @property
-    def create_project_folder(self) -> bool:
-        return self._create_project_folder
-
-    @create_project_folder.setter
-    def create_project_folder(self, value: bool) -> NoReturn:
-        self._create_project_folder = value
-
-    @property
-    def per_tool_folders(self) -> bool:
-        return self._per_tool_folders
-
-    @per_tool_folders.setter
-    def per_tool_folders(self, value: bool) -> NoReturn:
-        self._per_tool_folders = value
 
     @property
     def output_folder(self) -> Optional[Path]:
@@ -207,7 +191,12 @@ class QAXProject(QtCore.QObject):
             self.qa_json_path = path
         logger.debug("save json to {}".format(path))
         with open(str(path), "w") as file:
-            json.dump(self.qa_json.to_dict(), file, indent=4)
+            json.dump(self.qa_json.to_dict(), file, indent=4, sort_keys=True)
+
+    def open_qa_json(self) -> NoReturn:
+        path = self.qa_json_path
+        qajsonparser = QajsonParser(path)
+        self.qa_json = qajsonparser.root
 
     def get_summary(self) -> List[QaCheckSummary]:
         return QaCheckSummary.get_summary(self.qa_json)

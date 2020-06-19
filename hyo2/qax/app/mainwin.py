@@ -1,20 +1,22 @@
-import os
-import ssl
-import sys
-import traceback
-from urllib.request import urlopen
-from urllib.error import URLError
-import socket
-import logging
-from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtGui import QIcon, QKeySequence
-from PySide2.QtWidgets import QAction
-import qtawesome as qta
-
-from hyo2.abc.lib.helper import Helper
+from ausseabed.qajson.model import QajsonRoot
 from hyo2.abc.app.dialogs.exception.exception_dialog import ExceptionDialog
 from hyo2.abc.app.tabs.info.info_tab import InfoTab
 from hyo2.abc.lib.helper import Helper
+from hyo2.abc.lib.helper import Helper
+from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2.QtGui import QIcon, QKeySequence
+from PySide2.QtWidgets import QAction
+from typing import Optional, NoReturn, List
+from urllib.error import URLError
+from urllib.request import urlopen
+import logging
+import os
+import qtawesome as qta
+import socket
+import ssl
+import sys
+import traceback
+
 from hyo2.qax.lib import lib_info
 from hyo2.qax.app import app_info
 from hyo2.qax.app.widgets.qax.widget import QAXWidget
@@ -66,10 +68,18 @@ class MainWin(QtWidgets.QMainWindow):
 
         self.qax_widget = QAXWidget(main_win=self)
         self.qax_widget.setDocumentMode(True)
+        self.qax_widget.status_message.connect(self.update_status_bar)
 
         self._add_menu_bar()
 
+        self.status_bar = QtWidgets.QStatusBar()
+        self.setStatusBar(self.status_bar)
+        self.status_bar.showMessage('...')
+
         self.setCentralWidget(self.qax_widget)
+
+    def update_status_bar(self, message: str, timeout=0):
+        self.status_bar.showMessage(message, timeout=timeout)
 
     def _add_menu_bar(self):
         self.menuBar = QtWidgets.QMenuBar(parent=self)
@@ -180,21 +190,56 @@ class MainWin(QtWidgets.QMainWindow):
         msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
         return msg_box.exec_()
 
+    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+        self.qax_widget.update_ui(qajson)
+
     def new_qajson(self):
-        print("NEW")
-        pass
+        self.qax_widget.prj.qa_json_path = None
+        self.qax_widget.prj.qa_json = QajsonRoot(None)
+        self.update_ui(self.qax_widget.prj.qa_json)
+
+    def _save_qajson(self):
+        qajson = self.qax_widget._build_qa_json()
+        self.qax_widget.prj.qa_json = qajson
+        self.qax_widget.prj.save_qa_json()
+        base_name = os.path.basename(self.qax_widget.prj.qa_json_path)
+        self.update_status_bar("Saved {}".format(base_name), 1500)
 
     def save_qajson(self):
-        print("save")
-        pass
+        if self.qax_widget.prj.qa_json_path is None:
+            # we don't know what file was saved, or opened, so do "Save as..."
+            self.saveas_qajson()
+        else:
+            self._save_qajson()
 
     def saveas_qajson(self):
-        print("saveas")
-        pass
+        dialog = QtWidgets.QFileDialog(self)
+        dialog.setAcceptMode(QtWidgets.QFileDialog.AcceptMode.AcceptSave)
+        dialog.setFileMode(QtWidgets.QFileDialog.AnyFile)
+        dialog.setNameFilter("QAJSON (*.json)")
+        if dialog.exec_():
+            file_names = dialog.selectedFiles()
+            if len(file_names) == 0:
+                return
+            file_name = file_names[0]
+            self.qax_widget.prj.qa_json_path = file_name
+            self._save_qajson()
 
     def open_qajson(self):
-        print("open")
-        pass
+        dialog = QtWidgets.QFileDialog(self)
+        dialog.setAcceptMode(QtWidgets.QFileDialog.AcceptMode.AcceptOpen)
+        dialog.setFileMode(QtWidgets.QFileDialog.AnyFile)
+        dialog.setNameFilter("QAJSON (*.json)")
+        if dialog.exec_():
+            file_names = dialog.selectedFiles()
+            if len(file_names) == 0:
+                return
+            file_name = file_names[0]
+            self.qax_widget.prj.qa_json_path = file_name
+            self.qax_widget.prj.open_qa_json()
+            base_name = os.path.basename(self.qax_widget.prj.qa_json_path)
+            self.update_ui(self.qax_widget.prj.qa_json)
+            self.update_status_bar("Opened {}".format(base_name), 1500)
 
     def open_manual(self):
         logger.debug("open manual")

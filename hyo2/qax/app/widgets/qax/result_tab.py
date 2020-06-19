@@ -1,3 +1,4 @@
+from ausseabed.qajson.model import QajsonRoot
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QSizePolicy
 from typing import Optional, NoReturn
@@ -9,7 +10,6 @@ import qtawesome as qta
 from hyo2.qax.app.widgets.qax.scoreboard_details import ScoreboardDetailsWidget
 from hyo2.qax.app.widgets.qax.summary_details import SummaryDetailsWidget
 from hyo2.qax.app.gui_settings import GuiSettings
-from ausseabed.qajson.model import QajsonRoot
 from hyo2.qax.lib.project import QAXProject
 
 logger = logging.getLogger(__name__)
@@ -43,7 +43,6 @@ class ResultTab(QtWidgets.QWidget):
         self.set_data_level = None
         self.qa_group = None
         self.force_reload = None
-        self.save_as = None
         self.execute_all = None
         self.json_text_group = None
         self.json_viewer = None
@@ -283,7 +282,7 @@ class ResultTab(QtWidgets.QWidget):
             else:
                 check_state_item = QtWidgets.QTableWidgetItem("")
             check_state_item.setTextAlignment(QtCore.Qt.AlignHCenter)
-            self.score_board.setItem(idx, 4, lbl_item)
+            self.score_board.setItem(idx, 4, check_state_item)
 
         vbox.addWidget(self.score_board)
 
@@ -364,12 +363,6 @@ class ResultTab(QtWidgets.QWidget):
         hbox.addWidget(self.set_view)
         hbox.setSpacing(16)
 
-        self.save_as = QtWidgets.QPushButton()
-        self.save_as.setText("Save as")
-        # noinspection PyUnresolvedReferences
-        self.save_as.clicked.connect(self.on_save_as)
-        hbox.addWidget(self.save_as)
-
         self.add_summary_view()
         self.add_json_view(qa_json_dict)
         self.add_score_board_view(qa_json_dict)
@@ -396,31 +389,6 @@ class ResultTab(QtWidgets.QWidget):
     def on_set_data_level(self):
         self.qa_group = self.set_data_level.currentText()
         self._update()
-
-    def on_save_as(self):
-        logger.debug("save as")
-
-        output_folder = GuiSettings.settings().value("json_export_folder")
-        if output_folder is None:
-            output_folder = self.prj.outputs.output_folder
-        else:
-            output_folder = Path(output_folder)
-
-        output_path = output_folder.joinpath(self.prj.inputs.qa_json.path.name)
-        # noinspection PyCallByClass
-        selection, _ = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Save file", str(output_path),
-            "QA JSON file (*.json);;All files (*.*)", "")
-        if selection == "":
-            logger.debug('save file: aborted')
-            return
-
-        output_path = Path(selection)
-        output_folder = output_path.parent
-        GuiSettings.settings().setValue("json_export_folder", str(output_folder))
-
-        self.prj.save_cur_json(path=output_path)
-        # self.on_force_reload()
 
     def on_button_clicked(self):
         button = QtGui.qApp.focusWidget()

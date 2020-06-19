@@ -1,14 +1,15 @@
+from ausseabed.qajson.model import QajsonRoot
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
 from typing import List, NoReturn
 import logging
 import os
-import re
 import qtawesome as qta
+import re
 
 from hyo2.qax.app.gui_settings import GuiSettings
-
 from hyo2.qax.lib.plugin import QaxFileGroup
+
 
 logger = logging.getLogger(__name__)
 
@@ -59,18 +60,23 @@ class FileGroupWidget(QtWidgets.QWidget):
         self.file_list.installEventFilter(self)
 
         button_layout = QtWidgets.QVBoxLayout()
+        hbox.addLayout(button_layout)
         button_layout.setAlignment(QtCore.Qt.AlignTop)
+
         self.add_file_button = QtWidgets.QPushButton()
         button_layout.addWidget(self.add_file_button)
-        # self.add_file_button.setFixedHeight(GuiSettings.single_line_height())
-        # self.add_file_button.setFixedWidth(GuiSettings.single_line_height())
         self.add_file_button.setIcon(qta.icon('fa.folder-open'))
         self.add_file_button.setToolTip(
             "Add (or drag-and-drop) the survey {} files"
             .format(file_group.name))
-        hbox.addLayout(button_layout)
-
         self.add_file_button.clicked.connect(self._click_add)
+
+        self.clear_files_button = QtWidgets.QPushButton()
+        button_layout.addWidget(self.clear_files_button)
+        self.clear_files_button.setIcon(qta.icon('fa.close'))
+        self.clear_files_button.setToolTip(
+            "Clear {} files".format(file_group.name))
+        self.clear_files_button.clicked.connect(self._click_clear)
 
     def eventFilter(self, obj, e):
         """ Captures events for the purpose of supporting drag and drop of
@@ -144,6 +150,10 @@ class FileGroupWidget(QtWidgets.QWidget):
         # if event not handled defer to default event handler
         return QtWidgets.QMainWindow.eventFilter(self, obj, e)
 
+    def _click_clear(self):
+        self.selected_files.clear()
+        self._update_file_list()
+
     def _click_add(self):
         """ Add files selected by user. Opens file selection dialog
         """
@@ -173,13 +183,14 @@ class FileGroupWidget(QtWidgets.QWidget):
             return
         last_open_folder = os.path.dirname(selections[0])
         if os.path.exists(last_open_folder):
-            GuiSettings.settings().setValue(import_folder_name, last_open_folder)
+            GuiSettings.settings().setValue(
+                import_folder_name, last_open_folder)
 
-        selected_files = [
+        new_selected_files = [
             os.path.abspath(selection).replace("\\", "/")
             for selection in selections
         ]
-        self.selected_files = selected_files
+        self.selected_files.extend(new_selected_files)
         self._update_file_list()
         self.files_added.emit(self.file_group)
 
@@ -222,6 +233,30 @@ class FileGroupWidget(QtWidgets.QWidget):
 
             self.file_list.addItem(file_item)
 
+    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+        data_levels = ['raw_data', 'survey_products', 'chart_adequacy']
+
+        # build list of all checks from all data levels
+        all_checks = []
+        for dl in data_levels:
+            data_level = getattr(qajson.qa, dl, None)
+            if data_level is None:
+                continue
+            all_checks.extend(data_level.checks)
+
+        all_inputs = []
+        for check in all_checks:
+            all_inputs.extend(check.inputs.files)
+
+        self.selected_files.clear()
+        for input in all_inputs:
+            if (input.file_type == self.file_group.name and
+                    input.path not in self.selected_files):
+                self.selected_files.append(input.path)
+                dirty = True
+
+        self._update_file_list()
+
 
 class FileGroupGroupBox(QtWidgets.QGroupBox):
     """ Widget to support selection of survey products (the input files) that
@@ -254,9 +289,11 @@ class FileGroupGroupBox(QtWidgets.QGroupBox):
         self.clear_button = QtWidgets.QPushButton()
         hbox.addWidget(self.clear_button)
 
-        self.clear_button.setText("Clear selected files")
+        self.clear_button.setText("Clear all selected files")
         self.clear_button.setToolTip('Clear all selected files')
-        self.clear_button.setStyleSheet("padding-left: 20px; padding-right: 20px; padding-top: 10px; padding-bottom: 10px;")
+        self.clear_button.setStyleSheet(
+            "padding-left: 20px; padding-right: 20px;"
+            "padding-top: 10px; padding-bottom: 10px;")
         # noinspection PyUnresolvedReferences
         self.clear_button.clicked.connect(self._click_clear_data)
         hbox.addStretch()
@@ -333,3 +370,7 @@ class FileGroupGroupBox(QtWidgets.QGroupBox):
             all_files.extend(paths)
 
         return all_files
+
+    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+        for fgw in self.file_group_widgets:
+            fgw.update_ui(qajson)

@@ -1,10 +1,12 @@
+from ausseabed.qajson.model import QajsonRoot
 from PySide2 import QtCore, QtGui, QtWidgets
+from typing import Optional, NoReturn, List
 
 from hyo2.qax.app.gui_settings import GuiSettings
-from hyo2.qax.lib.plugin import QaxCheckReference
 from hyo2.qax.app.widgets.lines import QHLine
 from hyo2.qax.app.widgets.qax.check_param_widget import CheckParamWidget, \
     get_param_widget
+from hyo2.qax.lib.plugin import QaxCheckReference
 
 
 class CheckWidget(QtWidgets.QWidget):
@@ -69,3 +71,26 @@ class CheckWidget(QtWidgets.QWidget):
         params = [param_widget.param() for param_widget in self.param_widgets]
         res = (self.check_reference.id, params)
         return res
+
+    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+        data_levels = ['raw_data', 'survey_products', 'chart_adequacy']
+        # build list of all checks from all data levels
+        this_check = None
+        for dl in data_levels:
+            data_level = getattr(qajson.qa, dl, None)
+            if data_level is None:
+                continue
+            for check in data_level.checks:
+                if check.info.id == self.check_reference.id:
+                    this_check = check
+                    break
+
+        if this_check is None:
+            # then whatever check was in the qajson is not being shown in the
+            # UI, so we can't update it.
+            return
+
+        for check_param in this_check.inputs.params:
+            for widget_param in self.param_widgets:
+                if check_param.name == widget_param.param().name:
+                    widget_param.value = check_param.value
