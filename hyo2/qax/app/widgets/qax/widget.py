@@ -47,7 +47,8 @@ class QAXWidget(QtWidgets.QTabWidget):
         # main tab
         self.tab_inputs = MainTab(parent_win=self, prj=self.prj)
         self.tab_inputs.profile_selected.connect(self._on_profile_selected)
-        self.tab_inputs.generate_checks.connect(self._on_generate_checks)
+        self.tab_inputs.check_inputs_changed.connect(
+            self._on_update_check_inputs)
         # noinspection PyArgumentList
         self.idx_inputs = self.tabs.insertTab(
             0, self.tab_inputs,
@@ -90,17 +91,11 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.profile = profile
         self.tab_plugins.set_profile(self.profile)
 
-    def _on_generate_checks(self, path: Path):
+    def _on_update_check_inputs(self):
         """ Read the feature files provided by the user"""
-        logger.debug('generate checks ...')
+        logger.debug('_on_update_check_inputs')
         qa_json = self._build_qa_json()
         self.prj.qa_json = qa_json
-        self.prj.save_qa_json()
-        #
-        # import json
-        # print("----- QA JSON -----")
-        # print(json.dumps(qajson.to_dict(), sort_keys=True, indent=4))
-        # print("-----         -----")
 
     # QA JSON methods
     def _build_qa_json(self) -> QajsonRoot:

@@ -29,14 +29,13 @@ class MainTab(QtWidgets.QWidget):
     here = os.path.abspath(os.path.dirname(__file__))
 
     profile_selected = QtCore.Signal(QaxConfigProfile)
-    generate_checks = QtCore.Signal(Path)
+    check_inputs_changed = QtCore.Signal()
 
     def __init__(self, parent_win, prj):
         QtWidgets.QWidget.__init__(self)
 
         # store a project reference
         self.prj = prj
-        self.prj.qa_json_path_changed.connect(self._on_qa_json_path_changed)
         self.parent_win = parent_win
 
         self.selected_profile = None
@@ -78,6 +77,7 @@ class MainTab(QtWidgets.QWidget):
         self.selected_profile = profile
         # propogate event up
         self.profile_selected.emit(profile)
+        self.check_inputs_changed.emit()
 
     def _on_check_tools_selected(self, check_tools):
         self.selected_check_tools = check_tools
@@ -95,21 +95,13 @@ class MainTab(QtWidgets.QWidget):
             self.file_group_selection.update_file_groups(
                 unique_file_groups)
 
-    def _on_file_group_files_added(self, file_group):
-        print("files added to: {}".format(file_group.name))
+        self.check_inputs_changed.emit()
 
-        # todo: call interaction functions such as `raw_loaded` based on
-        # what check has had files selected
+    def _on_file_group_files_added(self, file_group):
+        self.check_inputs_changed.emit()
 
     def _on_file_group_files_removed(self, file_group):
-        print("files removed from: {}".format(file_group.name))
-
-        # todo: call interaction functions such as `raw_unloaded` based on
-        # what check has had files cleared from
-
-    def _on_qa_json_path_changed(self, new_path: Path):
-        print("_update_json_list")
-        print(new_path)
+        self.check_inputs_changed.emit()
 
     def update_ui(self, qajson: QajsonRoot) -> NoReturn:
         self.profile_selection.update_ui(qajson)

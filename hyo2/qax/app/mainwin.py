@@ -1,4 +1,5 @@
 from ausseabed.qajson.model import QajsonRoot
+from ausseabed.qajson.utils import minimal_qajson
 from hyo2.abc.app.dialogs.exception.exception_dialog import ExceptionDialog
 from hyo2.abc.app.tabs.info.info_tab import InfoTab
 from hyo2.abc.lib.helper import Helper
@@ -195,12 +196,10 @@ class MainWin(QtWidgets.QMainWindow):
 
     def new_qajson(self):
         self.qax_widget.prj.qa_json_path = None
-        self.qax_widget.prj.qa_json = QajsonRoot(None)
+        self.qax_widget.prj.qa_json = minimal_qajson()
         self.update_ui(self.qax_widget.prj.qa_json)
 
     def _save_qajson(self):
-        qajson = self.qax_widget._build_qa_json()
-        self.qax_widget.prj.qa_json = qajson
         self.qax_widget.prj.save_qa_json()
         base_name = os.path.basename(self.qax_widget.prj.qa_json_path)
         self.update_status_bar("Saved {}".format(base_name), 1500)
