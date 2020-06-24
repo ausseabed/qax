@@ -48,17 +48,18 @@ class QaCheckSummary():
         """ Builds a list of check summaries from the qa json object
         """
         summaries = {}  # tuple of check id and name used as key
-        for check in qa_json.qa.raw_data.checks:
-            QaCheckSummary.__process_check_summary(
-                'raw_data', check, summaries)
-        for check in qa_json.qa.survey_products.checks:
-            QaCheckSummary.__process_check_summary(
-                'survey_products', check, summaries)
-
-        if qa_json.qa.chart_adequacy is not None:
-            for check in qa_json.qa.chart_adequacy.checks:
+        if qa_json.qa is not None:
+            for check in qa_json.qa.raw_data.checks:
                 QaCheckSummary.__process_check_summary(
-                    'chart_adequacy', check, summaries)
+                    'raw_data', check, summaries)
+            for check in qa_json.qa.survey_products.checks:
+                QaCheckSummary.__process_check_summary(
+                    'survey_products', check, summaries)
+
+            if qa_json.qa.chart_adequacy is not None:
+                for check in qa_json.qa.chart_adequacy.checks:
+                    QaCheckSummary.__process_check_summary(
+                        'chart_adequacy', check, summaries)
 
         return list(summaries.values())
 

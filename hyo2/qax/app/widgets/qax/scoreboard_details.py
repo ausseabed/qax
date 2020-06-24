@@ -9,6 +9,8 @@ import os
 
 from hyo2.qax.app.widgets.qax.map_utils import MarkerItem, LineItem, \
     MarkersModel, LinesModel
+from hyo2.qax.app.widgets.qax.treeview_utils import SimpleTreeModel, \
+    DictTreeModel
 
 
 class Manager(QtCore.QObject):
@@ -21,6 +23,8 @@ class Manager(QtCore.QObject):
     map_lines_changed = Signal()
     selected_properties_changed = Signal()
     selected_properties_table_changed = Signal()
+    data_available_changed = Signal()
+    map_data_available_changed = Signal()
 
     def __init__(self, parent=None):
         super(Manager, self).__init__(parent)
@@ -33,6 +37,22 @@ class Manager(QtCore.QObject):
         if self._check is None:
             return "n/a"
         return self._check.info.name
+
+    @Property(bool, notify=data_available_changed)
+    def data_available(self):
+        if (self._check is None or
+                self._check.outputs is None or
+                self._check.outputs.data is None):
+            return False
+        return True
+
+    @Property(bool, notify=map_data_available_changed)
+    def map_data_available(self):
+        if not self.data_available:
+            return False
+        if 'map' not in self._check.outputs.data:
+            return False
+        return True
 
     @Property(str, notify=qa_state_changed)
     def qa_state(self):
@@ -123,6 +143,8 @@ class Manager(QtCore.QObject):
         self.input_files_changed.emit()
         self.selected_properties_changed.emit()
         self.selected_properties_table_changed.emit()
+        self.data_available_changed.emit()
+        self.map_data_available_changed.emit()
 
 
 class ScoreboardDetailsWidget(QtWidgets.QGroupBox):
@@ -141,6 +163,9 @@ class ScoreboardDetailsWidget(QtWidgets.QGroupBox):
 
         self.linesModel = LinesModel()
         rc.setContextProperty('linesModel', self.linesModel)
+
+        self.dataModel = DictTreeModel()
+        rc.setContextProperty('dataModel', self.dataModel)
 
         url = QUrl.fromLocalFile(os.path.join(
             os.path.abspath(os.path.dirname(__file__)),
@@ -162,6 +187,8 @@ class ScoreboardDetailsWidget(QtWidgets.QGroupBox):
         return check.outputs.data['map']
 
     def set_selected_check(self, check: QajsonCheck):
+        if check.outputs is not None and check.outputs.data is not None:
+            self.dataModel.set_data_dict(check.outputs.data)
         self.markersModel.remove_all()
         self.linesModel.remove_all()
         geojson = self.get_check_geojson(check)

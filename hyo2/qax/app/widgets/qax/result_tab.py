@@ -190,8 +190,11 @@ class ResultTab(QtWidgets.QWidget):
         font = QtGui.QFont("Courier")
         font.setStyleHint(QtGui.QFont.TypeWriter)
         self.json_viewer.setCurrentFont(font)
-        self.json_viewer.setText(
-            json.dumps(qa_json_dict['qa'][self.qa_group], indent=4))
+        if (('qa' in qa_json_dict) and
+                (qa_json_dict['qa'] is not None) and
+                (self.qa_group in qa_json_dict['qa'])):
+            self.json_viewer.setText(
+                json.dumps(qa_json_dict['qa'][self.qa_group], indent=4))
         self.json_viewer.setReadOnly(True)
         vbox.addWidget(self.json_viewer)
 
@@ -230,7 +233,11 @@ class ResultTab(QtWidgets.QWidget):
         self.score_board.setHorizontalHeaderLabels(
             ["ID", "Check", "Input", "Status", "QA Pass"])
 
-        checks = qa_json_dict['qa'][self.qa_group]['checks']
+        checks = []
+        if (('qa' in qa_json_dict) and
+                (qa_json_dict['qa'] is not None) and
+                (self.qa_group in qa_json_dict['qa'])):
+            checks = qa_json_dict['qa'][self.qa_group]['checks']
 
         nr_of_checks = len(checks)
         self.score_board.setRowCount(nr_of_checks)
@@ -337,7 +344,7 @@ class ResultTab(QtWidgets.QWidget):
         data_level_names = [
             name
             for name in possible_dl_names
-            if getattr(self.qa_json.qa, name) is not None
+            if (self.qa_json.qa is not None) and getattr(self.qa_json.qa, name) is not None
         ]
         self.set_data_level = QtWidgets.QComboBox()
         self.set_data_level.setSizePolicy(
