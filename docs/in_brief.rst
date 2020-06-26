@@ -15,8 +15,9 @@ In brief
 
 QAX provides functionalities to perform quality assurance on ocean mapping data.
 
-Accepted data inputs are bathymetric grids, feature files, sounding selections, and directory structures.
-The output is GIS-layers that alert to the user various parts of their data that might require more attention.
-Summary reports are also printed for the record and review.
+Accepted data inputs are raw files (*.all and *.gsf at this stage) and bathymetric grids.
+The output are warnings, errors, reports, maps and data that are designed to assist with decision making
+and debugging data or setup issues.
 
-The objectives are to improve data accuracy, while also reducing the overall time required for ping-to-chart.
+The objectives are to improve data accuracy, capture potential problems at source
+and reduce the overall human time to quality control data.
