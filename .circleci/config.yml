@@ -29,6 +29,11 @@ jobs:
           at: C:\circleci-workspace
       - checkout
       - run:
+          name: Test attached
+          command: |
+            ls C:\circleci-workspace
+            ls C:\circleci-workspace\html
+      - run:
           name: Download Miniconda and save in tmp
           command: |
             $client = new-object System.Net.WebClient
