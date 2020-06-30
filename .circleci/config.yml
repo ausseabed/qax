@@ -32,7 +32,6 @@ jobs:
           name: Test attached
           command: |
             ls C:\circleci-workspace
-            ls C:\circleci-workspace\html
             ls C:\circleci-workspace\docs
       - run:
           name: Download Miniconda and save in tmp
