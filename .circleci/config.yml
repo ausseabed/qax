@@ -4,6 +4,22 @@ orbs:
   win: circleci/windows@2.2.0
 
 jobs:
+
+  docs-build:
+    docker:
+      - image: python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: pip install -r docs/requirements.txt
+      - run:
+          name: Build docs
+          command: cd docs/ && make html
+      - persist_to_workspace:
+          root: docs/_build
+          paths: html
+
   build:
     executor:
       name: win/default
@@ -110,7 +126,15 @@ workflows:
   version: 2
   Windows_Workflow:
     jobs:
+      - docs-build:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       - build:
+          requires:
+             - docs-build
           filters:
             tags:
               only: /^v.*/
