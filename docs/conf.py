@@ -138,11 +138,11 @@ html_static_path = ['_static']
 #html_last_updated_fmt = '%b %d, %Y'
 
 # Custom sidebar templates, maps document names to template names.
-html_sidebars = {
-    'index': ['sidebarintro.html', 'sourcelink.html', 'searchbox.html'],
-    '**': ['sidebarlogo.html', 'relations.html',
-           'sourcelink.html', 'searchbox.html'],
-}
+# html_sidebars = {
+#     'index': ['sidebarintro.html', 'sourcelink.html', 'searchbox.html'],
+#     '**': ['sidebarlogo.html', 'relations.html',
+#            'sourcelink.html', 'searchbox.html'],
+# }
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
@@ -238,7 +238,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'HydrOfficeQAX', u'HydrOffice QA Checks Documentation',
-   u'University of New Hampshire, Center for Coastal and Ocean Mapping', 
+   u'University of New Hampshire, Center for Coastal and Ocean Mapping',
    'HydrOfficeQAX', 'Library and tools for quality assurance of ocean mapping data.',
    'Miscellaneous'),
 ]
