@@ -25,14 +25,15 @@ jobs:
       name: win/default
       shell: powershell.exe
     steps:
+      - checkout
       - attach_workspace:
           at: C:\circleci-workspace
-      - checkout
       - run:
           name: Test attached
           command: |
             ls C:\circleci-workspace
             ls C:\circleci-workspace\docs
+            ls C:\circleci-workspace\docs\_build
       - run:
           name: Download Miniconda and save in tmp
           command: |
