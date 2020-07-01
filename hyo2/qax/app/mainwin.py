@@ -249,7 +249,7 @@ class MainWin(QtWidgets.QMainWindow):
             available_geometry.height() * 2 / 3)
         man_win.show()
 
-        self.manual_window = manWin
+        self.manual_window = man_win
 
     def quitAction(self):
         reply = self.do_you_really_want("Quit", "quit %s" % self.name)
