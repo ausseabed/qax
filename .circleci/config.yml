@@ -34,6 +34,7 @@ jobs:
             ls C:\circleci-workspace
             ls C:\circleci-workspace\docs
             ls C:\circleci-workspace\docs\_build
+            Copy-Item -Path C:\circleci-workspace\docs\_build -Destination C:\tmp\_build -Recurse -Container
       - run:
           name: Download Miniconda and save in tmp
           command: |
@@ -64,6 +65,7 @@ jobs:
             $env:CIRCLE_TAG | out-file -Encoding ascii -filepath ./version.txt
             ls
             ls docs
+            Copy-Item -Path C:\tmp\_build -Destination C:\circleci-workspace\docs\_build -Recurse -Container
             ls docs\_build
             ls docs\_build\html
             Write-Host "$env:CONDA_ROOT"
