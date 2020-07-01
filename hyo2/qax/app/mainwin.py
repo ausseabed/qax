@@ -3,10 +3,9 @@ from ausseabed.qajson.utils import minimal_qajson
 from hyo2.abc.app.dialogs.exception.exception_dialog import ExceptionDialog
 from hyo2.abc.app.tabs.info.info_tab import InfoTab
 from hyo2.abc.lib.helper import Helper
-from hyo2.abc.lib.helper import Helper
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtGui import QIcon, QKeySequence
-from PySide2.QtWidgets import QAction
+from PySide2.QtWidgets import QAction, QApplication
 from typing import Optional, NoReturn, List
 from urllib.error import URLError
 from urllib.request import urlopen
@@ -18,6 +17,7 @@ import ssl
 import sys
 import traceback
 
+from hyo2.qax.app.widgets.qax.manual import ManualWindow
 from hyo2.qax.lib import lib_info
 from hyo2.qax.app import app_info
 from hyo2.qax.app.widgets.qax.widget import QAXWidget
@@ -241,10 +241,15 @@ class MainWin(QtWidgets.QMainWindow):
             self.update_status_bar("Opened {}".format(base_name), 1500)
 
     def open_manual(self):
-        logger.debug("open manual")
-        Helper.explore_folder(
-            "https://www.hydroffice.org/"
-            "manuals/qax/user_manual_qax_data_inputs.html")
+        man_win = ManualWindow()
+        app = QApplication.instance()
+        available_geometry = app.desktop().availableGeometry(man_win)
+        man_win.resize(
+            available_geometry.width() * 2 / 3,
+            available_geometry.height() * 2 / 3)
+        man_win.show()
+
+        self.manual_window = manWin
 
     def quitAction(self):
         reply = self.do_you_really_want("Quit", "quit %s" % self.name)
