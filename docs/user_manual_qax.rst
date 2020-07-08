@@ -7,4 +7,3 @@ QA Checks
     user_manual_qax_overview
     user_manual_qax_data_inputs
     user_manual_qax_mate
-    user_manual_qax_qc_tools

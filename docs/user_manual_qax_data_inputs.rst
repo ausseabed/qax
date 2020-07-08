@@ -43,4 +43,4 @@ Entry of delayed calculated heave files is for tracking folder structure and fil
     :alt: raw file input
     :figclass: align-center
 
-    SVP file input box
+    Delayed Heave file input box
