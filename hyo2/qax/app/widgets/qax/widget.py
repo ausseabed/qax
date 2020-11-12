@@ -52,7 +52,7 @@ class QAXWidget(QtWidgets.QTabWidget):
         # noinspection PyArgumentList
         self.idx_inputs = self.tabs.insertTab(
             0, self.tab_inputs,
-            qta.icon('mdi.file-settings-variant-outline'), "")
+            qta.icon('mdi.file-multiple'), "")
 
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
 
