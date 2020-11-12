@@ -15,6 +15,8 @@ def get_param_widget(param: QajsonParam, parent=None) -> 'CheckParamWidget':
         return CheckParamStringWidget(param, parent)
     elif isinstance(param.value, int):
         return CheckParamIntWidget(param, parent)
+    elif isinstance(param.value, float):
+        return CheckParamFloatWidget(param, parent)
     else:
         # special case. Return a widget that doesn't allow modification.
         # it simply shows that this is an unsupported type.
@@ -104,6 +106,38 @@ class CheckParamIntWidget(CheckParamWidget):
         return QajsonParam(
             name=self._param.name,
             value=int(self.lineedit_value.text())
+        )
+
+    @CheckParamWidget.value.setter
+    def value(self, value):
+        self.lineedit_value.setText(str(value))
+
+
+class CheckParamFloatWidget(CheckParamWidget):
+    """ Supports parameters with int value types
+    """
+
+    def __init__(self, param: QajsonParam, parent=None):
+        super().__init__(param, parent=parent)
+
+        hbox = QtWidgets.QHBoxLayout()
+        hbox.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(hbox)
+
+        label_name = QtWidgets.QLabel("{}".format(self._param.name))
+        label_name.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        label_name.setMinimumWidth(self.label_min_width)
+        label_name.setStyleSheet(GuiSettings.stylesheet_check_param_name())
+        hbox.addWidget(label_name)
+
+        self.lineedit_value = QtWidgets.QLineEdit()
+        self.lineedit_value.setText(str(self._param.value))
+        hbox.addWidget(self.lineedit_value)
+
+    def param(self) -> QajsonParam:
+        return QajsonParam(
+            name=self._param.name,
+            value=float(self.lineedit_value.text())
         )
 
     @CheckParamWidget.value.setter
