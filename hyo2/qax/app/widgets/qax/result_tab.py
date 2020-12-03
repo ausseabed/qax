@@ -315,7 +315,7 @@ class ResultTab(QtWidgets.QWidget):
         # to get the right check we must be sure to get the data level that
         # the user has selected
         qajson_datalevel = getattr(self.qa_json.qa, self.qa_group)
-        check = self.qa_json.qa.raw_data.checks[selected_row]
+        check = qajson_datalevel.checks[selected_row]
         self.scoreboard_selected_check = check
         self.scoreboard_details.set_selected_check(
             self.scoreboard_selected_check)
