@@ -175,7 +175,7 @@ Pane {
                 visible: !manager.data_available
                 text: "No data avaliable for this check"
                 color: "grey"
-                anchors.horizontalCenter: parent.horizontalCenter
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
               }
             }
         }
