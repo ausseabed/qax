@@ -192,7 +192,7 @@ class QAXProject(QtCore.QObject):
             self.qa_json_path = path
         logger.debug("save json to {}".format(path))
         with open(str(path), "w") as file:
-            json.dump(self.qa_json.to_dict(), file, indent=4, sort_keys=True)
+            json.dump(self.qa_json.to_dict(), file, indent=4)
 
     def open_qa_json(self) -> NoReturn:
         path = self.qa_json_path
