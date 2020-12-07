@@ -2,5 +2,5 @@ GDAL==2.4.4
 PySide2
 qtawesome
 appdirs
-numpy
+numpy==1.19.1
 jsonschema

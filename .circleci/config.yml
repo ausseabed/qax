@@ -58,6 +58,7 @@ jobs:
             $client.DownloadFile("https://github.com/ausseabed/pyall/archive/master.zip","C:\tmp\pyall.zip")
             $client.DownloadFile("https://github.com/ausseabed/pygsf/archive/master.zip","C:\tmp\pygsf.zip")
             $client.DownloadFile("https://github.com/ausseabed/hyo2_mate/archive/master.zip","C:\tmp\hyo2.mate.zip")
+            $client.DownloadFile("https://github.com/ausseabed/mbes-grid-checks/archive/master.zip","C:\tmp\ausseabed.mbesgc.zip")
             $client.DownloadFile("https://github.com/hydroffice/hyo2_abc/archive/master.zip","C:\tmp\hyo2.abc.zip")
       - run:
           name: Activate the qax conda environment, update the version and install the package
@@ -76,6 +77,7 @@ jobs:
             conda install -y -c conda-forge certifi
             conda install -y -c conda-forge --file requirements_conda.txt
             conda install -y -c conda-forge --no-deps cartopy
+            pip install click==7.1.2
             pip install coveralls
             pip install jsonschema
             pip install geojson
@@ -86,6 +88,7 @@ jobs:
             pip install C:\tmp\pyall.zip
             pip install C:\tmp\pygsf.zip
             pip install C:\tmp\hyo2.mate.zip
+            pip install C:\tmp\ausseabed.mbesgc.zip
             pip install pypiwin32
             conda install -y -c conda-forge --no-deps pyproj
             pip install --no-deps C:\tmp\hyo2.abc.zip
