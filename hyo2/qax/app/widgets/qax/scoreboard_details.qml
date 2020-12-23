@@ -268,6 +268,15 @@ Pane {
                     }
                   }
 
+                  MapItemView {
+                    model: polygonsModel
+                    delegate: MapPolygon{
+                      path: polygonCoordinates
+                      border.width: lineWidth
+                      border.color: lineColor
+                    }
+                  }
+
                   Button {
                       id: fitButton
                       text: "Fit"

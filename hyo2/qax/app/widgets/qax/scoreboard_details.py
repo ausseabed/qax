@@ -8,7 +8,7 @@ from PySide2.QtQuick import QQuickView
 import os
 
 from hyo2.qax.app.widgets.qax.map_utils import MarkerItem, LineItem, \
-    MarkersModel, LinesModel
+    MarkersModel, LinesModel, PolygonsModel
 from hyo2.qax.app.widgets.qax.treeview_utils import SimpleTreeModel, \
     DictTreeModel
 
@@ -164,6 +164,9 @@ class ScoreboardDetailsWidget(QtWidgets.QGroupBox):
         self.linesModel = LinesModel()
         rc.setContextProperty('linesModel', self.linesModel)
 
+        self.polygonsModel = PolygonsModel()
+        rc.setContextProperty('polygonsModel', self.polygonsModel)
+
         self.dataModel = DictTreeModel()
         rc.setContextProperty('dataModel', self.dataModel)
 
@@ -191,9 +194,11 @@ class ScoreboardDetailsWidget(QtWidgets.QGroupBox):
             self.dataModel.set_data_dict(check.outputs.data)
         self.markersModel.remove_all()
         self.linesModel.remove_all()
+        self.polygonsModel.remove_all()
         geojson = self.get_check_geojson(check)
         if geojson is not None:
             self.markersModel.add_from_geojson(geojson)
             self.linesModel.add_from_geojson(geojson, color='blue')
+            self.polygonsModel.add_from_geojson(geojson, color='green')
 
         self.manager.set_check(check)

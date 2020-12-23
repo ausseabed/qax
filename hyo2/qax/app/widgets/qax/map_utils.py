@@ -60,6 +60,31 @@ class LineItem(object):
         self._width = size
 
 
+class PolygonItem(object):
+    def __init__(self, coordinates, color=QColor("blue"), width=5):
+        self._coordinates = coordinates
+        self._color = color
+        self._width = width
+
+    def coordinates(self):
+        return self._coordinates
+
+    def set_coordinates(self, value):
+        self._coordinates = value
+
+    def color(self):
+        return self._color
+
+    def set_color(self, value):
+        self._color = value
+
+    def width(self):
+        return self._width
+
+    def set_width(self, value):
+        self._width = size
+
+
 class MarkersModel(QAbstractListModel):
     PositionRole = Qt.UserRole + 1
     ColorRole = Qt.UserRole + 2
@@ -131,7 +156,8 @@ class MarkersModel(QAbstractListModel):
 
     def add_from_geojson(self, geojson, color='red'):
         new_items = []
-        assert(geojson['type'] == 'FeatureCollection')
+        if not(geojson['type'] == 'FeatureCollection'):
+            return
         features = geojson['features']
         for feature in features:
             if feature['type'] != 'Feature':
@@ -222,7 +248,8 @@ class LinesModel(QAbstractListModel):
 
     def add_from_geojson(self, geojson, color='red'):
         new_lines = []
-        assert(geojson['type'] == 'FeatureCollection')
+        if not (geojson['type'] == 'FeatureCollection'):
+            return
         features = geojson['features']
         for feature in features:
             if feature['type'] != 'Feature':
@@ -250,4 +277,95 @@ class LinesModel(QAbstractListModel):
             self.rowCount() + len(new_lines) - 1
         )
         self._items.extend(new_lines)
+        self.endInsertRows()
+
+
+class PolygonsModel(QAbstractListModel):
+    CoordinatesRole = Qt.UserRole + 1
+    ColorRole = Qt.UserRole + 2
+    WidthRole = Qt.UserRole + 3
+
+    _roles = {
+        CoordinatesRole: QByteArray(b"polygonCoordinates"),
+        ColorRole: QByteArray(b"lineColor"),
+        WidthRole: QByteArray(b"lineWidth")
+    }
+
+    def __init__(self, parent=None):
+        QAbstractListModel.__init__(self, parent)
+        self._items = []
+
+    def rowCount(self, index=QModelIndex()):
+        return len(self._items)
+
+    def roleNames(self):
+        return self._roles
+
+    def data(self, index, role=Qt.DisplayRole):
+        if index.row() >= self.rowCount():
+            return QVariant()
+        marker = self._items[index.row()]
+
+        if role == PolygonsModel.CoordinatesRole:
+            return marker.coordinates()
+        elif role == PolygonsModel.ColorRole:
+            return marker.color()
+        elif role == PolygonsModel.WidthRole:
+            return marker.width()
+
+        return QVariant()
+
+    def setData(self, index, value, role=Qt.EditRole):
+        if index.isValid():
+            marker = self._items[index.row()]
+            if role == PolygonsModel.CoordinatesRole:
+                marker.set_coordinates(value)
+            if role == PolygonsModel.ColorRole:
+                marker.set_color(value)
+            if role == PolygonsModel.WidthRole:
+                marker.set_width(value)
+            self.dataChanged.emit(index, index)
+            return True
+        return QAbstractListModel.setData(self, index, value, role)
+
+    def add(self, line):
+        self.beginInsertRows(QModelIndex(), self.rowCount(), self.rowCount())
+        self._items.append(line)
+        self.endInsertRows()
+
+    def remove_all(self):
+        self.beginRemoveRows(QModelIndex(), 0, self.rowCount())
+        self._items.clear()
+        self.endRemoveRows()
+
+    def flags(self, index):
+        if not index.isValid():
+            return Qt.ItemIsEnabled
+        return QAbstractListModel.flags(index) | Qt.ItemIsEditable
+
+    def add_from_geojson(self, geojson, color='red'):
+        new_polys = []
+        if not (geojson['type'] == 'MultiPolygon'):
+            return
+        poly_list_coords = geojson['coordinates']
+        for poly_coords in poly_list_coords:
+            poly_points = []
+            for coordinate in poly_coords:
+                poly_points.append({
+                    'latitude': coordinate[1],
+                    'longitude': coordinate[0],
+                })
+
+            new_poly = PolygonItem(
+                poly_points,
+                QColor(color)
+            )
+            new_polys.append(new_poly)
+
+        self.beginInsertRows(
+            QModelIndex(),
+            self.rowCount(),
+            self.rowCount() + len(new_polys) - 1
+        )
+        self._items.extend(new_polys)
         self.endInsertRows()
