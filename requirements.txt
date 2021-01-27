@@ -7,3 +7,4 @@ setuptools==44.*
 git+https://github.com/ausseabed/qajson.git@master#egg=ausseabed.qajson
 git+https://github.com/ausseabed/pyall.git@master#egg=pyall
 git+https://github.com/ausseabed/hyo2_mate.git@master#egg=hyo2.mate
+git+https://github.com/ausseabed/kmall.git@master#egg=kmall

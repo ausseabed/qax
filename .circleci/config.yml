@@ -60,6 +60,7 @@ jobs:
             $client.DownloadFile("https://github.com/ausseabed/hyo2_mate/archive/master.zip","C:\tmp\hyo2.mate.zip")
             $client.DownloadFile("https://github.com/ausseabed/mbes-grid-checks/archive/master.zip","C:\tmp\ausseabed.mbesgc.zip")
             $client.DownloadFile("https://github.com/hydroffice/hyo2_abc/archive/master.zip","C:\tmp\hyo2.abc.zip")
+            $client.DownloadFile("https://github.com/ausseabed/kmall/archive/master.zip","C:\tmp\kmall.zip")
       - run:
           name: Activate the qax conda environment, update the version and install the package
           command: |
@@ -89,6 +90,7 @@ jobs:
             pip install C:\tmp\pygsf.zip
             pip install C:\tmp\hyo2.mate.zip
             pip install C:\tmp\ausseabed.mbesgc.zip
+            pip install C:\tmp\kmall.mbesgc.zip
             pip install pypiwin32
             conda install -y -c conda-forge --no-deps pyproj
             pip install --no-deps C:\tmp\hyo2.abc.zip
