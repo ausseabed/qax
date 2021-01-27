@@ -82,6 +82,7 @@ jobs:
             pip install coveralls
             pip install jsonschema
             pip install geojson
+            pip install affine==2.3.0
             pip install pytest
             pip install pytest-cov
             pip install setuptools==44.*
