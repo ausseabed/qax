@@ -90,7 +90,7 @@ jobs:
             pip install C:\tmp\pygsf.zip
             pip install C:\tmp\hyo2.mate.zip
             pip install C:\tmp\ausseabed.mbesgc.zip
-            pip install C:\tmp\kmall.mbesgc.zip
+            pip install C:\tmp\kmall.zip
             pip install pypiwin32
             conda install -y -c conda-forge --no-deps pyproj
             pip install --no-deps C:\tmp\hyo2.abc.zip
