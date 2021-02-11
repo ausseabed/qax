@@ -4,3 +4,4 @@ qtawesome
 appdirs
 numpy==1.19.1
 jsonschema
+scipy=1.6.0

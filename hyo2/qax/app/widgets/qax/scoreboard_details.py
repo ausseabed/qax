@@ -199,6 +199,6 @@ class ScoreboardDetailsWidget(QtWidgets.QGroupBox):
         if geojson is not None:
             self.markersModel.add_from_geojson(geojson)
             self.linesModel.add_from_geojson(geojson, color='blue')
-            self.polygonsModel.add_from_geojson(geojson, color='green')
+            self.polygonsModel.add_from_geojson(geojson, color='#80FF0000', line_color='#FFFF0000')
 
         self.manager.set_check(check)

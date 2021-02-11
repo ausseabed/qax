@@ -61,10 +61,16 @@ class LineItem(object):
 
 
 class PolygonItem(object):
-    def __init__(self, coordinates, color=QColor("blue"), width=5):
+    def __init__(
+            self,
+            coordinates,
+            color=QColor("blue"),
+            line_color=QColor("blue"),
+            line_width=5):
         self._coordinates = coordinates
         self._color = color
-        self._width = width
+        self._line_color = line_color
+        self._line_width = line_width
 
     def coordinates(self):
         return self._coordinates
@@ -78,11 +84,17 @@ class PolygonItem(object):
     def set_color(self, value):
         self._color = value
 
-    def width(self):
-        return self._width
+    def line_color(self):
+        return self._line_color
 
-    def set_width(self, value):
-        self._width = size
+    def set_line_color(self, value):
+        self._line_color = value
+
+    def line_width(self):
+        return self._line_width
+
+    def set_line_width(self, value):
+        self._line_width = size
 
 
 class MarkersModel(QAbstractListModel):
@@ -282,13 +294,15 @@ class LinesModel(QAbstractListModel):
 
 class PolygonsModel(QAbstractListModel):
     CoordinatesRole = Qt.UserRole + 1
-    ColorRole = Qt.UserRole + 2
-    WidthRole = Qt.UserRole + 3
+    LineColorRole = Qt.UserRole + 2
+    LineWidthRole = Qt.UserRole + 3
+    ColorRole = Qt.UserRole + 4
 
     _roles = {
         CoordinatesRole: QByteArray(b"polygonCoordinates"),
-        ColorRole: QByteArray(b"lineColor"),
-        WidthRole: QByteArray(b"lineWidth")
+        LineColorRole: QByteArray(b"lineColor"),
+        LineWidthRole: QByteArray(b"lineWidth"),
+        ColorRole: QByteArray(b"mcolor")
     }
 
     def __init__(self, parent=None):
@@ -308,10 +322,12 @@ class PolygonsModel(QAbstractListModel):
 
         if role == PolygonsModel.CoordinatesRole:
             return marker.coordinates()
+        elif role == PolygonsModel.LineColorRole:
+            return marker.line_color()
+        elif role == PolygonsModel.LineWidthRole:
+            return marker.line_width()
         elif role == PolygonsModel.ColorRole:
             return marker.color()
-        elif role == PolygonsModel.WidthRole:
-            return marker.width()
 
         return QVariant()
 
@@ -322,8 +338,10 @@ class PolygonsModel(QAbstractListModel):
                 marker.set_coordinates(value)
             if role == PolygonsModel.ColorRole:
                 marker.set_color(value)
-            if role == PolygonsModel.WidthRole:
-                marker.set_width(value)
+            if role == PolygonsModel.LineWidthRole:
+                marker.set_line_width(value)
+            if role == PolygonsModel.LineColorRole:
+                marker.set_line_color(value)
             self.dataChanged.emit(index, index)
             return True
         return QAbstractListModel.setData(self, index, value, role)
@@ -343,7 +361,7 @@ class PolygonsModel(QAbstractListModel):
             return Qt.ItemIsEnabled
         return QAbstractListModel.flags(index) | Qt.ItemIsEditable
 
-    def add_from_geojson(self, geojson, color='red'):
+    def add_from_geojson(self, geojson, color='green', line_color='blue'):
         new_polys = []
         if not (geojson['type'] == 'MultiPolygon'):
             return
@@ -358,7 +376,8 @@ class PolygonsModel(QAbstractListModel):
 
             new_poly = PolygonItem(
                 poly_points,
-                QColor(color)
+                color=color,
+                line_color=line_color
             )
             new_polys.append(new_poly)
 

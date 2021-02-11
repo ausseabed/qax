@@ -274,6 +274,7 @@ Pane {
                       path: polygonCoordinates
                       border.width: lineWidth
                       border.color: lineColor
+                      color: mcolor
                     }
                   }
 
