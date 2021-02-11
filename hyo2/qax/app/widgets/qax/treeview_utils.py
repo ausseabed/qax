@@ -40,7 +40,7 @@ class DictTreeModel(QStandardItemModel):
         # If we didn't exclude the map data here all the geojson would be
         # browseable
         self.exclusions = {
-            # 1: set(['map'])
+            1: set(['map'])
         }
 
     def _recurse_dict(self, tree_item, data_item, depth):
