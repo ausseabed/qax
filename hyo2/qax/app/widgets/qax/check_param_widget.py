@@ -13,6 +13,8 @@ def get_param_widget(param: QajsonParam, parent=None) -> 'CheckParamWidget':
     # parameter types
     if isinstance(param.value, str):
         return CheckParamStringWidget(param, parent)
+    elif isinstance(param.value, bool):
+        return CheckParamBoolWidget(param, parent)
     elif isinstance(param.value, int):
         return CheckParamIntWidget(param, parent)
     elif isinstance(param.value, float):
@@ -111,6 +113,40 @@ class CheckParamIntWidget(CheckParamWidget):
     @CheckParamWidget.value.setter
     def value(self, value):
         self.lineedit_value.setText(str(value))
+
+
+class CheckParamBoolWidget(CheckParamWidget):
+    """ Supports parameters with bool value types
+    """
+
+    def __init__(self, param: QajsonParam, parent=None):
+        super().__init__(param, parent=parent)
+
+        hbox = QtWidgets.QHBoxLayout()
+        hbox.setContentsMargins(0, 0, 0, 0)
+        hbox.setAlignment(QtCore.Qt.AlignLeft)
+        self.setLayout(hbox)
+
+        label_name = QtWidgets.QLabel(f"{self._param.name}")
+        # label_name.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        label_name.setMinimumWidth(self.label_min_width)
+        label_name.setStyleSheet(GuiSettings.stylesheet_check_param_name())
+        hbox.addWidget(label_name)
+
+        self.checkbox = QtWidgets.QCheckBox()
+        self.checkbox.setChecked(self._param.value)
+        # self.checkbox.setAlignment(QtCore.Qt.AlignLeft)
+        hbox.addWidget(self.checkbox)
+
+    def param(self) -> QajsonParam:
+        return QajsonParam(
+            name=self._param.name,
+            value=self.checkbox.isChecked()
+        )
+
+    @CheckParamWidget.value.setter
+    def value(self, value):
+        self.checkbox.setChecked(value)
 
 
 class CheckParamFloatWidget(CheckParamWidget):
