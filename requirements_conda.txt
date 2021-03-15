@@ -5,3 +5,5 @@ appdirs
 numpy==1.19.1
 jsonschema
 scipy=1.6.0
+numba==0.51.2
+numexpr==2.7.2

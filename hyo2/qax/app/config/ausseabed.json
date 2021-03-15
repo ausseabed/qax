@@ -18,9 +18,12 @@
       "checked": true
     },
     {
-      "name": "Flier Finder",
-      "pluginClass": "hyo2.qax.plugins.test.FlierFinderQaxPlugin",
-      "icon": "qc_tools.png"
+      "name": "QC Tools",
+      "pluginClass": "ausseabed.findergc.qax.plugin.FinderGridChecksQaxPlugin",
+      "description": "Flier Finder and Holiday Finder checks",
+      "icon": "qc_tools.png",
+      "enabled": true,
+      "checked": true
     },
     {
       "name": "Coverage check",

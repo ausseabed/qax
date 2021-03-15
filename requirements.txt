@@ -5,6 +5,7 @@ affine==2.3.0
 pytest
 pytest-cov
 setuptools==44.*
+structlog==21.1.0
 git+https://github.com/ausseabed/qajson.git@master#egg=ausseabed.qajson
 git+https://github.com/ausseabed/pyall.git@master#egg=pyall
 git+https://github.com/ausseabed/hyo2_mate.git@master#egg=hyo2.mate

@@ -59,6 +59,7 @@ jobs:
             $client.DownloadFile("https://github.com/ausseabed/pygsf/archive/master.zip","C:\tmp\pygsf.zip")
             $client.DownloadFile("https://github.com/ausseabed/hyo2_mate/archive/master.zip","C:\tmp\hyo2.mate.zip")
             $client.DownloadFile("https://github.com/ausseabed/mbes-grid-checks/archive/master.zip","C:\tmp\ausseabed.mbesgc.zip")
+            $client.DownloadFile("https://github.com/ausseabed/finder-grid-checks/archive/main.zip","C:\tmp\ausseabed.findergc.zip")
             $client.DownloadFile("https://github.com/hydroffice/hyo2_abc/archive/master.zip","C:\tmp\hyo2.abc.zip")
             $client.DownloadFile("https://github.com/ausseabed/kmall/archive/master.zip","C:\tmp\kmall.zip")
       - run:
@@ -91,6 +92,7 @@ jobs:
             pip install C:\tmp\pygsf.zip
             pip install C:\tmp\hyo2.mate.zip
             pip install C:\tmp\ausseabed.mbesgc.zip
+            pip install C:\tmp\ausseabed.findergc.zip
             pip install C:\tmp\kmall.zip
             pip install pypiwin32
             conda install -y -c conda-forge --no-deps pyproj
