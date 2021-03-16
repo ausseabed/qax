@@ -87,6 +87,7 @@ jobs:
             pip install pytest
             pip install pytest-cov
             pip install setuptools==44.*
+            pip install structlog==21.1.0
             pip install C:\tmp\ausseabed.qajson.zip
             pip install C:\tmp\pyall.zip
             pip install C:\tmp\pygsf.zip
