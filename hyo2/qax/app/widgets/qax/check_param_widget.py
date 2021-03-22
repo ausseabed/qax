@@ -1,5 +1,6 @@
 from ausseabed.qajson.model import QajsonParam
 from PySide2 import QtCore, QtGui, QtWidgets
+from typing import Optional, NoReturn, List
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.lib.plugin import QaxCheckReference
@@ -31,6 +32,9 @@ class CheckParamWidget(QtWidgets.QWidget):
     data.
     """
 
+    # emitted when a new file is selected
+    value_changed = QtCore.Signal(QajsonParam)
+
     def __init__(self, param: QajsonParam, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
 
@@ -41,6 +45,12 @@ class CheckParamWidget(QtWidgets.QWidget):
         raise NotImplementedError(
             "Must implement in param function of child class to return "
             "correct value type within an QajsonParam")
+
+    def _on_edited(self) -> NoReturn:
+        self._raise_value_changed(self.param())
+
+    def _raise_value_changed(self, param: QajsonParam) -> NoReturn:
+        self.value_changed.emit(param)
 
     @property
     def value(self):
@@ -70,6 +80,7 @@ class CheckParamStringWidget(CheckParamWidget):
 
         self.lineedit_value = QtWidgets.QLineEdit()
         self.lineedit_value.setText(self._param.value)
+        self.lineedit_value.textEdited.connect(self._on_edited)
         hbox.addWidget(self.lineedit_value)
 
     def param(self) -> QajsonParam:
@@ -102,6 +113,7 @@ class CheckParamIntWidget(CheckParamWidget):
 
         self.lineedit_value = QtWidgets.QLineEdit()
         self.lineedit_value.setText(str(self._param.value))
+        self.lineedit_value.textEdited.connect(self._on_edited)
         hbox.addWidget(self.lineedit_value)
 
     def param(self) -> QajsonParam:
@@ -128,14 +140,13 @@ class CheckParamBoolWidget(CheckParamWidget):
         self.setLayout(hbox)
 
         label_name = QtWidgets.QLabel(f"{self._param.name}")
-        # label_name.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         label_name.setMinimumWidth(self.label_min_width)
         label_name.setStyleSheet(GuiSettings.stylesheet_check_param_name())
         hbox.addWidget(label_name)
 
         self.checkbox = QtWidgets.QCheckBox()
         self.checkbox.setChecked(self._param.value)
-        # self.checkbox.setAlignment(QtCore.Qt.AlignLeft)
+        self.checkbox.stateChanged.connect(self._on_edited)
         hbox.addWidget(self.checkbox)
 
     def param(self) -> QajsonParam:
@@ -168,6 +179,7 @@ class CheckParamFloatWidget(CheckParamWidget):
 
         self.lineedit_value = QtWidgets.QLineEdit()
         self.lineedit_value.setText(str(self._param.value))
+        self.lineedit_value.textEdited.connect(self._on_edited)
         hbox.addWidget(self.lineedit_value)
 
     def param(self) -> QajsonParam:

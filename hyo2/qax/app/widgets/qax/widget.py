@@ -14,7 +14,7 @@ from hyo2.qax.app.widgets.qax.result_tab import ResultTab
 from hyo2.qax.app.widgets.qax.run_tab import RunTab, QtCheckExecutor
 from hyo2.qax.app.widgets.widget import AbstractWidget
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
-from hyo2.qax.lib.plugin import QaxPlugins
+from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin
 from hyo2.qax.lib.project import QAXProject
 
 
@@ -57,6 +57,7 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
 
         self.tab_plugins = PluginsTab(parent_win=self, prj=self.prj)
+        self.tab_plugins.plugin_changed.connect(self._on_plugin_changed)
         self.idx_plugins = self.tabs.insertTab(
             1, self.tab_plugins,
             qta.icon('mdi.format-list-checkbox'), "")
@@ -86,6 +87,10 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.tab_plugins.set_profile(self.profile)
 
         self.status_message.emit("Initialised", 1000)
+
+    def _on_plugin_changed(self, plugin: QaxCheckToolPlugin):
+        qa_json = self._build_qa_json()
+        self.prj.qa_json = qa_json
 
     def _on_profile_selected(self, profile: QaxConfigProfile):
         self.profile = profile
@@ -136,8 +141,6 @@ class QAXWidget(QtWidgets.QTabWidget):
                         config_check_tool.name))
             check_param_details = plugin_tab.get_check_ids_and_params()
             for (check_id, params) in check_param_details:
-                for p in params:
-                    print(p.to_dict())
                 plugin_check_tool.update_qa_json_input_params(
                     root, check_id, params)
 

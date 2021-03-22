@@ -13,13 +13,15 @@ from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
 from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
-from hyo2.qax.lib.plugin import QaxPlugins
+from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin
 
 
 logger = logging.getLogger(__name__)
 
 
 class PluginsTab(QtWidgets.QWidget):
+
+    plugin_changed = QtCore.Signal(QaxCheckToolPlugin)
 
     def __init__(self, parent_win, prj):
         QtWidgets.QWidget.__init__(self)
@@ -63,6 +65,7 @@ class PluginsTab(QtWidgets.QWidget):
         for plugin in plugins:
             plugin_tab = PluginTab(
                 parent_win=self, prj=self.prj, plugin=plugin)
+            plugin_tab.plugin_changed.connect(self._on_plugin_changed)
             self.plugin_tabs.append(plugin_tab)
             icon_path = GuiSettings.icon_path(plugin.icon)
             if icon_path is not None:
@@ -71,6 +74,9 @@ class PluginsTab(QtWidgets.QWidget):
             else:
                 tab_index = self.tabs.addTab(plugin_tab, plugin.name)
             self.tabs.setTabToolTip(tab_index, plugin.name)
+
+    def _on_plugin_changed(self, plugin: QaxCheckToolPlugin):
+        self.plugin_changed.emit(plugin)
 
     def update_ui(self, qajson: QajsonRoot) -> NoReturn:
         for plugin_tab in self.plugin_tabs:

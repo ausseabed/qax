@@ -1,4 +1,4 @@
-from ausseabed.qajson.model import QajsonRoot
+from ausseabed.qajson.model import QajsonRoot, QajsonParam
 from PySide2 import QtCore, QtGui, QtWidgets
 from typing import Optional, NoReturn, List
 
@@ -12,6 +12,8 @@ from hyo2.qax.lib.plugin import QaxCheckReference
 class CheckWidget(QtWidgets.QWidget):
     """ Display details for single check
     """
+
+    check_changed = QtCore.Signal(QaxCheckReference)
 
     def __init__(self, check_reference: QaxCheckReference, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
@@ -57,11 +59,15 @@ class CheckWidget(QtWidgets.QWidget):
             hbox.addLayout(params_layout)
             for check_param in self.check_reference.default_input_params:
                 widget_param = get_param_widget(check_param)
+                widget_param.value_changed.connect(self._param_value_changed)
                 params_layout.addWidget(widget_param)
                 self.param_widgets.append(widget_param)
             hbox.addSpacing(10)
 
         vbox.addWidget(QHLine())
+
+    def _param_value_changed(self, param: QajsonParam):
+        self.check_changed.emit(self.check_reference)
 
     def get_check_id_and_params(self):
         """ Returns a tuple. First element of each tuple is the check

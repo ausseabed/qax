@@ -10,13 +10,15 @@ import os
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
-from hyo2.qax.lib.plugin import QaxCheckToolPlugin
+from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference
 
 
 logger = logging.getLogger(__name__)
 
 
 class PluginTab(QtWidgets.QWidget):
+
+    plugin_changed = QtCore.Signal(QaxCheckToolPlugin)
 
     def __init__(self, parent_win, prj, plugin: QaxCheckToolPlugin):
         QtWidgets.QWidget.__init__(self)
@@ -58,11 +60,15 @@ class PluginTab(QtWidgets.QWidget):
 
         for check in self.plugin.checks():
             check_widget = CheckWidget(check)
+            check_widget.check_changed.connect(self._on_check_changed)
             self.layout_checks.addWidget(check_widget)
             self.check_widgets.append(check_widget)
 
         self.layout_checks.addStretch(1)
         self.scrollarea_checks.setWidget(self.widget_checks)
+
+    def _on_check_changed(self, check_reference: QaxCheckReference):
+        self.plugin_changed.emit(self.plugin)
 
     def get_check_ids_and_params(self):
         """ Returns a list of tuples. First element of each tuple is the check
