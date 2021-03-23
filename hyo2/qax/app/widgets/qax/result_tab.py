@@ -59,6 +59,43 @@ class ResultTab(QtWidgets.QWidget):
         self.tick_icon = qta.icon('fa.check', color='green')
         self.warning_icon = qta.icon('fa.warning', color='orange')
 
+        gb = QtWidgets.QGroupBox()
+        # gb.setFixedHeight(40)
+        hbox = QtWidgets.QHBoxLayout()
+        gb.setLayout(hbox)
+
+        self.vbox.addWidget(gb)
+
+        data_level_label = QtWidgets.QLabel("Data level:")
+        # data_level_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+        hbox.addWidget(data_level_label)
+        possible_dl_names = ['raw_data', 'survey_products', 'chart_adequacy']
+
+        self.set_data_level = QtWidgets.QComboBox()
+        self.set_data_level.setSizePolicy(
+            QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.set_data_level.addItems(possible_dl_names)
+
+        # noinspection PyUnresolvedReferences
+        self.set_data_level.currentTextChanged.connect(self._on_set_data_level)
+        hbox.addWidget(self.set_data_level)
+
+        hbox.addStretch()
+        self.set_view = QtWidgets.QComboBox()
+        self.set_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.set_view.addItems(['Summary', 'Score Board', 'Json Text'])
+        self.set_view.setCurrentText(self.cur_view)
+        # noinspection PyUnresolvedReferences
+        self.set_view.currentTextChanged.connect(self._on_set_view)
+        hbox.addWidget(self.set_view)
+        hbox.setSpacing(16)
+
+        self._add_summary_view()
+        self._add_json_view()
+        self._add_score_board_view()
+
+        self._on_set_view()
+
     @property
     def qa_json(self) -> Optional[QajsonRoot]:
         return self._qa_json
@@ -75,9 +112,9 @@ class ResultTab(QtWidgets.QWidget):
     def _update(self) -> NoReturn:
         """ Updates the user interface based on the qa_json
         """
-        self.display_json()
+        self._display_json()
 
-    def add_summary_view(self):
+    def _add_summary_view(self):
         # Summary view
         self.summary_widget = QtWidgets.QWidget()
 
@@ -112,6 +149,26 @@ class ResultTab(QtWidgets.QWidget):
         self.summary_table.setHorizontalHeaderLabels(
             ["Check", "Total runs", "Failed runs", "QA Fails", "QA Warning"])
 
+        vbox.addWidget(self.summary_table)
+
+        self.summary_table.horizontalHeader().setSectionResizeMode(
+            0, QtWidgets.QHeaderView.Stretch)
+        self.summary_table.horizontalHeader().setSectionResizeMode(
+            1, QtWidgets.QHeaderView.ResizeToContents)
+        self.summary_table.horizontalHeader().setSectionResizeMode(
+            2, QtWidgets.QHeaderView.ResizeToContents)
+        self.summary_table.horizontalHeader().setSectionResizeMode(
+            3, QtWidgets.QHeaderView.ResizeToContents)
+        self.summary_table.horizontalHeader().setSectionResizeMode(
+            4, QtWidgets.QHeaderView.ResizeToContents)
+
+        self.summary_table.clicked.connect(self._on_clicked_summary)
+
+        self.summary_details = SummaryDetailsWidget(parent=self)
+        self.summary_details.setVisible(False)
+        splitter.addWidget(self.summary_details)
+
+    def _update_summary_view(self):
         summaries = self.prj.get_summary()
 
         self.summary_table.setRowCount(len(summaries))
@@ -151,25 +208,6 @@ class ResultTab(QtWidgets.QWidget):
                 total_warn_qa_item.setBackground(ResultTab.color_warning)
             self.summary_table.setItem(idx, 4, total_warn_qa_item)
 
-        vbox.addWidget(self.summary_table)
-
-        self.summary_table.horizontalHeader().setSectionResizeMode(
-            0, QtWidgets.QHeaderView.Stretch)
-        self.summary_table.horizontalHeader().setSectionResizeMode(
-            1, QtWidgets.QHeaderView.ResizeToContents)
-        self.summary_table.horizontalHeader().setSectionResizeMode(
-            2, QtWidgets.QHeaderView.ResizeToContents)
-        self.summary_table.horizontalHeader().setSectionResizeMode(
-            3, QtWidgets.QHeaderView.ResizeToContents)
-        self.summary_table.horizontalHeader().setSectionResizeMode(
-            4, QtWidgets.QHeaderView.ResizeToContents)
-
-        self.summary_table.clicked.connect(self._on_clicked_summary)
-
-        self.summary_details = SummaryDetailsWidget(parent=self)
-        self.summary_details.setVisible(False)
-        splitter.addWidget(self.summary_details)
-
     def _on_clicked_summary(self, item):
         selected_row = item.row()
 
@@ -178,7 +216,7 @@ class ResultTab(QtWidgets.QWidget):
         self.summary_details.set_selected_summary(summary)
         self.summary_details.setVisible(True)
 
-    def add_json_view(self, qa_json_dict):
+    def _add_json_view(self):
         # Json Text
         self.json_text_group = QtWidgets.QGroupBox("Json Text")
         self.json_text_group.setHidden(True)
@@ -190,15 +228,19 @@ class ResultTab(QtWidgets.QWidget):
         font = QtGui.QFont("Courier")
         font.setStyleHint(QtGui.QFont.TypeWriter)
         self.json_viewer.setCurrentFont(font)
+
+        self.json_viewer.setReadOnly(True)
+        vbox.addWidget(self.json_viewer)
+
+    def _update_json_view(self):
+        qa_json_dict = self.qa_json.to_dict()
         if (('qa' in qa_json_dict) and
                 (qa_json_dict['qa'] is not None) and
                 (self.qa_group in qa_json_dict['qa'])):
             self.json_viewer.setText(
                 json.dumps(qa_json_dict['qa'][self.qa_group], indent=4))
-        self.json_viewer.setReadOnly(True)
-        vbox.addWidget(self.json_viewer)
 
-    def add_score_board_view(self, qa_json_dict):
+    def _add_score_board_view(self):
         # Score Board
         self.score_board_widget = QtWidgets.QWidget()
 
@@ -233,64 +275,6 @@ class ResultTab(QtWidgets.QWidget):
         self.score_board.setHorizontalHeaderLabels(
             ["ID", "Check", "Input", "Status", "QA Pass"])
 
-        checks = []
-        if (('qa' in qa_json_dict) and
-                (qa_json_dict['qa'] is not None) and
-                (self.qa_group in qa_json_dict['qa'])):
-            checks = qa_json_dict['qa'][self.qa_group]['checks']
-
-        nr_of_checks = len(checks)
-        self.score_board.setRowCount(nr_of_checks)
-        for idx in range(nr_of_checks):
-            item0 = QtWidgets.QTableWidgetItem(checks[idx]['info']['id'])
-            self.score_board.setItem(idx, 0, item0)
-
-            check_name = checks[idx]['info']['name']
-            try:
-                check_name = "{} [v.{}]".format(
-                    check_name, checks[idx]['info']['version'])
-            except Exception as e:
-                check_name = "{} [no version]".format(check_name)
-            item1 = QtWidgets.QTableWidgetItem(check_name)
-            self.score_board.setItem(idx, 1, item1)
-
-            if len(checks[idx]['inputs']['files']) == 0:
-                file_item = QtWidgets.QTableWidgetItem("")
-            else:
-                full_path = checks[idx]['inputs']['files'][0]['path']
-                _, file_name = os.path.split(full_path)
-                file_item = QtWidgets.QTableWidgetItem(file_name)
-            self.score_board.setItem(idx, 2, file_item)
-
-            try:
-                status = checks[idx]['outputs']['execution']['status']
-                status_item = QtWidgets.QTableWidgetItem(status)
-                if status in ["aborted", "failed"]:
-                    status_item.setBackground(ResultTab.color_fail)
-                elif status in ["draft", "queued", "running"]:
-                    status_item.setBackground(ResultTab.color_in_progress)
-                else:
-                    status_item.setBackground(ResultTab.color_ok)
-                self.score_board.setItem(idx, 3, status_item)
-            except KeyError as e:
-                logger.debug("skipping grade for #%d: %s" % (idx, e))
-
-            check_state = ""
-            try:
-                check_state = checks[idx]['outputs']['check_state']
-            except KeyError as e:
-                logger.debug("skipping check_state for #%d: %s" % (idx, e))
-            if check_state == "fail":
-                check_state_item = QtWidgets.QTableWidgetItem(self.cross_icon, "")
-            elif check_state == "pass":
-                check_state_item = QtWidgets.QTableWidgetItem(self.tick_icon, "")
-            elif check_state == "warning":
-                check_state_item = QtWidgets.QTableWidgetItem(self.warning_icon, "")
-            else:
-                check_state_item = QtWidgets.QTableWidgetItem("")
-            check_state_item.setTextAlignment(QtCore.Qt.AlignHCenter)
-            self.score_board.setItem(idx, 4, check_state_item)
-
         vbox.addWidget(self.score_board)
 
         self.score_board.setColumnWidth(0, 60)
@@ -309,6 +293,76 @@ class ResultTab(QtWidgets.QWidget):
         self.scoreboard_details.setVisible(False)
         splitter.addWidget(self.scoreboard_details)
 
+    def _update_score_board_view(self):
+        data_level = getattr(self.prj.qa_json.qa, self.qa_group)
+        if data_level is None:
+            return
+        checks = data_level.checks
+
+        nr_of_checks = len(checks)
+        self.score_board.setRowCount(nr_of_checks)
+        for idx in range(nr_of_checks):
+            check = checks[idx]
+            item0 = QtWidgets.QTableWidgetItem(check.info.id)
+            self.score_board.setItem(idx, 0, item0)
+
+            check_name = check.info.name
+            try:
+                check_name = f"{check_name} [v.{check.info.version}]"
+            except Exception as e:
+                check_name = f"{check_name} [no version]"
+            item1 = QtWidgets.QTableWidgetItem(check_name)
+            self.score_board.setItem(idx, 1, item1)
+
+            if len(check.inputs.files) == 0:
+                file_item = QtWidgets.QTableWidgetItem("")
+            else:
+                full_path = check.inputs.files[0].path
+                _, file_name = os.path.split(full_path)
+                file_item = QtWidgets.QTableWidgetItem(file_name)
+            self.score_board.setItem(idx, 2, file_item)
+
+            if check.outputs is None:
+                status = "Not run"
+                status_item_color = ResultTab.color_in_progress
+            else:
+                status = check.outputs.execution.status
+
+                if status in ["aborted", "failed"]:
+                    status_item.setBackground(ResultTab.color_fail)
+                elif status in ["draft", "queued", "running"]:
+                    status_item_color = ResultTab.color_in_progress
+                    status_item.setBackground()
+                else:
+                    status_item_color = ResultTab.color_ok
+            status_item = QtWidgets.QTableWidgetItem(status)
+            status_item.setBackground(status_item_color)
+            self.score_board.setItem(idx, 3, status_item)
+
+            check_state = ""
+            try:
+                check_state = check.outputs.check_state
+            except AttributeError as e:
+                # then this check doesn't have outputs as it hasn't been run
+                pass
+
+            if check_state == "fail":
+                check_state_item = QtWidgets.QTableWidgetItem(
+                    self.cross_icon, "")
+            elif check_state == "pass":
+                check_state_item = QtWidgets.QTableWidgetItem(
+                    self.tick_icon, "")
+            elif check_state == "warning":
+                check_state_item = QtWidgets.QTableWidgetItem(
+                    self.warning_icon, "")
+            elif check.outputs is None:
+                check_state_item = QtWidgets.QTableWidgetItem(
+                    self.warning_icon, "")
+            else:
+                check_state_item = QtWidgets.QTableWidgetItem("")
+            check_state_item.setTextAlignment(QtCore.Qt.AlignHCenter)
+            self.score_board.setItem(idx, 4, check_state_item)
+
     def _on_clicked_scoreboard(self, item):
         selected_row = item.row()
 
@@ -321,64 +375,26 @@ class ResultTab(QtWidgets.QWidget):
             self.scoreboard_selected_check)
         self.scoreboard_details.setVisible(True)
 
-    def display_json(self):
-        # logger.debug("displaying js: %s" % self.prj.inputs.qa_json.js)
-        qa_json_dict = self.qa_json.to_dict()
+    def _display_json(self):
+        if self.qa_json.qa is None:
+            # then there is no qajson yet, user probably hasn't added an input
+            # file to check
+            return
 
-        while self.vbox.count():
-            child = self.vbox.takeAt(0)
-            if child.widget():
-                child.widget().deleteLater()
+        for row in range(self.set_data_level.count()):
+            data_level_name = self.set_data_level.itemText(row)
+            data_level_available = getattr(
+                self.qa_json.qa, data_level_name) is not None
+            self.set_data_level.model().item(row).setEnabled(data_level_available)
 
-        gb = QtWidgets.QGroupBox()
-        # gb.setFixedHeight(40)
-        hbox = QtWidgets.QHBoxLayout()
-        gb.setLayout(hbox)
+        self._update_summary_view()
+        self._update_json_view()
+        self._update_score_board_view()
 
-        self.vbox.addWidget(gb)
+        self._on_set_view()
 
-        data_level_label = QtWidgets.QLabel("Data level:")
-        # data_level_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
-        hbox.addWidget(data_level_label)
-        possible_dl_names = ['raw_data', 'survey_products', 'chart_adequacy']
-        data_level_names = [
-            name
-            for name in possible_dl_names
-            if (self.qa_json.qa is not None) and getattr(self.qa_json.qa, name) is not None
-        ]
-        self.set_data_level = QtWidgets.QComboBox()
-        self.set_data_level.setSizePolicy(
-            QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.set_data_level.addItems(data_level_names)
-        if self.qa_group in data_level_names:
-            self.set_data_level.setCurrentText(self.qa_group)
-        elif len(data_level_names) > 0:
-            self.qa_group = data_level_names[0]
-            self.set_data_level.setCurrentText(self.qa_group)
-
-        # noinspection PyUnresolvedReferences
-        self.set_data_level.currentTextChanged.connect(self.on_set_data_level)
-        hbox.addWidget(self.set_data_level)
-
-        hbox.addStretch()
-        self.set_view = QtWidgets.QComboBox()
-        self.set_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.set_view.addItems(['Summary', 'Score Board', 'Json Text'])
-        self.set_view.setCurrentText(self.cur_view)
-        # noinspection PyUnresolvedReferences
-        self.set_view.currentTextChanged.connect(self.on_set_view)
-        hbox.addWidget(self.set_view)
-        hbox.setSpacing(16)
-
-        self.add_summary_view()
-        self.add_json_view(qa_json_dict)
-        self.add_score_board_view(qa_json_dict)
-
-        self.on_set_view()
-
-    def on_set_view(self):
+    def _on_set_view(self):
         self.cur_view = self.set_view.currentText()
-        logger.debug("selected view: %s" % self.cur_view)
 
         if self.cur_view == "Json Text":
             self.json_text_group.setVisible(True)
@@ -393,11 +409,11 @@ class ResultTab(QtWidgets.QWidget):
             self.score_board_widget.setHidden(True)
             self.summary_widget.setVisible(True)
 
-    def on_set_data_level(self):
+    def _on_set_data_level(self):
         self.qa_group = self.set_data_level.currentText()
         self._update()
 
-    def on_button_clicked(self):
+    def _on_button_clicked(self):
         button = QtGui.qApp.focusWidget()
         index = self.score_board.indexAt(button.pos())
         if index.isValid():
