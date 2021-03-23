@@ -59,36 +59,48 @@ class ResultTab(QtWidgets.QWidget):
         self.tick_icon = qta.icon('fa.check', color='green')
         self.warning_icon = qta.icon('fa.warning', color='orange')
 
-        gb = QtWidgets.QGroupBox()
+        self.view_names = ['Summary', 'Score Board', 'Json Text']
+
+        gb = QtWidgets.QGroupBox('View')
         # gb.setFixedHeight(40)
         hbox = QtWidgets.QHBoxLayout()
         gb.setLayout(hbox)
 
-        self.vbox.addWidget(gb)
+        hbox_view_and_datalevel = QtWidgets.QHBoxLayout()
+        hbox_view_and_datalevel.addWidget(gb)
+        self.vbox.addLayout(hbox_view_and_datalevel)
 
-        data_level_label = QtWidgets.QLabel("Data level:")
-        # data_level_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
-        hbox.addWidget(data_level_label)
+        self.set_view = QtWidgets.QButtonGroup()
+        self.set_view.setExclusive(True)
+        for idx, view_name in enumerate(self.view_names):
+            # viewRadioButton = QtWidgets.QRadioButton(view_name)
+            viewRadioButton = QtWidgets.QPushButton(view_name)
+            viewRadioButton.setCheckable(True)
+            if idx == 0:
+                viewRadioButton.setChecked(True)
+            viewRadioButton.setSizePolicy(
+                QSizePolicy.Expanding, QSizePolicy.Minimum)
+            self.set_view.addButton(viewRadioButton, idx)
+            hbox.addWidget(viewRadioButton)
+        self.set_view.buttonReleased.connect(self._on_set_view)
+
+        gb = QtWidgets.QGroupBox("Data Level")
+        hbox = QtWidgets.QHBoxLayout()
+        gb.setLayout(hbox)
+        hbox_view_and_datalevel.addWidget(gb)
+
         possible_dl_names = ['raw_data', 'survey_products', 'chart_adequacy']
 
         self.set_data_level = QtWidgets.QComboBox()
         self.set_data_level.setSizePolicy(
-            QSizePolicy.Minimum, QSizePolicy.Minimum)
+            QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.set_data_level.addItems(possible_dl_names)
-
-        # noinspection PyUnresolvedReferences
         self.set_data_level.currentTextChanged.connect(self._on_set_data_level)
-        hbox.addWidget(self.set_data_level)
+        # starts off disabled as the default summary view doesn't filter by
+        # data level
+        self.set_data_level.setDisabled(True)
 
-        hbox.addStretch()
-        self.set_view = QtWidgets.QComboBox()
-        self.set_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.set_view.addItems(['Summary', 'Score Board', 'Json Text'])
-        self.set_view.setCurrentText(self.cur_view)
-        # noinspection PyUnresolvedReferences
-        self.set_view.currentTextChanged.connect(self._on_set_view)
-        hbox.addWidget(self.set_view)
-        hbox.setSpacing(16)
+        hbox.addWidget(self.set_data_level)
 
         self._add_summary_view()
         self._add_json_view()
@@ -394,20 +406,23 @@ class ResultTab(QtWidgets.QWidget):
         self._on_set_view()
 
     def _on_set_view(self):
-        self.cur_view = self.set_view.currentText()
+        self.cur_view = self.view_names[self.set_view.checkedId()]
 
         if self.cur_view == "Json Text":
             self.json_text_group.setVisible(True)
             self.score_board_widget.setHidden(True)
             self.summary_widget.setHidden(True)
+            self.set_data_level.setDisabled(False)
         elif self.cur_view == "Score Board":
             self.json_text_group.setHidden(True)
             self.score_board_widget.setVisible(True)
             self.summary_widget.setHidden(True)
+            self.set_data_level.setDisabled(False)
         elif self.cur_view == "Summary":
             self.json_text_group.setHidden(True)
             self.score_board_widget.setHidden(True)
             self.summary_widget.setVisible(True)
+            self.set_data_level.setDisabled(True)
 
     def _on_set_data_level(self):
         self.qa_group = self.set_data_level.currentText()
