@@ -98,7 +98,6 @@ class QAXWidget(QtWidgets.QTabWidget):
 
     def _on_update_check_inputs(self):
         """ Read the feature files provided by the user"""
-        logger.debug('_on_update_check_inputs')
         qa_json = self._build_qa_json()
         self.prj.qa_json = qa_json
 
