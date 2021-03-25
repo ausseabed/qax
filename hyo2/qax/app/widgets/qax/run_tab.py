@@ -27,6 +27,7 @@ class QtCheckExecutor(QtCore.QThread, CheckExecutor):
     """
 
     progress = QtCore.Signal(float)
+    qajson_updated = QtCore.Signal()
     check_tool_started = QtCore.Signal(object)
     checks_complete = QtCore.Signal()
     status_changed = QtCore.Signal(str)
@@ -46,6 +47,9 @@ class QtCheckExecutor(QtCore.QThread, CheckExecutor):
 
     def _progress_callback(self, check_tool, progress):
         self.progress.emit(progress)
+
+    def _qajson_update_callback(self):
+        self.qajson_updated.emit()
 
     def _check_tool_started(self, check_tool, check_number, total_check_count):
         tpl = (check_tool.name, check_number, total_check_count)
@@ -157,6 +161,7 @@ class RunTab(QtWidgets.QWidget):
         self.check_executor.check_tool_started.connect(
             self._on_check_tool_started)
         self.check_executor.progress.connect(self._on_progress)
+        self.check_executor.qajson_updated.connect(self._on_qajson_update)
         self.check_executor.checks_complete.connect(self._on_checks_complete)
         self.check_executor.status_changed.connect(self._on_status_change)
         self.check_executor.start()
@@ -173,6 +178,10 @@ class RunTab(QtWidgets.QWidget):
     @QtCore.Slot(float)
     def _on_progress(self, progress):
         self.progress_bar.setValue(int(progress * 100))
+
+    @QtCore.Slot()
+    def _on_qajson_update(self):
+        self.prj.qa_json = self.check_executor.qa_json
 
     @QtCore.Slot(object)
     def _on_check_tool_started(self, tpl):

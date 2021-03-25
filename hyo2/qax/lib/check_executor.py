@@ -23,6 +23,9 @@ class CheckExecutor():
     def _progress_callback(self, check_tool, progress):
         print(progress)
 
+    def _qajson_update_callback(self):
+        print("QAJSON Updated")
+
     def _check_tool_started(self, check_tool, check_number, total_check_count):
         print("Started {}".format(check_tool.name))
 
@@ -48,9 +51,14 @@ class CheckExecutor():
             self._check_tool_started(
                 check_tool,
                 self.current_check_number,
-                len(self.check_tools))
+                len(self.check_tools)
+            )
 
-            check_tool.run(self.qa_json, self._progress_callback)
+            check_tool.run(
+                self.qa_json,
+                self._progress_callback,
+                self._qajson_update_callback
+            )
             self._increment_check_number()
         if self.stopped:
             self._set_status("Stopped")

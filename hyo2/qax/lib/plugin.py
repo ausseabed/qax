@@ -167,7 +167,7 @@ class QaxCheckReference():
             supported_file_types: List[QaxFileType] = [],
             default_input_params: List[QajsonParam] = [],
             version: str = None
-            ):
+    ):
         """
         Constructor
 
@@ -362,8 +362,9 @@ class QaxCheckToolPlugin():
     def run(
             self,
             qajson: QajsonRoot,
-            progress_callback: Callable = None
-            ) -> NoReturn:
+            progress_callback: Callable = None,
+            qajson_update_callback: Callable = None
+    ) -> NoReturn:
         """ Runs the checks implemented within the check tool plugin.
 
         * Must be implemented by plugin. *
@@ -455,7 +456,7 @@ class QaxPlugins():
             self,
             profile: QaxConfigProfile,
             check_tool: QaxConfigCheckTool
-            ) -> QaxCheckToolPlugin:
+    ) -> QaxCheckToolPlugin:
         """ creates an instance of the plugin based on the `plugin_class`
         defined in the QA JSON config for the given `check_tool`
         """
@@ -496,7 +497,7 @@ class QaxPlugins():
             self,
             profile_name: str,
             check_tool_class: str
-            ) -> Optional[QaxCheckToolPlugin]:
+    ) -> Optional[QaxCheckToolPlugin]:
         """ Gets a plugin instance that has already been loaded based on the
         class name string (as included in QAX config) and the profile name.
         Will return None if no matching plugin found.
