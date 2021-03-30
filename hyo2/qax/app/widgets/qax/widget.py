@@ -151,13 +151,15 @@ class QAXWidget(QtWidgets.QTabWidget):
         qa_json = self._build_qa_json()
 
         # only the selected ones
-        check_tool_plugins = [
-            QaxPlugins.instance().get_plugin(
-                self.profile.name, config_check_tool.plugin_class)
+        check_tool_plugin_class_names = [
+            config_check_tool.plugin_class
             for config_check_tool in self.tab_inputs.selected_check_tools
         ]
 
-        executor = QtCheckExecutor(qa_json, check_tool_plugins)
+        executor = QtCheckExecutor(
+            qa_json,
+            self.profile.name,
+            check_tool_plugin_class_names)
         self.tab_run.run_executor(executor)
 
     def change_tabs(self, index):

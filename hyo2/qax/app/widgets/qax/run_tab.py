@@ -6,6 +6,7 @@ from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QSizePolicy
 import qtawesome as qta
+import multiprocessing as mp
 
 from hyo2.abc.lib.helper import Helper
 
@@ -35,9 +36,14 @@ class QtCheckExecutor(QtCore.QThread, CheckExecutor):
     def __init__(
             self,
             qa_json: QajsonRoot,
-            check_tools: List[QaxCheckToolPlugin]):
+            profile_name: str,
+            check_tool_class_names: List[str]):
         super(QtCheckExecutor, self).__init__()
-        CheckExecutor.__init__(self, qa_json, check_tools)
+        CheckExecutor.__init__(
+            self,
+            qa_json,
+            profile_name,
+            check_tool_class_names)
 
     def run(self):
         # seems ugly, but is required

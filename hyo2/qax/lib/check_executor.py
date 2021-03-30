@@ -1,7 +1,7 @@
 from PySide2 import QtCore
 from typing import List
 from ausseabed.qajson.model import QajsonRoot
-from .plugin import QaxCheckToolPlugin
+from .plugin import QaxCheckToolPlugin, QaxPlugins
 
 
 class CheckExecutor():
@@ -13,12 +13,22 @@ class CheckExecutor():
     def __init__(
             self,
             qa_json: QajsonRoot,
-            check_tools: List[QaxCheckToolPlugin]):
+            profile_name: str,
+            check_tool_class_names: List[str]):
         self.qa_json = qa_json
-        self.check_tools = check_tools
+        self.profile_name = profile_name
+        self.check_tool_class_names = check_tool_class_names
         self.current_check_number = 1
         self.stopped = False
         self.status = "Not started"
+
+        self.check_tools = [
+            QaxPlugins.instance().get_plugin(
+                self.profile_name,
+                check_tool_class_name
+            )
+            for check_tool_class_name in self.check_tool_class_names
+        ]
 
     def _progress_callback(self, check_tool, progress):
         print(progress)
