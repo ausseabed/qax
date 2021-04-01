@@ -363,7 +363,8 @@ class QaxCheckToolPlugin():
             self,
             qajson: QajsonRoot,
             progress_callback: Callable = None,
-            qajson_update_callback: Callable = None
+            qajson_update_callback: Callable = None,
+            is_stopped: Callable = None
     ) -> NoReturn:
         """ Runs the checks implemented within the check tool plugin.
 
@@ -376,15 +377,12 @@ class QaxCheckToolPlugin():
             passed a reference to a check tool plugin and a float (between 0.0
             and 1.0) representing the progress of the check tool execution.
             Optional.
+        :qajson_update_callback: A check should pass any updated qajson into
+            this callback to update the display of qajson
+        :is_stopped: Each check & check tool should periodically call this function,
+            if True is returned the check should finish operation
         """
         raise NotImplementedError
-
-    def stop(self):
-        """ When called the implementing check tool should stop execution. This
-        is an optional method; not overwriting will mean the check will run
-        to completion.
-        """
-        pass
 
 
 class QaxProfilePlugins():

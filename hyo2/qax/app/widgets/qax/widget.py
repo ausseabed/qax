@@ -11,7 +11,7 @@ from hyo2.qax.app.widgets.qax.main_tab import MainTab
 from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
 from hyo2.qax.app.widgets.qax.plugins_tab import PluginsTab
 from hyo2.qax.app.widgets.qax.result_tab import ResultTab
-from hyo2.qax.app.widgets.qax.run_tab import RunTab, QtCheckExecutor
+from hyo2.qax.app.widgets.qax.run_tab import RunTab, QtCheckExecutorThread
 from hyo2.qax.app.widgets.widget import AbstractWidget
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin
@@ -156,7 +156,7 @@ class QAXWidget(QtWidgets.QTabWidget):
             for config_check_tool in self.tab_inputs.selected_check_tools
         ]
 
-        executor = QtCheckExecutor(
+        executor = QtCheckExecutorThread(
             qa_json,
             self.profile.name,
             check_tool_plugin_class_names)

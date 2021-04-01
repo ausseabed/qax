@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import time
 from typing import List, NoReturn
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
@@ -13,18 +14,21 @@ from hyo2.abc.lib.helper import Helper
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin
-from hyo2.qax.lib.check_executor import CheckExecutor
+from hyo2.qax.lib.check_executor import CheckExecutor, MultiprocessCheckExecutor, \
+    ProgressQueueItem, CheckToolStartedQueueItem, StatusQueueItem, \
+    QajsonChangedQueueItem, ChecksCompleteQueueItem
 from ausseabed.qajson.model import QajsonRoot
 from hyo2.qax.lib.project import QAXProject
 
 logger = logging.getLogger(__name__)
 
 
-class QtCheckExecutor(QtCore.QThread, CheckExecutor):
-    """ Implementation of the CheckExecutor using QThread to run the checks in
-    a background thread. This allows the UI to remain responsive, and accept
-    other user events (eg; stop button). Signals and slots are used to
-    communicate status to the UI main thread.
+class QtCheckExecutorThread(QtCore.QThread):
+    """ QThread implementation that starts, and then watched a check executor
+    that is run in another thread via Python's multiprocessing module. Running
+    the checks from this run method thread does allow the UI to update while
+    the check run, however it is still restricted to running on a single process.
+    Hence, multiprocessing was introduced to get around this issue.
     """
 
     progress = QtCore.Signal(float)
@@ -38,35 +42,46 @@ class QtCheckExecutor(QtCore.QThread, CheckExecutor):
             qa_json: QajsonRoot,
             profile_name: str,
             check_tool_class_names: List[str]):
-        super(QtCheckExecutor, self).__init__()
-        CheckExecutor.__init__(
-            self,
+        super(QtCheckExecutorThread, self).__init__()
+
+        self.queue = mp.Queue()
+        self.mp_checkexecutor = MultiprocessCheckExecutor(
             qa_json,
             profile_name,
-            check_tool_class_names)
+            check_tool_class_names,
+            self.queue
+        )
+        self.mp_running = False
 
     def run(self):
-        # seems ugly, but is required
-        # expect this is related to the fact both the QThread and CheckExecutor
-        # classes implement a `runs` function.
-        CheckExecutor.run(self)
+        self.mp_running = True
+        self.mp_checkexecutor.start()
 
-    def _progress_callback(self, check_tool, progress):
-        self.progress.emit(progress)
+        while self.mp_running:
+            queue_item = self.queue.get()
+            if queue_item is not None:
+                if isinstance(queue_item, ProgressQueueItem):
+                    self.progress.emit(queue_item.progress)
+                elif isinstance(queue_item, CheckToolStartedQueueItem):
+                    tpl = (
+                        queue_item.check_tool_class_name,
+                        queue_item.check_number,
+                        queue_item.total_check_count
+                    )
+                    self.check_tool_started.emit(tpl)
+                elif isinstance(queue_item, StatusQueueItem):
+                    self.status = queue_item.status
+                    self.status_changed.emit(queue_item.status)
+                elif isinstance(queue_item, QajsonChangedQueueItem):
+                    self.qa_json = queue_item.qajson
+                    self.qajson_updated.emit()
+                elif isinstance(queue_item, ChecksCompleteQueueItem):
+                    self.checks_complete.emit()
 
-    def _qajson_update_callback(self):
-        self.qajson_updated.emit()
+        self.mp_checkexecutor.join()
 
-    def _check_tool_started(self, check_tool, check_number, total_check_count):
-        tpl = (check_tool.name, check_number, total_check_count)
-        self.check_tool_started.emit(tpl)
-
-    def _checks_complete(self):
-        self.checks_complete.emit()
-
-    def _set_status(self, status: str):
-        self.status = status
-        self.status_changed.emit(status)
+    def stop(self):
+        self.mp_checkexecutor.stop()
 
 
 class RunTab(QtWidgets.QWidget):
@@ -158,7 +173,7 @@ class RunTab(QtWidgets.QWidget):
             self.run_button.setEnabled(True)
             self.stop_button.setEnabled(False)
 
-    def run_executor(self, check_executor: QtCheckExecutor):
+    def run_executor(self, check_executor: QtCheckExecutorThread):
         # we pass the check_executor into the run tab as this is where the UI
         # components are that will display the execution status.
         self.set_run_stop_buttons_enabled(True)
