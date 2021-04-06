@@ -11,6 +11,7 @@ from hyo2.qax.app.widgets.qax.scoreboard_details import ScoreboardDetailsWidget
 from hyo2.qax.app.widgets.qax.summary_details import SummaryDetailsWidget
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.lib.project import QAXProject
+from hyo2.qax.app.widgets.qax.scoreboard_check_model import ScoreBoardCheckModel
 
 logger = logging.getLogger(__name__)
 
@@ -272,7 +273,13 @@ class ResultTab(QtWidgets.QWidget):
         vbox = QtWidgets.QVBoxLayout()
         self.score_board_group.setLayout(vbox)
 
-        self.score_board = QtWidgets.QTableWidget()
+        self.table_model = ScoreBoardCheckModel([])
+        self.sort_proxy_model = QtCore.QSortFilterProxyModel(self)
+        self.sort_proxy_model.setSourceModel(self.table_model)
+        self.sort_proxy_model.setDynamicSortFilter(True)
+
+        self.score_board = QtWidgets.QTableView()
+        self.score_board.setModel(self.sort_proxy_model)
         self.score_board.setSortingEnabled(True)
         self.score_board.setEditTriggers(
             QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -282,10 +289,6 @@ class ResultTab(QtWidgets.QWidget):
         self.score_board.setSelectionMode(
             QtWidgets.QAbstractItemView.ExtendedSelection)
         self.score_board.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-
-        self.score_board.setColumnCount(5)
-        self.score_board.setHorizontalHeaderLabels(
-            ["ID", "Check", "Input", "Status", "QA Pass"])
 
         vbox.addWidget(self.score_board)
 
@@ -311,73 +314,15 @@ class ResultTab(QtWidgets.QWidget):
             return
         checks = data_level.checks
 
-        nr_of_checks = len(checks)
-        self.score_board.setRowCount(nr_of_checks)
-        for idx in range(nr_of_checks):
-            check = checks[idx]
-            item0 = QtWidgets.QTableWidgetItem(check.info.id)
-            self.score_board.setItem(idx, 0, item0)
+        self.table_model.setChecks(checks)
 
-            check_name = check.info.name
-            try:
-                check_name = f"{check_name} [v.{check.info.version}]"
-            except Exception as e:
-                check_name = f"{check_name} [no version]"
-            item1 = QtWidgets.QTableWidgetItem(check_name)
-            self.score_board.setItem(idx, 1, item1)
-
-            if len(check.inputs.files) == 0:
-                file_item = QtWidgets.QTableWidgetItem("")
-            else:
-                full_path = check.inputs.files[0].path
-                _, file_name = os.path.split(full_path)
-                file_item = QtWidgets.QTableWidgetItem(file_name)
-            self.score_board.setItem(idx, 2, file_item)
-
-            if check.outputs is None:
-                status = "Not run"
-                status_item_color = ResultTab.color_in_progress
-            else:
-                status = check.outputs.execution.status
-
-                if status in ["aborted", "failed"]:
-                    status_item.setBackground(ResultTab.color_fail)
-                elif status in ["draft", "queued", "running"]:
-                    status_item_color = ResultTab.color_in_progress
-                    status_item.setBackground()
-                else:
-                    status_item_color = ResultTab.color_ok
-            status_item = QtWidgets.QTableWidgetItem(status)
-            status_item.setBackground(status_item_color)
-            self.score_board.setItem(idx, 3, status_item)
-
-            check_state = ""
-            try:
-                check_state = check.outputs.check_state
-            except AttributeError as e:
-                # then this check doesn't have outputs as it hasn't been run
-                pass
-
-            if check_state == "fail":
-                check_state_item = QtWidgets.QTableWidgetItem(
-                    self.cross_icon, "")
-            elif check_state == "pass":
-                check_state_item = QtWidgets.QTableWidgetItem(
-                    self.tick_icon, "")
-            elif check_state == "warning":
-                check_state_item = QtWidgets.QTableWidgetItem(
-                    self.warning_icon, "")
-            elif check.outputs is None:
-                check_state_item = QtWidgets.QTableWidgetItem(
-                    self.warning_icon, "")
-            else:
-                check_state_item = QtWidgets.QTableWidgetItem("")
-            check_state_item.setTextAlignment(QtCore.Qt.AlignHCenter)
-            self.score_board.setItem(idx, 4, check_state_item)
-
-    def _on_clicked_scoreboard(self, item):
-        selected_row = item.row()
-
+    def _on_clicked_scoreboard(self, selected_index):
+        # use the selected_index is the row number (column too) selected by the
+        # user. This probably doesn't correspond to the check data in the table
+        # model as the table may be sorted. Use the proxy_model to get the index
+        # of the source data from the sorted display index.
+        source_index = self.sort_proxy_model.mapToSource(selected_index)
+        selected_row = source_index.row()
         # to get the right check we must be sure to get the data level that
         # the user has selected
         qajson_datalevel = getattr(self.qa_json.qa, self.qa_group)
