@@ -12,6 +12,7 @@ from hyo2.qax.app.widgets.qax.summary_details import SummaryDetailsWidget
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.lib.project import QAXProject
 from hyo2.qax.app.widgets.qax.scoreboard_check_model import ScoreBoardCheckModel
+from hyo2.qax.app.widgets.qax.summary_model import SummaryModel
 
 logger = logging.getLogger(__name__)
 
@@ -147,7 +148,14 @@ class ResultTab(QtWidgets.QWidget):
         vbox = QtWidgets.QVBoxLayout()
         self.summary_group.setLayout(vbox)
 
-        self.summary_table = QtWidgets.QTableWidget()
+        self.summary_table_model = SummaryModel([])
+        self.summary_sort_proxy_model = QtCore.QSortFilterProxyModel(self)
+        self.summary_sort_proxy_model.setSourceModel(
+            self.summary_table_model)
+        self.summary_sort_proxy_model.setDynamicSortFilter(True)
+
+        self.summary_table = QtWidgets.QTableView()
+        self.summary_table.setModel(self.summary_sort_proxy_model)
         self.summary_table.setSortingEnabled(True)
         self.summary_table.setEditTriggers(
             QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -157,10 +165,6 @@ class ResultTab(QtWidgets.QWidget):
         self.summary_table.setSelectionMode(
             QtWidgets.QAbstractItemView.ExtendedSelection)
         self.summary_table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-
-        self.summary_table.setColumnCount(5)
-        self.summary_table.setHorizontalHeaderLabels(
-            ["Check", "Total runs", "Failed runs", "QA Fails", "QA Warning"])
 
         vbox.addWidget(self.summary_table)
 
@@ -183,46 +187,13 @@ class ResultTab(QtWidgets.QWidget):
 
     def _update_summary_view(self):
         summaries = self.prj.get_summary()
+        self.summary_table_model.setCheckSummaries(summaries)
 
-        self.summary_table.setRowCount(len(summaries))
-        for idx, summary in enumerate(summaries):
-            check_name = summary.name
-            if summary.version is None:
-                check_name = "{} [no version]".format(check_name)
-            else:
-                check_name = "{} [v.{}]".format(check_name, summary.version)
-
-            name_item = QtWidgets.QTableWidgetItem(check_name)
-            self.summary_table.setItem(idx, 0, name_item)
-
-            total_runs_item = QtWidgets.QTableWidgetItem(
-                "{}".format(summary.total_executions))
-            total_runs_item.setTextAlignment(QtCore.Qt.AlignRight)
-            self.summary_table.setItem(idx, 1, total_runs_item)
-
-            total_failed_runs_item = QtWidgets.QTableWidgetItem(
-                "{}".format(summary.failed_executions))
-            total_failed_runs_item.setTextAlignment(QtCore.Qt.AlignRight)
-            if summary.failed_executions != 0:
-                total_failed_runs_item.setBackground(ResultTab.color_fail)
-            self.summary_table.setItem(idx, 2, total_failed_runs_item)
-
-            total_failed_qa_item = QtWidgets.QTableWidgetItem(
-                "{}".format(summary.failed_check_state))
-            total_failed_qa_item.setTextAlignment(QtCore.Qt.AlignRight)
-            if summary.failed_check_state != 0:
-                total_failed_qa_item.setBackground(ResultTab.color_fail)
-            self.summary_table.setItem(idx, 3, total_failed_qa_item)
-
-            total_warn_qa_item = QtWidgets.QTableWidgetItem(
-                "{}".format(summary.warning_check_state))
-            total_warn_qa_item.setTextAlignment(QtCore.Qt.AlignRight)
-            if summary.warning_check_state != 0:
-                total_warn_qa_item.setBackground(ResultTab.color_warning)
-            self.summary_table.setItem(idx, 4, total_warn_qa_item)
-
-    def _on_clicked_summary(self, item):
-        selected_row = item.row()
+    def _on_clicked_summary(self, selected_index):
+        # refer to notes on _on_clicked_scoreboard for explanation on this
+        source_index = self.summary_sort_proxy_model.mapToSource(
+            selected_index)
+        selected_row = source_index.row()
 
         summaries = self.prj.get_summary()
         summary = summaries[selected_row]
@@ -273,13 +244,14 @@ class ResultTab(QtWidgets.QWidget):
         vbox = QtWidgets.QVBoxLayout()
         self.score_board_group.setLayout(vbox)
 
-        self.table_model = ScoreBoardCheckModel([])
-        self.sort_proxy_model = QtCore.QSortFilterProxyModel(self)
-        self.sort_proxy_model.setSourceModel(self.table_model)
-        self.sort_proxy_model.setDynamicSortFilter(True)
+        self.scoreboard_table_model = ScoreBoardCheckModel([])
+        self.scoreboard_sort_proxy_model = QtCore.QSortFilterProxyModel(self)
+        self.scoreboard_sort_proxy_model.setSourceModel(
+            self.scoreboard_table_model)
+        self.scoreboard_sort_proxy_model.setDynamicSortFilter(True)
 
         self.score_board = QtWidgets.QTableView()
-        self.score_board.setModel(self.sort_proxy_model)
+        self.score_board.setModel(self.scoreboard_sort_proxy_model)
         self.score_board.setSortingEnabled(True)
         self.score_board.setEditTriggers(
             QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -314,14 +286,15 @@ class ResultTab(QtWidgets.QWidget):
             return
         checks = data_level.checks
 
-        self.table_model.setChecks(checks)
+        self.scoreboard_table_model.setChecks(checks)
 
     def _on_clicked_scoreboard(self, selected_index):
         # use the selected_index is the row number (column too) selected by the
         # user. This probably doesn't correspond to the check data in the table
         # model as the table may be sorted. Use the proxy_model to get the index
         # of the source data from the sorted display index.
-        source_index = self.sort_proxy_model.mapToSource(selected_index)
+        source_index = self.scoreboard_sort_proxy_model.mapToSource(
+            selected_index)
         selected_row = source_index.row()
         # to get the right check we must be sure to get the data level that
         # the user has selected
