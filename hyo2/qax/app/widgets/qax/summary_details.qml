@@ -56,7 +56,65 @@ Pane {
                 text: "Data level: " + manager.data_level
               }
             }
+
+            ColumnLayout {
+              visible: manager.failed_execution_filenames.length != 0
+              spacing: 4
+              Text {
+                text: "Files failing during check execution:"
+                color: "grey"
+              }
+              Repeater {
+                model: manager.failed_execution_filenames
+                TextEdit {
+                  text: modelData
+                  wrapMode: Text.Wrap
+                  Layout.fillWidth: true
+                  readOnly: true
+                  selectByMouse: true
+                }
+              }
+            }
+
+            ColumnLayout {
+              visible: manager.failed_qa_filenames.length != 0
+              spacing: 4
+              Text {
+                text: "Files failing QA:"
+                color: "grey"
+              }
+              Repeater {
+                model: manager.failed_qa_filenames
+                TextEdit {
+                  text: modelData
+                  wrapMode: Text.Wrap
+                  Layout.fillWidth: true
+                  readOnly: true
+                  selectByMouse: true
+                }
+              }
+            }
+
+            ColumnLayout {
+              visible: manager.warning_qa_filenames.length != 0
+              spacing: 4
+              Text {
+                text: "Files with QA warnings:"
+                color: "grey"
+              }
+              Repeater {
+                model: manager.warning_qa_filenames
+                TextEdit {
+                  text: modelData
+                  wrapMode: Text.Wrap
+                  Layout.fillWidth: true
+                  readOnly: true
+                  selectByMouse: true
+                }
+              }
+            }
           }
+
         }
 
       }

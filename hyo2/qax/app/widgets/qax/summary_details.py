@@ -57,6 +57,39 @@ class Manager(QtCore.QObject):
             return "n/a"
         return self._summary.version
 
+    @Property('QVariantList', notify=summary_changed)
+    def failed_execution_filenames(self):
+        if self._summary is None:
+            return ["n/a"]
+        filenames = []
+        for f in self._summary.failed_execution_files:
+            # f is a QajsonFile
+            _, fn = os.path.split(f.path)
+            filenames.append(fn)
+        return filenames
+
+    @Property('QVariantList', notify=summary_changed)
+    def failed_qa_filenames(self):
+        if self._summary is None:
+            return ["n/a"]
+        filenames = []
+        for f in self._summary.failed_check_state_files:
+            # f is a QajsonFile
+            _, fn = os.path.split(f.path)
+            filenames.append(fn)
+        return filenames
+
+    @Property('QVariantList', notify=summary_changed)
+    def warning_qa_filenames(self):
+        if self._summary is None:
+            return ["n/a"]
+        filenames = []
+        for f in self._summary.warning_check_state_files:
+            # f is a QajsonFile
+            _, fn = os.path.split(f.path)
+            filenames.append(fn)
+        return filenames
+
     @Property(str, notify=summary_changed)
     def data_level(self):
         if self._summary is None:
