@@ -155,19 +155,6 @@ class ScoreBoardCheckModel(QAbstractTableModel):
 
         return None
 
-    def insertRows(self, position, rows=1, index=QModelIndex()):
-        """ Insert a row into the model. """
-        self.beginInsertRows(QModelIndex(), position, position + rows - 1)
-
-        for row in range(rows):
-            info = QajsonInfo("", "", "", "", None)
-            inputs = QajsonInputs([], [])
-            check = QajsonCheck(info, inputs, None)
-            self.checks.insert(position + row, check)
-
-        self.endInsertRows()
-        return True
-
     def setChecks(self, checks):
         self.beginResetModel()
 
@@ -175,28 +162,3 @@ class ScoreBoardCheckModel(QAbstractTableModel):
 
         self.endResetModel()
         return True
-
-    def removeRows(self, position, rows=1, index=QModelIndex()):
-        """ Remove a row from the model. """
-        self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
-
-        del self.checks[position:position + rows]
-
-        self.endRemoveRows()
-        return True
-
-    def setData(self, index, value, role=Qt.EditRole):
-        """ Adjust the data (set it to <value>) depending on the given
-            index and role.
-        """
-        return False
-
-    def flags(self, index):
-        """ Set the item flags at the given index. Seems like we're
-            implementing this function just to see how it's done, as we
-            manually adjust each tableView to have NoEditTriggers.
-        """
-        if not index.isValid():
-            return Qt.ItemIsEnabled
-        return Qt.ItemFlags(QAbstractTableModel.flags(self, index) |
-                            Qt.ItemIsEditable)
