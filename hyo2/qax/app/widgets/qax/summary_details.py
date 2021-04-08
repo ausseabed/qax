@@ -8,7 +8,7 @@ import os
 
 from ausseabed.qajson.model import QajsonCheck
 from hyo2.qax.app.widgets.qax.map_utils import MarkerItem, LineItem, \
-    MarkersModel, LinesModel
+    MarkersModel, LinesModel, PolygonsModel
 from hyo2.qax.lib.project import QaCheckSummary
 
 # from https://colorbrewer2.org/#type=qualitative&scheme=Paired&n=8
@@ -22,6 +22,16 @@ colors = [
     '#ff7f00',
     '#6a3d9a',
 ]
+
+
+def color_with_alpha(color: str, alpha: str):
+    ''' Inserts a hex alpha value into an existing hex color. eg: color = #b2df8a
+    with alpha = 80 would return #80b2df8a
+    '''
+    assert len(color) == 7
+    assert len(alpha) == 2
+    assert color[0] == '#'
+    return f'#{alpha}{color[1:]}'
 
 
 class Manager(QtCore.QObject):
@@ -122,6 +132,9 @@ class SummaryDetailsWidget(QtWidgets.QGroupBox):
         self.linesModel = LinesModel()
         rc.setContextProperty('linesModel', self.linesModel)
 
+        self.polygonsModel = PolygonsModel()
+        rc.setContextProperty('polygonsModel', self.polygonsModel)
+
         url = QUrl.fromLocalFile(os.path.join(
             os.path.abspath(os.path.dirname(__file__)),
             "summary_details.qml")
@@ -144,6 +157,7 @@ class SummaryDetailsWidget(QtWidgets.QGroupBox):
     def set_selected_summary(self, summary: QaCheckSummary):
         self.markersModel.remove_all()
         self.linesModel.remove_all()
+        self.polygonsModel.remove_all()
 
         for idx, check in enumerate(summary.checks):
             geojson = self.get_check_geojson(check)
@@ -153,5 +167,11 @@ class SummaryDetailsWidget(QtWidgets.QGroupBox):
             color = colors[idx % len(colors)]
             self.markersModel.add_from_geojson(geojson, color=color)
             self.linesModel.add_from_geojson(geojson, color=color)
+            color_transparent = color_with_alpha(color, '80')
+            self.polygonsModel.add_from_geojson(
+                geojson,
+                color=color_transparent,
+                line_color=color
+            )
 
         self.manager.set_summary(summary)
