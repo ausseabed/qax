@@ -305,7 +305,6 @@ class QaxCheckToolPlugin():
                 QajsonFile(path=str(f), file_type=f_group, description=None)
                 for (f, f_group) in files if check_ref.supports_file(f, f_group)]
 
-            print(supported_files)
             inputs.files.extend(supported_files)
 
     def update_qa_json_input_params(

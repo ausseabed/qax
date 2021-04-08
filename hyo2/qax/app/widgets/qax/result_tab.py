@@ -350,10 +350,8 @@ class ResultTab(QtWidgets.QWidget):
         will be presented with blank content. Calling this function will change the
         active data level to one that includes data to stop this from happening.
         '''
-        print("no change")
         data_level = getattr(self.prj.qa_json.qa, self.qa_group)
         if data_level is not None and len(data_level.checks) > 0:
-            print("no change")
             # then the currently selected data_level has check data, so
             # don't change
             return
