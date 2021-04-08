@@ -27,6 +27,8 @@ class ResultTab(QtWidgets.QWidget):
     color_ok = QtGui.QColor(100, 200, 100, 50)
     color_in_progress = QtGui.QColor(200, 200, 100, 50)
 
+    possible_dl_names = ['raw_data', 'survey_products', 'chart_adequacy']
+
     def __init__(self, prj: QAXProject):
         super(ResultTab, self).__init__()
 
@@ -91,12 +93,10 @@ class ResultTab(QtWidgets.QWidget):
         gb.setLayout(hbox)
         hbox_view_and_datalevel.addWidget(gb)
 
-        possible_dl_names = ['raw_data', 'survey_products', 'chart_adequacy']
-
         self.set_data_level = QtWidgets.QComboBox()
         self.set_data_level.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.set_data_level.addItems(possible_dl_names)
+        self.set_data_level.addItems(ResultTab.possible_dl_names)
         self.set_data_level.currentTextChanged.connect(self._on_set_data_level)
         # starts off disabled as the default summary view doesn't filter by
         # data level
@@ -331,16 +331,41 @@ class ResultTab(QtWidgets.QWidget):
             self.score_board_widget.setHidden(True)
             self.summary_widget.setHidden(True)
             self.set_data_level.setDisabled(False)
+            self._set_datalevel_with_data()
         elif self.cur_view == "Score Board":
             self.json_text_group.setHidden(True)
             self.score_board_widget.setVisible(True)
             self.summary_widget.setHidden(True)
             self.set_data_level.setDisabled(False)
+            self._set_datalevel_with_data()
         elif self.cur_view == "Summary":
             self.json_text_group.setHidden(True)
             self.score_board_widget.setHidden(True)
             self.summary_widget.setVisible(True)
             self.set_data_level.setDisabled(True)
+
+    def _set_datalevel_with_data(self):
+        ''' Sets the UI to a data level that contains data. If a user has only run
+        checks on processed data and switches to the scoreboard or qajson view they
+        will be presented with blank content. Calling this function will change the
+        active data level to one that includes data to stop this from happening.
+        '''
+        print("no change")
+        data_level = getattr(self.prj.qa_json.qa, self.qa_group)
+        if data_level is not None and len(data_level.checks) > 0:
+            print("no change")
+            # then the currently selected data_level has check data, so
+            # don't change
+            return
+
+        # iterate through each data level and get the first one that has
+        # checks data
+        for (index, dl) in enumerate(ResultTab.possible_dl_names):
+            data_level = getattr(self.prj.qa_json.qa, dl)
+            if data_level is not None and len(data_level.checks) > 0:
+                self.qa_group = dl
+                self.set_data_level.setCurrentIndex(index)
+                return
 
     def _on_set_data_level(self):
         self.qa_group = self.set_data_level.currentText()
