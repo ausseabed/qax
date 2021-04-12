@@ -11,16 +11,16 @@ from hyo2.qax.app.widgets.qax.map_utils import MarkerItem, LineItem, \
     MarkersModel, LinesModel, PolygonsModel
 from hyo2.qax.lib.project import QaCheckSummary
 
-# from https://colorbrewer2.org/#type=qualitative&scheme=Paired&n=8
-# but without the blue colors as they blend in too much with water
+# from https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=9
+# but without the blue or green colors as they blend in too much with water
 colors = [
-    '#b2df8a',
-    '#33a02c',
-    '#fb9a99',
-    '#e31a1c',
-    '#fdbf6f',
+    '#e41a1c',
+    '#984ea3',
     '#ff7f00',
-    '#6a3d9a',
+    '#ffff33',
+    '#a65628',
+    '#f781bf',
+    '#999999',
 ]
 
 
