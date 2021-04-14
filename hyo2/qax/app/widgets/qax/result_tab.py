@@ -65,6 +65,31 @@ class ResultTab(QtWidgets.QWidget):
 
         self.view_names = ['Summary', 'Score Board', 'Json Text']
 
+        self.warning_groupbox = QtWidgets.QGroupBox('Warning')
+        self.warning_groupbox.setStyleSheet(
+            'QGroupBox:title {color: red; top: -12px; left: 10px;} '
+            'QGroupBox { border: 1px solid red; margin-top: 8px; padding: 5px;}')
+        hbox = QtWidgets.QHBoxLayout()
+        self.warning_groupbox.setLayout(hbox)
+        self.warning_groupbox.setHidden(True)
+
+        warning_icon_widget = qta.IconWidget('fa.warning', color='red')
+        warning_icon_widget.setIconSize(QtCore.QSize(48, 48))
+        warning_icon_widget.update()
+        hbox.addWidget(warning_icon_widget)
+        warning_label = QtWidgets.QLabel(
+            "QAJSON is invalid, contents shown below have not been updated. "
+            "Please correct check parameter values on the plugins tab to "
+            "resolve this issue.")
+        warning_label.setWordWrap(True)
+        warning_label.setSizePolicy(
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Preferred)
+        hbox.addWidget(warning_label)
+        hbox.stretch(1)
+
+        self.vbox.addWidget(self.warning_groupbox)
+
         gb = QtWidgets.QGroupBox('View')
         # gb.setFixedHeight(40)
         hbox = QtWidgets.QHBoxLayout()
@@ -126,6 +151,10 @@ class ResultTab(QtWidgets.QWidget):
     def _update(self) -> NoReturn:
         """ Updates the user interface based on the qa_json
         """
+        if not self.prj.is_qajson_valid():
+            self.warning_groupbox.setHidden(False)
+            return
+        self.warning_groupbox.setHidden(True)
         self._display_json()
 
     def _add_summary_view(self):
@@ -350,6 +379,9 @@ class ResultTab(QtWidgets.QWidget):
         will be presented with blank content. Calling this function will change the
         active data level to one that includes data to stop this from happening.
         '''
+        if self.qa_group is None:
+            # occurs when attempting to view invalid qajson
+            return
         data_level = getattr(self.prj.qa_json.qa, self.qa_group)
         if data_level is not None and len(data_level.checks) > 0:
             # then the currently selected data_level has check data, so

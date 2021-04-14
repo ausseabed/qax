@@ -1,5 +1,6 @@
 from ausseabed.qajson.model import QajsonRoot, QajsonCheck
 from ausseabed.qajson.parser import QajsonParser
+from ausseabed.qajson.utils import qajson_valid
 from collections import defaultdict
 from hyo2.abc.lib.helper import Helper
 from hyo2.qax.lib import lib_info
@@ -201,6 +202,13 @@ class QAXProject(QtCore.QObject):
 
     def get_summary(self) -> List[QaCheckSummary]:
         return QaCheckSummary.get_summary(self.qa_json)
+
+    def is_qajson_valid(self) -> bool:
+        ''' Checks if the qa json object is valid. This may return false if the
+        user has entered invalid information into the check parameters (for
+        example).
+        '''
+        return qajson_valid(self.qa_json)
 
     @property
     def params(self) -> QAXParams:

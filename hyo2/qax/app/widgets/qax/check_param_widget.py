@@ -42,11 +42,17 @@ class CheckParamWidget(QtWidgets.QWidget):
         self.label_min_width = 200
 
     def param(self) -> QajsonParam:
+        ''' Will return valid QajsonParam if user has entered valid data, otherwise
+        None for invalid data.
+        '''
         raise NotImplementedError(
             "Must implement in param function of child class to return "
             "correct value type within an QajsonParam")
 
-    def _on_edited(self) -> NoReturn:
+    def _on_edited(self, *args, **kwargs) -> NoReturn:
+        sender = self.sender()
+        validation_color = self.check_state_color(sender)
+        self._set_validation_color(validation_color)
         self._raise_value_changed(self.param())
 
     def _raise_value_changed(self, param: QajsonParam) -> NoReturn:
@@ -59,6 +65,24 @@ class CheckParamWidget(QtWidgets.QWidget):
     @value.setter
     def value(self, value):
         raise NotImplementedError("Must implement in child class")
+
+    def check_state_color(self, sender):
+        validator = sender.validator()
+        if validator is None:
+            # then this component doesn't need validation (eg; could be a
+            # checkbox that has only valid states)
+            return None
+        state = validator.validate(sender.text(), 0)[0]
+        if state == QtGui.QValidator.Acceptable:
+            color = '#c4df9b'  # green
+        else:
+            color = '#f6989d'  # red
+        return color
+
+    def _set_validation_color(self, color):
+        # each child class must implement this method to show a validation color.
+        # How this is shown is up to the component.
+        pass
 
 
 class CheckParamStringWidget(CheckParamWidget):
@@ -84,6 +108,8 @@ class CheckParamStringWidget(CheckParamWidget):
         hbox.addWidget(self.lineedit_value)
 
     def param(self) -> QajsonParam:
+        if len(self.lineedit_value.text()) == 0:
+            return None
         return QajsonParam(
             name=self._param.name,
             value=self.lineedit_value.text()
@@ -92,6 +118,11 @@ class CheckParamStringWidget(CheckParamWidget):
     @CheckParamWidget.value.setter
     def value(self, value):
         self.lineedit_value.setText(str(value))
+
+    def _set_validation_color(self, color):
+        self.lineedit_value.setStyleSheet(
+            f"QLineEdit {{ background-color: {color} }}"
+        )
 
 
 class CheckParamIntWidget(CheckParamWidget):
@@ -112,11 +143,15 @@ class CheckParamIntWidget(CheckParamWidget):
         hbox.addWidget(label_name)
 
         self.lineedit_value = QtWidgets.QLineEdit()
+        validator = QtGui.QIntValidator()
+        self.lineedit_value.setValidator(validator)
         self.lineedit_value.setText(str(self._param.value))
         self.lineedit_value.textEdited.connect(self._on_edited)
         hbox.addWidget(self.lineedit_value)
 
     def param(self) -> QajsonParam:
+        if len(self.lineedit_value.text()) == 0:
+            return None
         return QajsonParam(
             name=self._param.name,
             value=int(self.lineedit_value.text())
@@ -125,6 +160,11 @@ class CheckParamIntWidget(CheckParamWidget):
     @CheckParamWidget.value.setter
     def value(self, value):
         self.lineedit_value.setText(str(value))
+
+    def _set_validation_color(self, color):
+        self.lineedit_value.setStyleSheet(
+            f"QLineEdit {{ background-color: {color} }}"
+        )
 
 
 class CheckParamBoolWidget(CheckParamWidget):
@@ -178,11 +218,15 @@ class CheckParamFloatWidget(CheckParamWidget):
         hbox.addWidget(label_name)
 
         self.lineedit_value = QtWidgets.QLineEdit()
+        validator = QtGui.QDoubleValidator()
+        self.lineedit_value.setValidator(validator)
         self.lineedit_value.setText(str(self._param.value))
         self.lineedit_value.textEdited.connect(self._on_edited)
         hbox.addWidget(self.lineedit_value)
 
     def param(self) -> QajsonParam:
+        if len(self.lineedit_value.text()) == 0:
+            return None
         return QajsonParam(
             name=self._param.name,
             value=float(self.lineedit_value.text())
@@ -191,6 +235,11 @@ class CheckParamFloatWidget(CheckParamWidget):
     @CheckParamWidget.value.setter
     def value(self, value):
         self.lineedit_value.setText(str(value))
+
+    def _set_validation_color(self, color):
+        self.lineedit_value.setStyleSheet(
+            f"QLineEdit {{ background-color: {color} }}"
+        )
 
 
 class CheckParamUnknownWidget(CheckParamWidget):
