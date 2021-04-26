@@ -6,9 +6,120 @@ from PySide2.QtGui import QFont
 from PySide2 import QtCore
 import qtawesome as qta
 import os
+import time
+import multiprocessing as mp
+
+from ausseabed.mbesgc.lib.grid_transformer import GridTransformer
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.lib.data import RasterFileInfo
+
+
+class ProgressQueueItem:
+
+    def __init__(self, progress: float):
+        self.progress = progress
+
+
+class MessageQueueItem:
+
+    def __init__(self, message: str):
+        self.message = message
+
+
+class CompleteQueueItem:
+
+    def __init__(self, successful: bool):
+        self.successful = successful
+
+
+class MultiprocessGridTransformerExecutor(mp.Process):
+    ''' Implementation of multiprocessing Process class for the QAX CheckExecutor.
+    Allows the checks to be processed in a background thread (to keep UI
+    responsive). Communication with parent thread is handled by the Queue object
+    passed into __init__
+    '''
+
+    def __init__(
+            self,
+            inputs: dict,
+            queue: mp.Queue):
+        super(MultiprocessGridTransformerExecutor, self).__init__()
+        self.inputs = inputs
+        self.queue = queue
+        self.stop_event = mp.Event()
+
+    def run(self):
+
+        gt = GridTransformer()
+        gt.process(
+            self.inputs['Density'],
+            self.inputs['Depth'],
+            self.inputs['Uncertainty'],
+            self.inputs['output'],
+            self._progress_callback,
+            self.is_stopped,
+            self._complete_callback,
+            self._message_callback
+        )
+
+    def stop(self):
+        self.stop_event.set()
+
+    def is_stopped(self) -> bool:
+        return self.stop_event.is_set()
+
+    def _progress_callback(self, progress):
+        progress_item = ProgressQueueItem(progress)
+        self.queue.put(progress_item)
+
+    def _message_callback(self, message):
+        message_item = MessageQueueItem(message)
+        self.queue.put(message_item)
+
+    def _complete_callback(self, successful: bool):
+        complete_item = CompleteQueueItem(successful)
+        self.queue.put(complete_item)
+
+
+class QtGridTransformerThread(QtCore.QThread):
+
+    progress = QtCore.Signal(float)
+    message = QtCore.Signal(str)
+    complete = QtCore.Signal(bool)
+
+    def __init__(
+            self,
+            inputs: dict):
+        super(QtGridTransformerThread, self).__init__()
+        self.grid_transformer_inputs = inputs
+
+    def run(self):
+        self.queue = mp.Queue()
+        self.mp_running = True
+
+        self.gt_executor = MultiprocessGridTransformerExecutor(
+            self.grid_transformer_inputs,
+            self.queue,
+        )
+
+        self.gt_executor.start()
+
+        while self.mp_running:
+            queue_item = self.queue.get()
+            if queue_item is not None:
+                if isinstance(queue_item, ProgressQueueItem):
+                    self.progress.emit(queue_item.progress)
+                elif isinstance(queue_item, MessageQueueItem):
+                    self.message.emit(queue_item.message)
+                elif isinstance(queue_item, CompleteQueueItem):
+                    self.complete.emit(queue_item.successful)
+
+        self.gt_executor.join()
+
+    def stop(self):
+        self.gt_executor.stop()
+
 
 input_band_names = [
     "Density",
@@ -221,6 +332,8 @@ class GridTransformerDialog(QDialog):
         output_file_layout = QHBoxLayout()
         output_file_layout.setSpacing(4)
         self.output_file_input = QLineEdit()
+        self.output_file_input.textChanged.connect(
+            self._on_output_filename_changed)
         self.output_file_input.setMinimumWidth(400)
         self.output_file_input.setSizePolicy(
             QSizePolicy.Expanding,
@@ -235,6 +348,10 @@ class GridTransformerDialog(QDialog):
         self.open_output_file_button.clicked.connect(self._click_open_output)
 
         self.layout.addWidget(output_groupbox)
+
+    def _on_output_filename_changed(self, filename):
+        self.grid_transformer_inputs['output'] = filename
+        self.validate()
 
     def _set_output_filename(self, filename):
         self.output_file_input.setText(filename)
@@ -308,6 +425,48 @@ class GridTransformerDialog(QDialog):
         pbar_frame.setLayout(pbar_hbox)
         process_layout.addWidget(pbar_frame)
 
+        self.warning_frame = QFrame()
+        self.warning_frame.setVisible(False)
+        self.warning_frame.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Fixed)
+        hbox = QHBoxLayout()
+
+        warning_icon_widget = qta.IconWidget('fa.warning', color='red')
+        warning_icon_widget.setIconSize(QtCore.QSize(48, 48))
+        warning_icon_widget.update()
+        hbox.addWidget(warning_icon_widget)
+        warning_label = QLabel(
+            "Grid Transformer did not complete successfully. Please refer to "
+            "log output.")
+        warning_label.setStyleSheet("QLabel { color: red; }")
+        warning_label.setWordWrap(True)
+        warning_label.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Preferred)
+        hbox.addWidget(warning_label)
+        self.warning_frame.setLayout(hbox)
+        process_layout.addWidget(self.warning_frame)
+
+        self.success_frame = QFrame()
+        self.success_frame.setVisible(False)
+        self.success_frame.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Fixed)
+        hbox = QHBoxLayout()
+
+        success_icon_widget = qta.IconWidget('fa.check', color='green')
+        success_icon_widget.setIconSize(QtCore.QSize(48, 48))
+        success_icon_widget.update()
+        hbox.addWidget(success_icon_widget)
+        success_label = QLabel("Grid Transformer completed successfully.")
+        success_label.setStyleSheet("QLabel { color: green; }")
+        success_label.setWordWrap(True)
+        success_label.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Preferred)
+        hbox.addWidget(success_label)
+        self.success_frame.setLayout(hbox)
+        process_layout.addWidget(self.success_frame)
+
         log_layout = QVBoxLayout()
         log_layout.setSpacing(4)
         log_label = QLabel("Log messages")
@@ -328,11 +487,40 @@ class GridTransformerDialog(QDialog):
 
         self.layout.addWidget(process_groupbox)
 
+    def _on_progress(self, progress):
+        self.progress_bar.setValue(int(progress * 100))
+
+    def _on_complete(self, successful: bool):
+        self.warning_frame.setVisible(not successful)
+        self.success_frame.setVisible(successful)
+        self.stop_button.setEnabled(False)
+        self.run_button.setEnabled(True)
+
+        run_time = time.perf_counter() - self.start_time
+        self._log_message(
+            f"Total grid transformation time = {run_time:.2f} sec")
+        self._log_message("\n\n")
+
     def _click_run(self):
-        pass
+        self.warning_frame.setVisible(False)
+        self.success_frame.setVisible(False)
+        self.stop_button.setEnabled(True)
+        self.run_button.setEnabled(False)
+
+        self.gt_executor = QtGridTransformerThread(
+            self.grid_transformer_inputs)
+
+        self.gt_executor.progress.connect(self._on_progress)
+        self.gt_executor.message.connect(self._log_message)
+        self.gt_executor.complete.connect(self._on_complete)
+
+        self.start_time = time.perf_counter()
+        self._log_message("\n\nStarting Grid Transformer process")
+        self.gt_executor.start()
 
     def _click_stop(self):
-        pass
+        if self.gt_executor is not None:
+            self.gt_executor.stop()
 
     def close_dialog(self):
         self.close()
