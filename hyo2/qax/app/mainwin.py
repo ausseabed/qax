@@ -22,6 +22,7 @@ from hyo2.qax.lib import lib_info
 from hyo2.qax.app import app_info
 from hyo2.qax.app.widgets.qax.widget import QAXWidget
 from hyo2.qax.app.gui_settings import GuiSettings
+from hyo2.qax.app.grid_transformer_dialog import GridTransformerDialog
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +37,8 @@ class MainWin(QtWidgets.QMainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
 
-        logger.info("current configuration:\n%s" % Helper(lib_info=lib_info).package_info())
+        logger.info("current configuration:\n%s" %
+                    Helper(lib_info=lib_info).package_info())
 
         # set the application name
         self.name = app_info.app_name
@@ -59,10 +61,12 @@ class MainWin(QtWidgets.QMainWindow):
         if Helper.is_windows():
 
             try:
-                # This is needed to display the app icon on the taskbar on Windows 7
+                # This is needed to display the app icon on the taskbar on
+                # Windows 7
                 import ctypes
                 app_id = '%s v.%s' % (self.name, self.version)
-                ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
+                ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+                    app_id)
 
             except AttributeError as e:
                 logger.debug("Unable to change app icon: %s" % e)
@@ -125,6 +129,15 @@ class MainWin(QtWidgets.QMainWindow):
         quit_action.triggered.connect(self.quitAction)
         fileMenu.addAction(quit_action)
 
+        utilities_menu = self.menuBar.addMenu('&Utilities')
+        gridtransformer_icon = qta.icon('fa.th')
+        gridtransformer_action = QAction(
+            gridtransformer_icon, "&Grid Transformer", self)
+        gridtransformer_action.setStatusTip(
+            "Convert grid files to check input specification")
+        gridtransformer_action.triggered.connect(self.open_gridtransformer)
+        utilities_menu.addAction(gridtransformer_action)
+
         helpMenu = self.menuBar.addMenu('&Help')
 
         manual_icon = qta.icon('fa.info-circle')
@@ -142,10 +155,14 @@ class MainWin(QtWidgets.QMainWindow):
             int(self.settings.value("qax_app_height", defaultValue=840)),
         ))
 
-    def exception_hook(self, ex_type: type, ex_value: BaseException, tb: traceback) -> None:
+    def exception_hook(
+            self,
+            ex_type: type,
+            ex_value: BaseException, tb: traceback) -> None:
         sys.__excepthook__(ex_type, ex_value, tb)
 
-        # first manage case of not being an exception (e.g., keyboard interrupts)
+        # first manage case of not being an exception (e.g., keyboard
+        # interrupts)
         if not issubclass(ex_type, Exception):
             msg = str(ex_value)
             if not msg:
@@ -185,9 +202,14 @@ class MainWin(QtWidgets.QMainWindow):
     def do_you_really_want(self, title="Quit", text="quit"):
         msg_box = QtWidgets.QMessageBox(self)
         msg_box.setWindowTitle(title)
-        msg_box.setIconPixmap(QtGui.QPixmap(app_info.app_icon_path).scaled(QtCore.QSize(60, 60)))
+        msg_box.setIconPixmap(
+            QtGui.QPixmap(
+                app_info.app_icon_path).scaled(
+                QtCore.QSize(
+                    60, 60)))
         msg_box.setText('Do you really want to %s?' % text)
-        msg_box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        msg_box.setStandardButtons(
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
         return msg_box.exec_()
 
@@ -250,6 +272,11 @@ class MainWin(QtWidgets.QMainWindow):
         man_win.show()
 
         self.manual_window = man_win
+
+    def open_gridtransformer(self):
+        gt_dialog = GridTransformerDialog()
+        gt_dialog.show()
+        gt_dialog.exec_()
 
     def quitAction(self):
         reply = self.do_you_really_want("Quit", "quit %s" % self.name)
