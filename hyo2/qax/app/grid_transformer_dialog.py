@@ -415,6 +415,7 @@ class GridTransformerDialog(QDialog):
 
         self.progress_bar = QProgressBar()
         self.progress_bar.setTextVisible(True)
+        self.progress_bar.setAlignment(QtCore.Qt.AlignCenter)
         self.progress_bar.setValue(0)
         self.progress_bar.setSizePolicy(
             QSizePolicy.Expanding,
