@@ -5,7 +5,11 @@ import time
 from typing import List, NoReturn
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtWidgets import QSizePolicy
+from PySide2.QtWidgets import QApplication, QDialog, QLineEdit, \
+    QPushButton, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QWidget, \
+    QSizePolicy, QComboBox, QFileDialog, QPlainTextEdit, QProgressBar, \
+    QFrame
+from PySide2.QtGui import QFont
 import qtawesome as qta
 import multiprocessing as mp
 
@@ -96,74 +100,143 @@ class RunTab(QtWidgets.QWidget):
         self.vbox = QtWidgets.QVBoxLayout()
         self.setLayout(self.vbox)
 
-        # title
-        label_name = QtWidgets.QLabel("Run checks")
-        label_name.setStyleSheet(GuiSettings.stylesheet_plugin_tab_titles())
-        self.vbox.addWidget(label_name)
-
-        # Run and stop buttons
-        hbox = QtWidgets.QHBoxLayout()
-        hbox.addStretch()
-        self.run_button = QtWidgets.QPushButton()
-        self.run_button.setText("Run")
-        self.run_button.setFixedWidth(100)
-        run_icon = qta.icon('fa.play', color='green')
-        self.run_button.setIcon(run_icon)
-        self.run_button.clicked.connect(self.click_run)
-        hbox.addWidget(self.run_button)
-
-        self.stop_button = QtWidgets.QPushButton()
-        self.stop_button.setText("Stop")
-        self.stop_button.setFixedWidth(100)
-        stop_icon = qta.icon('fa.stop', color='red')
-        self.stop_button.setIcon(stop_icon)
-        self.stop_button.clicked.connect(self.click_stop)
-        hbox.addWidget(self.stop_button)
-
-        hbox.addStretch()
-        self.vbox.addLayout(hbox)
-
-        # progress section
-        self.progress_groupbox = QtWidgets.QGroupBox("Check execution status")
-        vbox = QtWidgets.QVBoxLayout()
-        self.progress_groupbox.setLayout(vbox)
-
-        hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(hbox)
-        check_name_label = QtWidgets.QLabel("Check:")
-        check_name_label.setFixedWidth(80)
-        hbox.addWidget(check_name_label)
-        self.check_name_text_label = QtWidgets.QLabel("n/a")
-        hbox.addWidget(self.check_name_text_label)
-
-        hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(hbox)
-        status_name_label = QtWidgets.QLabel("Status:")
-        status_name_label.setFixedWidth(80)
-        hbox.addWidget(status_name_label)
-        self.status_name_text_label = QtWidgets.QLabel("Not started")
-        hbox.addWidget(self.status_name_text_label)
-
-        hbox = QtWidgets.QHBoxLayout()
-        vbox.addLayout(hbox)
-        progress_label = QtWidgets.QLabel("Progress:")
-        progress_label.setFixedWidth(80)
-        hbox.addWidget(progress_label)
-        self.progress_bar = QtWidgets.QProgressBar()
-        self.progress_bar.setTextVisible(True)
-        self.progress_bar.setValue(0)
-        self.progress_bar.setAlignment(QtCore.Qt.AlignCenter)
-        self.progress_bar.setStyleSheet(
-            "QProgressBar::chunk { background-color: lightgrey; }")
-
-        hbox.addWidget(self.progress_bar)
-
-        self.vbox.addWidget(self.progress_groupbox)
-
-        self.vbox.addStretch()
+        self._add_process()
 
         # final setup
         self.set_run_stop_buttons_enabled(False)
+
+    def _add_process(self):
+        process_groupbox = QGroupBox("Process")
+        process_groupbox.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Expanding)
+        process_layout = QVBoxLayout()
+        process_layout.setSpacing(0)
+        process_groupbox.setLayout(process_layout)
+
+        pbar_frame = QFrame()
+        pbar_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        pbar_hbox = QHBoxLayout()
+        pbar_hbox.setContentsMargins(QtCore.QMargins(0, 0, 0, 16))
+        pbar_hbox.setSpacing(16)
+
+        # Run and stop buttons
+        hbox = QHBoxLayout()
+        hbox.setSpacing(8)
+        self.run_button = QPushButton()
+        # is only enabled when validation passes
+        self.run_button.setEnabled(False)
+        self.run_button.setText("Run")
+        self.run_button.setToolTip("Start check execution")
+        self.run_button.setFixedWidth(100)
+        run_icon = qta.icon('fa.play', color='green')
+        self.run_button.setIcon(run_icon)
+        self.run_button.clicked.connect(self._click_run)
+        hbox.addWidget(self.run_button)
+
+        self.stop_button = QPushButton()
+        self.stop_button.setEnabled(False)
+        self.stop_button.setText("Stop")
+        self.stop_button.setToolTip("Stop check execution")
+        self.stop_button.setFixedWidth(100)
+        stop_icon = qta.icon('fa.stop', color='red')
+        self.stop_button.setIcon(stop_icon)
+        self.stop_button.clicked.connect(self._click_stop)
+        hbox.addWidget(self.stop_button)
+
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setTextVisible(True)
+        self.progress_bar.setAlignment(QtCore.Qt.AlignCenter)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Expanding)
+
+        pbar_hbox.addLayout(hbox)
+        pbar_hbox.addWidget(self.progress_bar)
+        pbar_frame.setLayout(pbar_hbox)
+        process_layout.addWidget(pbar_frame)
+
+        vbox = QVBoxLayout()
+        vbox.setSpacing(8)
+        vbox.setContentsMargins(QtCore.QMargins(0, 0, 0, 16))
+        process_layout.addLayout(vbox)
+        hbox = QHBoxLayout()
+        vbox.addLayout(hbox)
+        check_name_label = QLabel("Check:")
+        check_name_label.setFixedWidth(80)
+        hbox.addWidget(check_name_label)
+        self.check_name_text_label = QLabel("n/a")
+        hbox.addWidget(self.check_name_text_label)
+
+        hbox = QHBoxLayout()
+        vbox.addLayout(hbox)
+        status_name_label = QLabel("Status:")
+        status_name_label.setFixedWidth(80)
+        hbox.addWidget(status_name_label)
+        self.status_name_text_label = QLabel("Not started")
+        hbox.addWidget(self.status_name_text_label)
+
+        self.warning_frame = QFrame()
+        self.warning_frame.setVisible(False)
+        self.warning_frame.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Fixed)
+        hbox = QHBoxLayout()
+
+        warning_icon_widget = qta.IconWidget('fa.warning', color='red')
+        warning_icon_widget.setIconSize(QtCore.QSize(48, 48))
+        warning_icon_widget.update()
+        hbox.addWidget(warning_icon_widget)
+        warning_label = QLabel(
+            "Grid Transformer did not complete successfully. Please refer to "
+            "log output.")
+        warning_label.setStyleSheet("QLabel { color: red; }")
+        warning_label.setWordWrap(True)
+        warning_label.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Preferred)
+        hbox.addWidget(warning_label)
+        self.warning_frame.setLayout(hbox)
+        process_layout.addWidget(self.warning_frame)
+
+        self.success_frame = QFrame()
+        self.success_frame.setVisible(False)
+        self.success_frame.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Fixed)
+        hbox = QHBoxLayout()
+
+        success_icon_widget = qta.IconWidget('fa.check', color='green')
+        success_icon_widget.setIconSize(QtCore.QSize(48, 48))
+        success_icon_widget.update()
+        hbox.addWidget(success_icon_widget)
+        success_label = QLabel("All checks completed successfully.")
+        success_label.setStyleSheet("QLabel { color: green; }")
+        success_label.setWordWrap(True)
+        success_label.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Preferred)
+        hbox.addWidget(success_label)
+        self.success_frame.setLayout(hbox)
+        process_layout.addWidget(self.success_frame)
+
+        log_layout = QVBoxLayout()
+        log_layout.setSpacing(4)
+        log_label = QLabel("Log messages")
+        log_label.setStyleSheet("QLabel { color: grey; }")
+        log_layout.addWidget(log_label)
+
+        self.log_messages = QPlainTextEdit()
+        log_font = QFont("monospace")
+        log_font.setStyleHint(QFont.TypeWriter)
+        self.log_messages.setFont(log_font)
+        self.log_messages.setReadOnly(True)
+        self.log_messages.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Expanding)
+        log_layout.addWidget(self.log_messages)
+        process_layout.addLayout(log_layout)
+
+        self.vbox.addWidget(process_groupbox)
 
     def set_run_stop_buttons_enabled(self, is_running: bool) -> NoReturn:
         if is_running:
@@ -173,10 +246,16 @@ class RunTab(QtWidgets.QWidget):
             self.run_button.setEnabled(True)
             self.stop_button.setEnabled(False)
 
+    def _log_message(self, message):
+        self.log_messages.appendPlainText(message)
+
     def run_executor(self, check_executor: QtCheckExecutorThread):
         # we pass the check_executor into the run tab as this is where the UI
         # components are that will display the execution status.
         self.set_run_stop_buttons_enabled(True)
+
+        self._log_message("Check execution started")
+        self.start_time = time.perf_counter()
 
         self.check_executor = check_executor
         self.check_executor.check_tool_started.connect(
@@ -187,13 +266,14 @@ class RunTab(QtWidgets.QWidget):
         self.check_executor.status_changed.connect(self._on_status_change)
         self.check_executor.start()
 
-    def click_run(self):
+    def _click_run(self):
         self.run_checks.emit()
 
-    def click_stop(self):
+    def _click_stop(self):
         if self.check_executor is None:
             logger.warn("Check executor does not exist, cannot stop")
             return
+        self._log_message("Stopping check execution")
         self.check_executor.stop()
 
     @QtCore.Slot(float)
@@ -212,6 +292,11 @@ class RunTab(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def _on_checks_complete(self):
+        run_time = time.perf_counter() - self.start_time
+        self._log_message(
+            f"Execution time for all checks = {run_time:.2f} sec")
+        self._log_message("\n\n")
+
         self.set_run_stop_buttons_enabled(False)
         self.prj.qa_json = self.check_executor.qa_json
 
