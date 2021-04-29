@@ -8,7 +8,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QApplication, QDialog, QLineEdit, \
     QPushButton, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QWidget, \
     QSizePolicy, QComboBox, QFileDialog, QPlainTextEdit, QProgressBar, \
-    QFrame
+    QFrame, QCheckBox
 from PySide2.QtGui import QFont
 import qtawesome as qta
 import multiprocessing as mp
@@ -100,10 +100,84 @@ class RunTab(QtWidgets.QWidget):
         self.vbox = QtWidgets.QVBoxLayout()
         self.setLayout(self.vbox)
 
+        self._add_check_outputs()
         self._add_process()
 
         # final setup
         self.set_run_stop_buttons_enabled(False)
+
+    def _add_check_outputs(self):
+        co_groupbox = QGroupBox("Check outputs")
+        co_groupbox.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Fixed)
+        co_layout = QVBoxLayout()
+        co_layout.setSpacing(16)
+        co_groupbox.setLayout(co_layout)
+
+        self.qajson_spatial_checkbox = QCheckBox(
+            "Include summary spatial output in QAJSON. "
+            "Supports QAX visualisation.")
+        self.qajson_spatial_checkbox.setCheckState(
+            QtCore.Qt.CheckState.Checked)
+        co_layout.addWidget(self.qajson_spatial_checkbox)
+
+        export_layout = QVBoxLayout()
+        export_layout.setSpacing(4)
+        self.export_spatial_checkbox = QCheckBox(
+            "Export detailed spatial output to file. "
+            "Supports visualisation in other geospatial applications.")
+        self.export_spatial_checkbox.stateChanged.connect(
+            self._on_export_spatial_changed)
+        export_layout.addWidget(self.export_spatial_checkbox)
+
+        output_folder_layout = QHBoxLayout()
+        output_folder_layout.setSpacing(4)
+        output_folder_layout.addSpacerItem(QtWidgets.QSpacerItem(37, 20))
+        self.output_folder_label = QLabel(
+            "Detailed spatial output folder location:")
+        output_folder_layout.addWidget(self.output_folder_label)
+        self.output_folder_input = QLineEdit()
+        self.output_folder_input.setText(
+            GuiSettings.settings().value("spatial_outputs"))
+        self.output_folder_input.setMinimumWidth(300)
+        self.output_folder_input.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Expanding)
+        output_folder_layout.addWidget(self.output_folder_input)
+
+        self.open_output_folder_button = QPushButton()
+        output_folder_layout.addWidget(self.open_output_folder_button)
+        self.open_output_folder_button.setIcon(qta.icon('fa.folder-open'))
+        self.open_output_folder_button.setToolTip(
+            f"Select file containing data")
+        self.open_output_folder_button.clicked.connect(
+            self._click_open_spatial_export_folder)
+        export_layout.addLayout(output_folder_layout)
+
+        co_layout.addLayout(export_layout)
+
+        self._on_export_spatial_changed()
+        self.vbox.addWidget(co_groupbox)
+
+    def _click_open_spatial_export_folder(self):
+        output_folder = QFileDialog.getExistingDirectory(
+            self,
+            f"Select folder for spatial outputs",
+            GuiSettings.settings().value("spatial_outputs"),
+            QFileDialog.ShowDirsOnly)
+
+        if os.path.exists(output_folder):
+            GuiSettings.settings().setValue(
+                "spatial_outputs", output_folder)
+
+        self.output_folder_input.setText(output_folder)
+
+    def _on_export_spatial_changed(self):
+        is_export = self.export_spatial_checkbox.isChecked()
+        self.output_folder_label.setEnabled(is_export)
+        self.output_folder_input.setEnabled(is_export)
+        self.open_output_folder_button.setEnabled(is_export)
 
     def _add_process(self):
         process_groupbox = QGroupBox("Process")
