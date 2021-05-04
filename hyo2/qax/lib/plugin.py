@@ -4,6 +4,7 @@ import importlib
 import re
 
 from hyo2.qax.lib.config import QaxConfig, QaxConfigCheckTool, QaxConfigProfile
+from hyo2.qax.lib.check_options import CheckOption
 from ausseabed.qajson.model import QajsonRoot, QajsonQa, QajsonDataLevel, \
     QajsonParam, QajsonCheck, QajsonInfo, QajsonGroup, QajsonFile
 from ausseabed.qajson.parser import QajsonParser
@@ -211,6 +212,28 @@ class QaxCheckToolPlugin():
         self.plugin_class = None  # full namespace string
         self.icon = None
         self.profile = None   # QaxConfigProfile, set when plugin loaded
+        self.options = {}
+
+    @property
+    def spatial_outputs_qajson(self) -> bool:
+        if CheckOption.spatial_output_qajson in self.options:
+            return self.options[CheckOption.spatial_output_qajson]
+        else:
+            return False
+
+    @property
+    def spatial_outputs_export(self) -> bool:
+        if CheckOption.spatial_output_export in self.options:
+            return self.options[CheckOption.spatial_output_export]
+        else:
+            return False
+
+    @property
+    def spatial_outputs_export_location(self) -> str:
+        if CheckOption.spatial_output_export_location in self.options:
+            return self.options[CheckOption.spatial_output_export_location]
+        else:
+            return None
 
     def get_file_groups(self) -> List[QaxFileGroup]:
         """ Generate a list of file groups for this check tool plugin

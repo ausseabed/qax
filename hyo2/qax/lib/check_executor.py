@@ -24,6 +24,11 @@ class CheckExecutor():
         self.stopped = False
         self.status = "Not started"
 
+        # dictionary containing some options that will be passed to each check
+        # includes things lke location to write spatial outputs too, what
+        # spatial outputs to write
+        self.options = {}
+
         self.check_tools = [
             QaxPlugins.instance().get_plugin(
                 self.profile_name,
@@ -65,6 +70,8 @@ class CheckExecutor():
                 self.current_check_number,
                 len(self.check_tools)
             )
+
+            check_tool.options = self.options
 
             check_tool.run(
                 self.qa_json,

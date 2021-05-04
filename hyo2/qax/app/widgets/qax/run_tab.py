@@ -2,7 +2,7 @@ import json
 import logging
 import os
 import time
-from typing import List, NoReturn
+from typing import List, NoReturn, Dict
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QApplication, QDialog, QLineEdit, \
@@ -18,6 +18,7 @@ from hyo2.abc.lib.helper import Helper
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin
+from hyo2.qax.lib.check_options import CheckOption
 from hyo2.qax.lib.check_executor import CheckExecutor, MultiprocessCheckExecutor, \
     ProgressQueueItem, CheckToolStartedQueueItem, StatusQueueItem, \
     QajsonChangedQueueItem, ChecksCompleteQueueItem
@@ -56,8 +57,13 @@ class QtCheckExecutorThread(QtCore.QThread):
             self.queue
         )
         self.mp_running = False
+        # options such as what output to generate, where to put it. Keys come
+        # from check_options.py
+        self.options = {}
 
     def run(self):
+        self.mp_checkexecutor.options = self.options
+
         self.mp_running = True
         self.mp_checkexecutor.start()
 
@@ -125,7 +131,7 @@ class RunTab(QtWidgets.QWidget):
         export_layout = QVBoxLayout()
         export_layout.setSpacing(4)
         self.export_spatial_checkbox = QCheckBox(
-            "Export detailed spatial output to file. "
+            "Export detailed spatial outputs to file. "
             "Supports visualisation in other geospatial applications.")
         self.export_spatial_checkbox.stateChanged.connect(
             self._on_export_spatial_changed)
@@ -332,6 +338,7 @@ class RunTab(QtWidgets.QWidget):
         self.start_time = time.perf_counter()
 
         self.check_executor = check_executor
+        self.check_executor.options = self.get_options()
         self.check_executor.check_tool_started.connect(
             self._on_check_tool_started)
         self.check_executor.progress.connect(self._on_progress)
@@ -339,6 +346,16 @@ class RunTab(QtWidgets.QWidget):
         self.check_executor.checks_complete.connect(self._on_checks_complete)
         self.check_executor.status_changed.connect(self._on_status_change)
         self.check_executor.start()
+
+    def get_options(self) -> Dict:
+        ''' Gets a list of options based on user entered data. eg; the spatial
+        output specifications.
+        '''
+        return {
+            CheckOption.spatial_output_qajson: self.qajson_spatial_checkbox.isChecked(),
+            CheckOption.spatial_output_export: self.export_spatial_checkbox.isChecked(),
+            CheckOption.spatial_output_export_location: self.output_folder_input.text()
+        }
 
     def _click_run(self):
         self.run_checks.emit()
