@@ -67,7 +67,11 @@ class CheckParamWidget(QtWidgets.QWidget):
         raise NotImplementedError("Must implement in child class")
 
     def check_state_color(self, sender):
-        validator = sender.validator()
+        try:
+            validator = sender.validator()
+        except AttributeError as ae:
+            # then this component has no validator, so skip validation
+            return None
         if validator is None:
             # then this component doesn't need validation (eg; could be a
             # checkbox that has only valid states)
