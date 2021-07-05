@@ -4,7 +4,7 @@ from hyo2.abc.app.dialogs.exception.exception_dialog import ExceptionDialog
 from hyo2.abc.app.tabs.info.info_tab import InfoTab
 from hyo2.abc.lib.helper import Helper
 from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtGui import QIcon, QKeySequence
+from PySide2.QtGui import QIcon, QKeySequence, Qt
 from PySide2.QtWidgets import QAction, QApplication
 from typing import Optional, NoReturn, List
 from urllib.error import URLError
@@ -207,7 +207,14 @@ class MainWin(QtWidgets.QMainWindow):
                 app_info.app_icon_path).scaled(
                 QtCore.QSize(
                     60, 60)))
-        msg_box.setText('Do you really want to %s?' % text)
+        msg = (
+            f"Do you really want to {text}?"
+            "<br><br>"
+            f"If you would like to provide feedback on {self.name}, please open the following "
+            f"link <a href='{app_info.app_support_link}'>{self.name}</a>."
+        )
+        msg_box.setTextFormat(Qt.TextFormat.RichText)
+        msg_box.setText(msg)
         msg_box.setStandardButtons(
             QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
@@ -287,7 +294,7 @@ class MainWin(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         """ actions to be done before close the app """
-        reply = self.do_you_really_want("Quit", "quit %s" % self.name)
+        reply = self.do_you_really_want("Quit", f"quit {self.name}")
 
         if reply == QtWidgets.QMessageBox.Yes:
             # store window size
