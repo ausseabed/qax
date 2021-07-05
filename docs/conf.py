@@ -48,9 +48,9 @@ copyright = u'2019, CCOM/JHC,UNH'
 # built documents.
 #
 # The short X.Y version.
-version = '0.1'
+version = '1.0'
 # The full version, including alpha/beta/rc tags.
-release = '0.1.8'
+release = '1.0.0'
 
 numfig = True
 
@@ -178,23 +178,23 @@ htmlhelp_basename = 'HydrOfficeQAXDoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    # 'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    # 'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
-    'maxlistdepth' : '99',
+    # Additional stuff for the LaTeX preamble.
+    # 'preamble': '',
+    'maxlistdepth': '99',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'HydrOfficeQAX.tex', u'HydrOffice QA Checks Manual',
-   u'2019, CCOM/JHC,UNH', 'manual'),
+    ('index', 'HydrOfficeQAX.tex', u'HydrOffice QA Checks Manual',
+     u'2019, CCOM/JHC,UNH', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -237,10 +237,10 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'HydrOfficeQAX', u'HydrOffice QA Checks Documentation',
-   u'University of New Hampshire, Center for Coastal and Ocean Mapping',
-   'HydrOfficeQAX', 'Library and tools for quality assurance of ocean mapping data.',
-   'Miscellaneous'),
+    ('index', 'HydrOfficeQAX', u'HydrOffice QA Checks Documentation',
+     u'University of New Hampshire, Center for Coastal and Ocean Mapping',
+     'HydrOfficeQAX', 'Library and tools for quality assurance of ocean mapping data.',
+     'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.
