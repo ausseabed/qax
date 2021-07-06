@@ -13,6 +13,8 @@ File type supported by the current version:
 
 #. Kongsberg (.all)
 
+#. Kongsberg (.kmall)
+
 #. Generic Sensor format (.gsf)
 
 Raw svp files can be used as input to the Mate plugin in QAX
@@ -110,6 +112,81 @@ The data within :class:`hyo2.mate.lib.scan.ScanResult` will indicate which datag
     .. automethod:: hyo2.mate.lib.scan_ALL.ScanALL.positions
 |
     
+Kongsberg .kmall checks
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Use the scan_KMALL library to provide information to the user about the raw data they are collecting
+
+.. autoclass:: hyo2.mate.lib.scan_KMALL.ScanKMALL
+|
+
+    .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.backscatter_availability
+    
+The datagrams in a .kmall required for backscatter processing are divided up into critical and non-critical as per the following table
+    
+============================  ====================================
+Critical                       Noncritical
+============================  ====================================
+SKM - Attitude                 IIP - Installation Parameters
+SPO - Position                 IOP - Runtime Parameters
+MRZ - Seabed Reflectivity      SVT - Surface Sound Speed
+\                              SVP - Sound Velocity
+============================  ====================================
+
+The messages within :class:`hyo2.mate.lib.scan.ScanResult` will provide information to help debug
+
+The data within :class:`hyo2.mate.lib.scan.ScanResult` will indicate which datagrams aren't present in the file
+
+    .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.bathymetry_availability
+    
+The datagrams in a .kmall required for bathymetry processing are divided up into critical and non-critical as per the following table
+    
+============================  ====================================
+Critical                       Noncritical
+============================  ====================================
+SKM - Attitude                 IIP - Installation Parameters
+SPO - Position                 IOP - Runtime Parameters
+MRZ - XYZ                      SVT - Surface Sound Speed
+\                              SVP - Sound Velocity
+============================  ====================================
+
+The messages within :class:`hyo2.mate.lib.scan.ScanResult` will provide information to help debug
+
+The data within :class:`hyo2.mate.lib.scan.ScanResult` will indicate which datagrams aren't present in the file
+
+    .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.date_match
+|
+
+    .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.ellipsoid_height_setup
+|
+
+    .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.filename_changed
+|
+
+    .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.ray_tracing_availability
+    
+The datagrams in a .kmall required for recalculating ray tracing are divided up into critical and non-critical as per the following table
+    
+============================  ====================================
+Critical                       Noncritical
+============================  ====================================
+SKM - Attitude                 IIP - Installation Parameters
+SPO - Position                 IOP - Runtime Parameters
+MRZ - Raw range and angle      SVT - Surface Sound Speed
+\                              SVP - Sound Velocity
+============================  ====================================
+
+The messages within :class:`hyo2.mate.lib.scan.ScanResult` will provide information to help debug
+
+The data within :class:`hyo2.mate.lib.scan.ScanResult` will indicate which datagrams aren't present in the file
+
+    .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.runtime_parameters
+|
+
+    .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.positions
+|
+    
+
 Generic sensor format .gsf checks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -186,32 +263,25 @@ The initial tab that is opened when QAX is started in the input tab.  A breakdow
 below
 
 .. _QAX_input_breakdown:
-.. figure:: _static/input_breakdown_qax.png
+.. figure:: _static/mate_QAX.png
     :width: 1000px
     :align: center
     :alt: input breakdown
     :figclass: align-center
 
-    QAX GUI input breakdown
+    QAX mate GUI input breakdown
     
-#. QAX tab - The QAX tab is the initial tab where all the inputs are entered, the suite of checks you want to run are selected or a profile of designated check is selected
-#. Plugins tab - The Plugins tab is where all additional parameters for checks are entered
-#. Run Checks tab - The Run Checks tab is where you can control the runnning of checks on your inputs
-#. View Check results tab - View the results of the checks you have run
-#. Profile selection - Select a profile that automatically selects checks to run
+When the mate plugin is selected the the QAX interface will change to show the inputs
+that work with the plugin.  As shown in the screenshot it is raw multibeam files, sound
+velocity profile files and trueheave files.
+
+#. Check tools - Used to select the plugin you want to run in this case Mate
+#. Folder icon - Used to select the raw files you want to check.  Will open independant popup for selection
+#. Remove file - you can remove files and of the x buttons not highlighted or the clear all files button
     .. note::
-        Not implemented in the current version of QAX
-#. Check selection - Check boxes to select the checks you want to run
-    .. note::
-        Only the MATE plugin is implemented in the current version of QAX
-#. Add raw multibeam files - Add raw multibeam files to run MATE checks on
-    .. note::
-        Only Kongsberg .all and Generic Sensor Format .gsf are implemented in the current version of MATE
-#. Add raw svp files - Add raw svp files
-#. Add delayed heave files - Add delayed heave files
-#. Clear all files button - Clears all files from the selection boxes
-#. File Menu - File menu currently enables the saving and opening of QAJson files after checks have been run
-#. Help Menu - Enables access to the QAX documentation
+        Profile selection is not implemented in the current version of QAX
+        
+After raw files have been added into the QAX interface navigate to the plugins tab
 
 .. _QAX_plugins_breakdown:
 .. figure:: _static/plugins_breakdown_qax.png
@@ -220,10 +290,13 @@ below
     :alt: plugins breakdown
     :figclass: align-center
 
-    QAX GUI plugins breakdown
+    QAX mate parameters breakdown
     
-.. note::
-    This tab in the QAX is currently for future use
+| There is currently limited parameters able to be set for the mate plugin as most of the
+  functionality exists in reading raw files and collecting metadata and information to be
+  logged into the QAjson and output gui
+
+| After parameters are set navigate to the run checks tab
     
 .. _QAX_run_checks_breakdown:
 .. figure:: _static/runchecks_breakdown_qax.png
@@ -234,9 +307,12 @@ below
 
     QAX GUI run checks breakdown
 
-#. Run button - Run the checks
-#. Stop button - Stop the checks
-#. Progress - Progress bar
+To run the QAX checks on your raw data files press the play button.  The check that is being
+run will be shown on the display as well as the status.  Logging messages will provide
+further information and time taken to run the checks.
+
+    .. note::
+        The checkbox to Export detailed spatial outputs to file is currently not implemented with the mate plugin and only works with the mbesgc plugin
 
 .. _QAX_view_results_breakdown:
 .. figure:: _static/checkresults_breakdown_qax.png
@@ -247,15 +323,15 @@ below
 
     QAX GUI view results breakdown
     
-#. Data level - Data level drop box enables changing from displaying check results for raw data or data products
-    .. note::
-        Only raw data results are implemented in the current version of MATE
-#. Results view - Enables changing the granularity of the checks
+#. View Selection - Choose between a summary of all data, score board view to look at the individual line level or qajson output
     - Summary gives a summary of the overall check results, i.e. a count of the lines pass, fail or warning
     - Scoreboard enables viewing of results per line
     - json text is a raw printout of the QAJson created after running the checks
-#. View - The part of the window that is changed by the above dropdown
-#. Details - Details is a subsection of the view part of the window.  I will change depening on what you select within the view pane
+#. Data Level - Automatically updates on summary view but is selectable on scoreboard view.  Options are:
+    - raw_data
+    - survey_products
+#. Check Selection - Choose the check you want to view in the details view
+#. Details - Details is a subsection of the view part of the window.  It will change depening on what you select within the view pane
     - As an example selecting the summary view --> summary item runtime parameters will display a geographic map with the location of where runtime parameters where changed
     - If you then select one of those geographic locations a table of runtime parameters will be populated
     - If you then select a different geographic location the table will update but highlight any runtime parameters that change between the points

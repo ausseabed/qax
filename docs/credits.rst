@@ -3,8 +3,11 @@
 Credits
 =======
 
-QAX is based on an ongoing joint development between the NOAA's `Ocean of Coastal Survey <http://www.nauticalcharts.noaa.gov/>`_
-and UNH's `Center for Coastal and Ocean Mapping <http://ccom.unh.edu>`_.
+QAX is based on an ongoing joint development between the NOAA's `Ocean of Coastal Survey <http://www.nauticalcharts.noaa.gov/>`_,
+UNH's `Center for Coastal and Ocean Mapping <http://ccom.unh.edu>`_, `Commonwealth Scientific and Industrial Research Organisation 
+<http://www.csiro.au/>`_, `FrontierSI <https://frontiersi.com.au/>`_.  The collaboration fly's under the 
+`AusSeabed <http://www.ausseabed.gov.au/>`_ banner 
+
 
 For bugs and feature requests: `qax@hydroffice.org <mailto:qax@hydroffice.org>`_
 
@@ -12,5 +15,4 @@ NOAA bugs and feature requests: `OCS.QCtools@noaa.gov <mailto:OCS.QCtools@noaa.g
 
 Feel free to contact us for comments and suggestions:
 
-* `Giuseppe Masetti <mailto:gmasetti@ccom.unh.edu>`_
-* `Tyanne Faulkes <mailto:tyanne.faulkes@noaa.gov>`_
+* `AusSeabed<mailto:AusSeabed@ga.gov.au>`_
