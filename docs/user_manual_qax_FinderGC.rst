@@ -215,7 +215,7 @@ The initial tab that is opened when QAX is started in the input tab.  A breakdow
 below
 
 .. _QAX_input_breakdown:
-.. figure:: _static/fliersgc_QAX.png
+.. figure:: _static/fliersgc_qax.png
     :width: 1000px
     :align: center
     :alt: input breakdown
