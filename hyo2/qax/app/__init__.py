@@ -19,7 +19,7 @@ app_info.app_path = os.path.abspath(os.path.dirname(__file__))
 app_info.app_url = "https://www.hydroffice.org/qax/"
 app_info.app_manual_url = "https://www.hydroffice.org/manuals/qax/index.html"
 app_info.app_support_email = "ausseabed@ga.gov.au"
-app_info.app_support_link = "https://www.ausseabed.gov.au/qa4bathy"
+app_info.app_support_link = "https://www.ausseabed.gov.au/QAX/feedback-form"
 app_info.app_latest_url = "https://www.hydroffice.org/latest/qax.txt"
 
 app_info.app_media_path = os.path.join(app_info.app_path, "media")
