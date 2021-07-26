@@ -49,7 +49,7 @@ Entry of delayed calculated heave files is for tracking folder structure and fil
 Survey DTM Files
 -----------------------------------------
 Currently survey DTM files can be input to the MBESGC and Finder plugins in QAX
-The only supported inputs in the current version of QAX geotiff, .tiff or .tif
+The only supported inputs in the current version of QAX GeoTIFF, .tiff or .tif
 and BAG (Bathymetry Attributed Grid) .bag format.  The following requirements need
 to be met for input grids:
     
@@ -63,13 +63,13 @@ to be met for input grids:
 | Uncertainty       |
 +-------------------+
 
-One multiband geotiff must only contain the above bands named correctly.
+One multiband GeoTIFF must only contain the above bands named correctly.
 
 Two BAG files are required one with main band depth and the other with
 a main band containing sounding density.
 
 Some processing software may not
-enable this as such it is recomended to create multiband geotiff in most
+enable this as such it is recommended to create multiband GeoTIFF in most
 circumstances until further work has been put into the BAG format specification
 to enable density metadata within a single file.  We have implemented BAG
 functionality for future use and is available however.

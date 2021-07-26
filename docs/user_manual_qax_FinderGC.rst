@@ -11,7 +11,7 @@ Inputs
 Processed multibeam grid files can be used as input to the FinderGC plugin in QAX
 File type supported by the current version:
 
-#. Mutiband Geotiff (.tiff, .tif)
+#. Mutiband GeoTIFF (.tiff, .tif)
 
 +-------------------+
 |**Bands Required** |
@@ -87,7 +87,7 @@ The workflow is:
 #. Take the input survey grid and run numpy.ma.getmask mask that identifies \
    all no data areas within the survey grid
 #. If the ignore edge holes is checked the check will work through the mask \
-   and idenfify holes that are conneced to the edge of the survey grid.  It \
+   and identify holes that are connected to the edge of the survey grid.  It \
    will remove those holes that are connected to the edge of the survey grid
 
 
@@ -101,7 +101,7 @@ Fliers grid check
 
 .. automethod:: ausseabed.findergc.lib.fliersgridcheck.FliersCheck.get_outputs
 
-QAJson output object that contains:
+QAJSON output object that contains:
 
 +------------------+--------------------------+
 |**Parameter**     |**Description**           |
@@ -126,14 +126,14 @@ QAJson output object that contains:
 | **messages**:
 | For this check the messages are:
 | Outputs an overall failure metric of the check **?** nodes failed the flier finders check, this represents **%** of all nodes.
-| Then, for each of the checks Laplacian Operator, Gaussian Curvature, Noisy Edges, Adjacent Cells, Edge Slivers and Isolated Nodes the check will output a the message:
+| Then, for each of the checks Laplacian Operator, Gaussian Curvature, Noisy Edges, Adjacent Cells, Edge Slivers and Isolated Nodes, the check will output the message:
 | **?** nodes failed **check** (**%**)
 | where the **?** is a count of the nodes that failed and **%** is the number of percentage of the total nodes that represents
 |
 | **data**:
 | For this check the data is a dictionary containing the keys:
 | 1. failed_cell_laplacian_operator: count of cells failing laplacian operation
-| 2. failed_cell_gaussian_curvaturer: count of cells failing gaussian curvature operation
+| 2. failed_cell_gaussian_curvature: count of cells failing gaussian curvature operation
 | 3. failed_cell_adjacent_cells: count of cells failing adjacent cells operation
 | 4. failed_cell_sliver: count of cells failing adjacent sliver operation
 | 5. failed_cell_isolated_group: count of cells failing adjacent isolated group operation
@@ -150,7 +150,7 @@ Holes grid check
 
 .. automethod:: ausseabed.findergc.lib.holesgridcheck.HolesCheck.get_outputs
 
-QAJson output object that contains:
+QAJSON output object that contains:
 
 +------------------+--------------------------+
 |**Parameter**     |**Description**           |
@@ -223,11 +223,11 @@ below
 
     QAX GUI input breakdown
     
-When the MBES Grid Checks plugin is selected the the QAX interface will change to show the inputs
-that work with the plugin.  As shown in the screenshot it is Survey DTM's.
+When the MBES Grid Checks plugin is selected, the QAX interface will change to show the inputs
+that work with the plugin.  As shown in the screenshot, it is Survey DTM's.
 
-#. Check tools - Used to select the plugin you want to run in this case mbesgc
-#. Folder icon - Used to select the surface files you want to check.  Will open independant popup for selection
+#. Check tools - Used to select the plugin you want to run, in this case MBES Grid Checks
+#. Folder icon - Used to select the surface files you want to check.  Will open independent popup for selection
 #. Remove file - you can remove files and of the x buttons not highlighted or the clear all files button
     .. note::
         Profile selection is not implemented in the current version of QAX
@@ -248,7 +248,7 @@ The parameters are as follows:
 Flier Finder Check
 
 #. Laplacian Operator - threshold: 
-#. Guassian Curvature - threshold: 
+#. Gaussian Curvature - threshold: 
 #. Noisy Edges - dist: 
 #. Noisy Edges - cf: 
 #. Adjacent Cells - threshold: 
@@ -275,8 +275,8 @@ run will be shown on the display as well as the status.  Logging messages will p
 further information and time taken to run the checks.
 
 #. Check outputs - The two checkboxes enable different outputs from QAX on MBES grid checks
-    - Include summary spatial output in QAJSON - enables visualisations within the QAX gui.  This can be used with all plugins
-    - Export detailed spatial outputs to file - enables geotiff and shapefile output able to be ingested into other geospatial applications
+    - Include summary spatial output in QAJSON - enables visualisations within the QAX GUI.  This can be used with all plugins
+    - Export detailed spatial outputs to file - enables GeoTIFF and shapefile output able to be ingested into other geospatial applications
         * These outputs include different outputs for each different check which includes areas that have failed checks
         * Raster data containing the calculation results for comparison and analysis in other geospatial applications
 
@@ -299,10 +299,10 @@ further information and time taken to run the checks.
 
     QAX GUI view results breakdown
     
-#. View Selection - Choose between a summary of all data, score board view to look at the individual line level or qajson output
+#. View Selection - Choose between a summary of all data, score board view to look at the individual line level or QAJSON output
     - Summary gives a summary of the overall check results, i.e. a count of the lines pass, fail or warning
     - Scoreboard enables viewing of results per file
-    - json text is a raw printout of the QAJson created after running the checks
+    - JSON text is a raw printout of the QAJSON created after running the checks
 #. Data Level - Automatically updates on summary view but is selectable on scoreboard view.  Options are:
     - raw_data
     - survey_products
