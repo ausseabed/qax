@@ -18,16 +18,20 @@
       "checked": true
     },
     {
-      "name": "QC Tools",
+      "name": "Finder Grid Checks",
       "pluginClass": "ausseabed.findergc.qax.plugin.FinderGridChecksQaxPlugin",
-      "description": "Flier Finder and Holiday Finder checks",
-      "icon": "qc_tools.png",
+      "description": "Flier Finder and Hole Finder checks",
+      "icon": "findergc.png",
       "enabled": true,
       "checked": true
     },
     {
-      "name": "Coverage check",
-      "pluginClass": "hyo2.qax.plugins.test.CoverageCheckQaxPlugin"
+      "name": "QC Tools",
+      "pluginClass": "hyo2.qax.plugins.test.CoverageCheckQaxPlugin",
+      "description": "Coming soon",
+      "icon": "qc_tools.png",
+      "enabled": true,
+      "checked": false
     }
   ]
 }
