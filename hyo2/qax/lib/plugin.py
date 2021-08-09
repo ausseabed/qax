@@ -209,6 +209,7 @@ class QaxCheckToolPlugin():
     def __init__(self):
         # name of the check tool
         self.name = 'unknown'
+        self.description = None
         self.plugin_class = None  # full namespace string
         self.icon = None
         self.profile = None   # QaxConfigProfile, set when plugin loaded
@@ -511,6 +512,9 @@ class QaxPlugins():
             plugin_instance.icon = check_tool.icon
         if check_tool.name is not None and len(check_tool.name) > 0:
             plugin_instance.name = check_tool.name
+        if check_tool.description is not None and len(
+                check_tool.description) > 0:
+            plugin_instance.description = check_tool.description
         return plugin_instance
 
     def get_plugin(
