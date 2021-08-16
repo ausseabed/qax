@@ -27,7 +27,7 @@
     },
     {
       "name": "QC Tools",
-      "pluginClass": "hyo2.qax.plugins.test.CoverageCheckQaxPlugin",
+      "pluginClass": "hyo2.qax.plugins.placeholder.PlaceholderQaxPlugin",
       "description": "Coming soon",
       "icon": "qc_tools.png",
       "enabled": true,
