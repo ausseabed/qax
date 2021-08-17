@@ -21,7 +21,7 @@ HydrOffice QAX
         :target: https://www.codacy.com/app/hydroffice/hyo2_qc/dashboard
         :alt: Codacy badge
 
-* Code: `GitHub repo <https://github.com/hydroffice/hyo2_qax>`_
+* Code: `GitHub repo <https://github.com/ausseabed/qax>`_
 * Project page: `url <https://www.hydroffice.org/qax/main>`_
 * Download page: `url <https://bitbucket.org/hydroffice/hyo_qctools/downloads/>`_
 * License: LGPLv3 license (See `LICENSE <https://github.com/hydroffice/hyo2_qc/raw/master/LICENSE>`_)
@@ -31,7 +31,7 @@ HydrOffice QAX
 General info
 ------------
 
-.. image:: https://github.com/hydroffice/hyo2_qax/raw/master/hyo2/qax/app/media/app_icon.png
+.. image:: https://github.com/ausseabed/qax/raw/master/hyo2/qax/app/media/app_icon.png
     :alt: logo
 
 HydrOffice is a research development environment for ocean mapping. Its aim is to provide a collection of

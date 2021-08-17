@@ -35,7 +35,14 @@ setup(
     license="LGPLv3 license",
 
     namespace_packages=["hyo2"],
-    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests", "*.test*", ]),
+    packages=find_packages(
+        exclude=[
+            "*.tests",
+            "*.tests.*",
+            "tests.*",
+            "tests",
+            "*.test*",
+        ]),
     package_data={
         "": [
             "media/*.png", "media/*.ico", "media/*.icns", "media/*.txt",
@@ -68,9 +75,8 @@ setup(
     long_description=(read("README.rst") + "\n\n\"\"\"\"\"\"\"\n\n" +
                       read("HISTORY.rst") + "\n\n\"\"\"\"\"\"\"\n\n" +
                       read("AUTHORS.rst") + "\n\n\"\"\"\"\"\"\"\n\n" +
-                      read(os.path.join("docs", "developer_guide_how_to_contribute.rst")))
-,
-    url="https://github.com/hydroffice/hyo2_qax",
+                      read(os.path.join("docs", "developer_guide_how_to_contribute.rst"))),
+    url="https://github.com/ausseabed/qax",
     classifiers=[  # https://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',

@@ -1,8 +1,6 @@
-<img src ="/resources/Website_banner.png" alt="MATE" height=200 >
-
 # <img src ="/resources/logos/QAX.png" alt="MATE" height=50 > QAX
-### AusSeabed Quality Assurance Tool for Multibeam Echosounder (MBES) data
-QAX was built from [HydrOffice source code](https://github.com/hydroffice/hyo2_qax). Visit the [AusSeabed Website](ausseabed.gov.au/qax) for training resources, download information and more. 
+### Quality Assurance Tool for Multibeam Echosounder (MBES) data
+Visit the [AusSeabed Website](ausseabed.gov.au/qax) for training resources, download information and more. 
 
 ### About QAX
 QAX provides an efficient workflow for checking multibeam echosounder data. The tool standardises quality assurance (QA) outputs and assists the technician to perform a robust QA of data.

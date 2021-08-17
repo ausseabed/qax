@@ -14,7 +14,7 @@ Installation latest executable installer package (.exe)
 
 .. _QAX_logo:
 .. figure:: _static/qax.png
-    :target: https://github.com/ausseabed/hyo2_qax/releases.html
+    :target: https://github.com/ausseabed/qax/releases.html
     :width: 100px
     :align: center
     :alt: QAX logo
@@ -22,7 +22,7 @@ Installation latest executable installer package (.exe)
 
     The QAX logo.
 
-If you are on Windows, you can easily install QAX from the latest executable package installer found `here <https://github.com/ausseabed/hyo2_qax/releases.html>`_.
+If you are on Windows, you can easily install QAX from the latest executable package installer found `here <https://github.com/ausseabed/qax/releases.html>`_.
 
 .. note::
     This is the recomended install method for anyone just wanting to use the QAX application
@@ -45,8 +45,8 @@ The following command sequence is suggested:
     
     conda install -y -c conda-forge git
     cd <directory where qax environment was created>
-    git clone https://github.com/ausseabed/hyo2_qax
-    cd .\hyo2_qax
+    git clone https://github.com/ausseabed/qax
+    cd .\qax
     conda install -y -c conda-forge --file requirements_conda.txt
     conda install -y -c conda-forge --no-deps cartopy
     conda install -y -c conda-forge  --no-deps pyproj
