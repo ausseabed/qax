@@ -56,14 +56,14 @@ The following command sequence is suggested:
 Clone code repositories you want to contribute to and install unbundled
 *************************************************************************
 You need to remove from the requirements.txt file any modules you want to install unbundled.  
-As an example if you wanted to contribute to hyo2_mate plugin then remove it from the requirements.txt file and after that install requirements according to requirements.txt
+As an example if you wanted to contribute to mate plugin then remove it from the requirements.txt file and after that install requirements according to requirements.txt
 ::
     pip install -r requirements.txt
     
 You then need to install the modules you wish to contibute to unbundled, as per the example
 ::
-    git clone https:\\github.com\ausseabed\hyo2_mate
-    pip install -e .\hyo2_mate\
+    git clone https:\\github.com\ausseabed\mate
+    pip install -e .\mate\
     
 Do the above for all modules you want to install unbundled, e.g. pyall, pygsf, qajson etc.
 
@@ -71,8 +71,8 @@ Clone code repositories and install unbundled
 ***************************************************
 Clone QAX and install unbundled
 ::
-    git clone https:\\github.com\ausseabed\hyo2_qax
-    pip install .\hyo2_qax\
+    git clone https:\\github.com\ausseabed\qax
+    pip install .\qax\
 
 Build your own executable from source
 -----------------------------------------
