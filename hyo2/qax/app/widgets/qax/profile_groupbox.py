@@ -23,8 +23,6 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
     def __init__(self, parent_win, prj, config):
         QtWidgets.QGroupBox.__init__(self, "Profile Settings")
 
-        self.label_size = 160
-
         self.prj = prj
         self.parent_win = parent_win
         self.config = config
@@ -77,7 +75,7 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
             checked_state = QtCore.Qt.CheckState.Checked \
                 if check_tool.checked else QtCore.Qt.CheckState.Unchecked
             check_tool_widget = QtWidgets.QCheckBox(check_tool.name, self)
-            check_tool_widget.setFixedWidth(self.label_size)
+            check_tool_widget.setStyleSheet("padding-right: 30px;")
 
             # set enabled and checked state based on config file setting
             check_tool_widget.setEnabled(check_tool.enabled)
