@@ -1,4 +1,7 @@
 # <img src ="/resources/logos/qax_original_logo.png" alt="QAX Logo" height=50 > QAX
+
+[Download the latest release installation package](https://github.com/ausseabed/qax/releases)
+
 ### Quality Assurance Tool for Multibeam Echosounder (MBES) data
 Visit the [AusSeabed Website](ausseabed.gov.au/qax) for training resources, download information and more. 
 
