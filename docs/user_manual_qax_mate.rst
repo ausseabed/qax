@@ -263,7 +263,7 @@ The initial tab that is opened when QAX is started in the input tab.  A breakdow
 below
 
 .. _QAX_input_breakdown:
-.. figure:: _static/mate_QAX.png
+.. figure:: _static/mate_qax.png
     :width: 1000px
     :align: center
     :alt: input breakdown

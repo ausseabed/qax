@@ -57,7 +57,7 @@ jobs:
             $client.DownloadFile("https://github.com/ausseabed/qajson/archive/master.zip","C:\tmp\ausseabed.qajson.zip")
             $client.DownloadFile("https://github.com/ausseabed/pyall/archive/master.zip","C:\tmp\pyall.zip")
             $client.DownloadFile("https://github.com/ausseabed/pygsf/archive/master.zip","C:\tmp\pygsf.zip")
-            $client.DownloadFile("https://github.com/ausseabed/hyo2_mate/archive/master.zip","C:\tmp\hyo2.mate.zip")
+            $client.DownloadFile("https://github.com/ausseabed/mate/archive/master.zip","C:\tmp\hyo2.mate.zip")
             $client.DownloadFile("https://github.com/ausseabed/mbes-grid-checks/archive/master.zip","C:\tmp\ausseabed.mbesgc.zip")
             $client.DownloadFile("https://github.com/ausseabed/finder-grid-checks/archive/main.zip","C:\tmp\ausseabed.findergc.zip")
             $client.DownloadFile("https://github.com/hydroffice/hyo2_abc/archive/master.zip","C:\tmp\hyo2.abc.zip")

@@ -6,7 +6,7 @@
 #include "version.txt"
 
 #define MyAppPublisher "AusSeabed Development Team"
-#define MyAppURL "https://github.com/ausseabed/hyo2_qax"
+#define MyAppURL "https://github.com/ausseabed/qax"
 
 
 [Setup]

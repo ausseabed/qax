@@ -39,6 +39,11 @@ class PluginTab(QtWidgets.QWidget):
         label_name.setStyleSheet(GuiSettings.stylesheet_plugin_tab_titles())
         self.vbox.addWidget(label_name)
 
+        # description (if one is include in config)
+        if plugin.description is not None:
+            label_desc = QtWidgets.QLabel(plugin.description)
+            self.vbox.addWidget(label_desc)
+
         self.groupbox_checks = QtWidgets.QGroupBox("Checks")
         self.groupbox_checks.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Expanding)

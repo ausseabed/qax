@@ -113,6 +113,10 @@ class QAXWidget(QtWidgets.QTabWidget):
         for config_check_tool in self.tab_inputs.selected_check_tools:
             plugin_check_tool = QaxPlugins.instance().get_plugin(
                 self.profile.name, config_check_tool.plugin_class)
+            if plugin_check_tool is None:
+                # then the qajson includes a check tool that isn't available within
+                # the current profile
+                continue
             # update the `root` qa json object with the selected checks
             plugin_check_tool.update_qa_json(root)
 

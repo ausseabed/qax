@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 set_logging(ns_list=["hyo2.qax", ])
 
 
-def qt_custom_handler(error_type: QtCore.QtMsgType, error_context: QtCore.QMessageLogContext, message: str):
+def qt_custom_handler(error_type: QtCore.QtMsgType,
+                      error_context: QtCore.QMessageLogContext, message: str):
     if "Cannot read property 'id' of null" in message:
         return
     if "The event loop is already running" in message:
@@ -50,15 +51,8 @@ def gui(dev_mode=False):
     # app.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
     # app.setStyleSheet(AppStyle.load_stylesheet())
 
-    cfg_dir = GuiSettings.config()
-    # setup user editable config directory
-    if not os.path.isdir(cfg_dir):
-        # config does not exist, so copy out default settings
-        logger.info("Copying default config to {}".format(cfg_dir))
-        import shutil
-        shutil.copytree(GuiSettings.config_default(), cfg_dir)
-    else:
-        logger.info("Using existing config {}".format(cfg_dir))
+    cfg_dir = GuiSettings.config_default()
+    logger.info("Using config {}".format(cfg_dir))
 
     config = QaxConfig(Path(cfg_dir))
     config.load()

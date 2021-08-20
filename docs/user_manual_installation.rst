@@ -14,7 +14,7 @@ Installation latest executable installer package (.exe)
 
 .. _QAX_logo:
 .. figure:: _static/qax.png
-    :target: https://github.com/ausseabed/hyo2_qax/releases.html
+    :target: https://github.com/ausseabed/qax/releases.html
     :width: 100px
     :align: center
     :alt: QAX logo
@@ -22,7 +22,7 @@ Installation latest executable installer package (.exe)
 
     The QAX logo.
 
-If you are on Windows, you can easily install QAX from the latest executable package installer found `here <https://github.com/ausseabed/hyo2_qax/releases.html>`_.
+If you are on Windows, you can easily install QAX from the latest executable package installer found `here <https://github.com/ausseabed/qax/releases.html>`_.
 
 .. note::
     This is the recomended install method for anyone just wanting to use the QAX application
@@ -45,8 +45,8 @@ The following command sequence is suggested:
     
     conda install -y -c conda-forge git
     cd <directory where qax environment was created>
-    git clone https://github.com/ausseabed/hyo2_qax
-    cd .\hyo2_qax
+    git clone https://github.com/ausseabed/qax
+    cd .\qax
     conda install -y -c conda-forge --file requirements_conda.txt
     conda install -y -c conda-forge --no-deps cartopy
     conda install -y -c conda-forge  --no-deps pyproj
@@ -56,14 +56,14 @@ The following command sequence is suggested:
 Clone code repositories you want to contribute to and install unbundled
 *************************************************************************
 You need to remove from the requirements.txt file any modules you want to install unbundled.  
-As an example if you wanted to contribute to hyo2_mate plugin then remove it from the requirements.txt file and after that install requirements according to requirements.txt
+As an example if you wanted to contribute to mate plugin then remove it from the requirements.txt file and after that install requirements according to requirements.txt
 ::
     pip install -r requirements.txt
     
 You then need to install the modules you wish to contibute to unbundled, as per the example
 ::
-    git clone https:\\github.com\ausseabed\hyo2_mate
-    pip install -e .\hyo2_mate\
+    git clone https:\\github.com\ausseabed\mate
+    pip install -e .\mate\
     
 Do the above for all modules you want to install unbundled, e.g. pyall, pygsf, qajson etc.
 
@@ -71,8 +71,8 @@ Clone code repositories and install unbundled
 ***************************************************
 Clone QAX and install unbundled
 ::
-    git clone https:\\github.com\ausseabed\hyo2_qax
-    pip install .\hyo2_qax\
+    git clone https:\\github.com\ausseabed\qax
+    pip install .\qax\
 
 Build your own executable from source
 -----------------------------------------

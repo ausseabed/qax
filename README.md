@@ -1,10 +1,13 @@
-<img src ="/resources/Website_banner.png" alt="MATE" height=200 >
+# <img src ="/resources/logos/qax_original_logo.png" alt="QAX Logo" height=50 > QAX
 
-# <img src ="/resources/logos/QAX.png" alt="MATE" height=50 > QAX
-### AusSeabed Quality Assurance Tool for Multibeam Echosounder (MBES) data
-QAX was built from [HydrOffice source code](https://github.com/hydroffice/hyo2_qax). Visit the [AusSeabed Website](ausseabed.gov.au/qax) for training resources, download information and more. 
+[Download the latest release installation package](https://github.com/ausseabed/qax/releases)
+
+### Quality Assurance Tool for Multibeam Echosounder (MBES) data
+Visit the [AusSeabed Website](ausseabed.gov.au/qax) for training resources, download information and more. 
 
 ### About QAX
+QAX is an open-source project, jointly steered by AusSeabed, and the United States of America National Oceanic and Atmospheric Administration’s Office of Coast Survey (NOAA OCS), and the University of New Hampshire’s Center for Coastal and Ocean Mapping (UNH CCOM) that facilitates quality assurance of Multibeam Echosounder (MBES) data.
+
 QAX provides an efficient workflow for checking multibeam echosounder data. The tool standardises quality assurance (QA) outputs and assists the technician to perform a robust QA of data.
 Three plug-in tools are available through the QAX user interface that facilitate the QA checks.
 
@@ -24,6 +27,12 @@ Three plug-in tools are available through the QAX user interface that facilitate
 -	Runs QA checks on multiband geotiff files
 -	Identifies holidays (missing data or holes)
 -	Identifies erroneous data (fliers or outliers)
+
+### <img src ="/resources/logos/qcTools_logo.png" alt="QC Tools Logo" height=50 > QC Tools
+- Coming in future release
+- QA checks on MBES saved in a BAG file format
+
+Do you need more checks? Tell us what you think of QAX using our [feedback form](https://www.ausseabed.gov.au/QAX/feedback-form).
 
 ### How QAX works
 QAX runs the three QA plug-ins based on user-defined input parameters and input files. After the checks are run, a check results table, QAJSON output and output files are created. The check results table provides near real time decision support QAJSON output contains the provenance and metadata on the check that was run.  Additional output files are also created for use in external software packages and enable further analysis of processed multibeam data check results.
