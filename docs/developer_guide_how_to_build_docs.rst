@@ -5,7 +5,7 @@ How to build the documentation
 Requirements
 ^^^^^^^^^^^^
 
-The documentation is built using ``sphinx``, so you neeed to have it:
+The documentation is built using ``sphinx``, so you need to have it:
 
 * ``pip install sphinx sphinx-autobuild``
 

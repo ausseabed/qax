@@ -11,7 +11,7 @@ Inputs
 Processed multibeam grid files can be used as input to the MBESGC plugin in QAX
 File type supported by the current version:
 
-#. Mutiband Geotiff (.tiff, .tif)
+#. Mutiband GeoTIFF (.tiff, .tif)
 
 +-------------------+
 |**Bands Required** |
@@ -170,7 +170,7 @@ Density grid check
 
 .. automethod:: ausseabed.mbesgc.lib.mbesgridcheck.DensityCheck.get_outputs
 
-QAJson output object that contains:
+QAJSON output object that contains:
 
 +------------------+--------------------------+
 |**Parameter**     |**Description**           |
@@ -211,7 +211,7 @@ Total Vertical Uncertainty grid check
 
 .. automethod:: ausseabed.mbesgc.lib.mbesgridcheck.TvuCheck.get_outputs
 
-QAJson output object that contains:
+QAJSON output object that contains:
 
 +------------------+--------------------------+
 |**Parameter**     |**Description**           |
@@ -250,7 +250,7 @@ Resolution of grid check
 
 .. automethod:: ausseabed.mbesgc.lib.mbesgridcheck.ResolutionCheck.get_outputs
 
-QAJson output object that contains:
+QAJSON output object that contains:
 
 +------------------+--------------------------+
 |**Parameter**     |**Description**           |
@@ -323,11 +323,11 @@ below
 
     QAX GUI input breakdown
     
-When the MBES Grid Checks plugin is selected the the QAX interface will change to show the inputs
-that work with the plugin.  As shown in the screenshot it is Survey DTM's.
+When the MBES Grid Checks plugin is selected, the QAX interface will change to show the inputs
+that work with the plugin.  As shown in the screenshot, it is Survey DTM's.
 
-#. Check tools - Used to select the plugin you want to run in this case mbesgc
-#. Folder icon - Used to select the surface files you want to check.  Will open independant popup for selection
+#. Check tools - Used to select the plugin you want to run in this case MBES Grid Checks
+#. Folder icon - Used to select the surface files you want to check.  Will open independent popup for selection
 #. Remove file - you can remove files and of the x buttons not highlighted or the clear all files button
     .. note::
         Profile selection is not implemented in the current version of QAX
@@ -356,7 +356,7 @@ Resolution Check
 #. Feature detection size multiplier - Multiplier to scale the feature detection size
 #. Threshold depth - Depth threshold to dictate when to use above and below parameters below
 #. Above threshold FDS depth multiplier - Multiplier of depth to calculate feature detection size above threshold depth
-#. Above threshold FDS depth contant - Constant added to above to calculate feature detection size above threshold depth
+#. Above threshold FDS depth constant - Constant added to above to calculate feature detection size above threshold depth
 #. Below threshold FDS depth multiplier - Multiplier of depth to calculate feature detection size below threshold depth
 #. Below threshold FDS depth constant - Constant added to above to calculate feature detection size above threshold depth
 
@@ -379,8 +379,8 @@ run will be shown on the display as well as the status.  Logging messages will p
 further information and time taken to run the checks.
 
 #. Check outputs - The two checkboxes enable different outputs from QAX on MBES grid checks
-    - Include summary spatial output in QAJSON - enables visualisations within the QAX gui.  This can be used with all plugins
-    - Export detailed spatial outputs to file - enables geotiff and shapefile output able to be ingested into other geospatial applications
+    - Include summary spatial output in QAJSON - enables visualisations within the QAX GUI.  This can be used with all plugins
+    - Export detailed spatial outputs to file - enables GeoTIFF and shapefile output able to be ingested into other geospatial applications
         * These outputs include different outputs for each different check which includes areas that have failed checks
         * Raster data containing the calculation results for comparison and analysis in other geospatial applications
 
@@ -403,10 +403,10 @@ further information and time taken to run the checks.
 
     QAX GUI view results breakdown
     
-#. View Selection - Choose between a summary of all data, score board view to look at the individual line level or qajson output
+#. View Selection - Choose between a summary of all data, score board view to look at the individual line level or QAJSON output
     - Summary gives a summary of the overall check results, i.e. a count of the lines pass, fail or warning
     - Scoreboard enables viewing of results per file
-    - json text is a raw printout of the QAJson created after running the checks
+    - JSON text is a raw printout of the QAJSON created after running the checks
 #. Data Level - Automatically updates on summary view but is selectable on scoreboard view.  Options are:
     - raw_data
     - survey_products

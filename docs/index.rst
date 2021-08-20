@@ -25,11 +25,11 @@ QAX documentation
     NOAA-developed code in the public domain.
     
     HYO2 Mate © University of New Hampshire, Center for Coastal and Ocean Mapping, 2019.  All rights reserved.  Portions of this
-    project were developed under a cooperative agreement with Ausseabed, NOAA Coast Survey Development Laboratory, and contain
+    project were developed under a cooperative agreement with AusSeabed, NOAA Coast Survey Development Laboratory, and contain
     NOAA-developed code in the public domain.
 
-    MBESGC © Ausseabed, 2021.  All rights reserved.  Portions of this project were developed under a cooperative agreement with \
-    Ausseabed, NOAA Coast Survey Development Laboratory, and contain NOAA-developed code in the public domain.
+    MBESGC © AusSeabed, 2021.  All rights reserved.  Portions of this project were developed under a cooperative agreement with \
+    AusSeabed, NOAA Coast Survey Development Laboratory, and contain NOAA-developed code in the public domain.
     
-    FinderGC © Ausseabed, 2021.  All rights reserved.  Portions of this project were developed under a cooperative agreement with \
-    Ausseabed, NOAA Coast Survey Development Laboratory, and contain revisions of NOAA-developed code in the public domain.
+    FinderGC © AusSeabed, 2021.  All rights reserved.  Portions of this project were developed under a cooperative agreement with \
+    AusSeabed, NOAA Coast Survey Development Laboratory, and contain revisions of NOAA-developed code in the public domain.

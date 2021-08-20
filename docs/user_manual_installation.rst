@@ -37,7 +37,7 @@ There are 3 steps
 
 Establish conda environment that is able to run QAX
 ******************************************************
-Start by installing `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ (on Windows) and installing necessary dependencies (numpy, gdal, hyo2.abc, hyo2.mate) and  QAX itself.
+Start by installing `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ (on Windows) and installing necessary dependencies (NumPy, GDAL, hyo2.abc, hyo2.mate) and  QAX itself.
 The following command sequence is suggested:
 ::
     conda create -y -n qax python=3.7
@@ -84,7 +84,7 @@ There are 3 steps
 
 Establish conda environment that is able to run QAX
 *******************************************************
-Start by installing `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ (on Windows) and installing necessary dependencies (numpy, gdal, hyo2.abc, hyo2.mate) and  QAX itself. *pyinstaller will also need to be installed in this environment.*
+Start by installing `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ (on Windows) and installing necessary dependencies (NumPy, GDAL, hyo2.abc, hyo2.mate) and  QAX itself. *pyinstaller will also need to be installed in this environment.*
 The following command sequence is suggested:
 :: 
     conda create -y -n qax python=3.7

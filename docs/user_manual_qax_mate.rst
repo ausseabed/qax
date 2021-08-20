@@ -15,7 +15,7 @@ File type supported by the current version:
 
 #. Kongsberg (.kmall)
 
-#. Generic Sensor format (.gsf)
+#. Generic Sensor Format (.gsf)
 
 Raw svp files can be used as input to the Mate plugin in QAX
 File type supported by the current version:
@@ -239,7 +239,7 @@ Outputs
 Interface
 -----------------------------------------
 Upon initial opening of the QAX interface two windows will open.  One is a console window that provides 
-extra information and assists with debugging, the other is the main graphical user interface (GUI).
+extra information and assists with debugging, the other is the main Graphical User Interface (GUI).
 
 .. _console:
 .. figure:: _static/console_qax.png
@@ -271,12 +271,12 @@ below
 
     QAX mate GUI input breakdown
     
-When the mate plugin is selected the the QAX interface will change to show the inputs
-that work with the plugin.  As shown in the screenshot it is raw multibeam files, sound
-velocity profile files and trueheave files.
+When the mate plugin is selected, the QAX interface will change to show the inputs
+that work with the plugin.  As shown in the screenshot, it is raw multibeam files, sound
+velocity profile files and TrueHeave files.
 
 #. Check tools - Used to select the plugin you want to run in this case Mate
-#. Folder icon - Used to select the raw files you want to check.  Will open independant popup for selection
+#. Folder icon - Used to select the raw files you want to check.  Will open independent popup for selection
 #. Remove file - you can remove files and of the x buttons not highlighted or the clear all files button
     .. note::
         Profile selection is not implemented in the current version of QAX
@@ -294,7 +294,7 @@ After raw files have been added into the QAX interface navigate to the plugins t
     
 | There is currently limited parameters able to be set for the mate plugin as most of the
   functionality exists in reading raw files and collecting metadata and information to be
-  logged into the QAjson and output gui
+  logged into the QAJSON and output GUI
 
 | After parameters are set navigate to the run checks tab
     
@@ -323,15 +323,15 @@ further information and time taken to run the checks.
 
     QAX GUI view results breakdown
     
-#. View Selection - Choose between a summary of all data, score board view to look at the individual line level or qajson output
+#. View Selection - Choose between a summary of all data, score board view to look at the individual line level or QAJSON output
     - Summary gives a summary of the overall check results, i.e. a count of the lines pass, fail or warning
     - Scoreboard enables viewing of results per line
-    - json text is a raw printout of the QAJson created after running the checks
+    - JSON text is a raw printout of the QAJSON created after running the checks
 #. Data Level - Automatically updates on summary view but is selectable on scoreboard view.  Options are:
     - raw_data
     - survey_products
 #. Check Selection - Choose the check you want to view in the details view
-#. Details - Details is a subsection of the view part of the window.  It will change depening on what you select within the view pane
+#. Details - Details is a subsection of the view part of the window.  It will change depending on what you select within the view pane
     - As an example selecting the summary view --> summary item runtime parameters will display a geographic map with the location of where runtime parameters where changed
     - If you then select one of those geographic locations a table of runtime parameters will be populated
     - If you then select a different geographic location the table will update but highlight any runtime parameters that change between the points
