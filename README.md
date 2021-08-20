@@ -1,4 +1,4 @@
-# <img src ="/resources/logos/qax_original_logo.png" alt="QAX Logo" height=50 > QAX
+# <img src ="/resources/logos/QAX.png" alt="QAX Logo" height=50 > QAX
 
 [Download the latest release installation package](https://github.com/ausseabed/qax/releases)
 
