@@ -1,3 +1,13 @@
+© Intellectual property is jointly owned by the Commonwealth of Australia 
+(Geoscience Australia) and University of New Hampshire, Center for Coastal
+and Ocean Mapping, 2019-2021. Portions of this project were developed
+under a cooperative agreement with NOAA Coast Survey Development Laboratory,
+and contain NOAA-developed code in the public domain. With the exception
+of the Commonwealth Coat of Arms and where otherwise noted, this work is
+licensed under the GNU LGPL V3 licence. The package utilises third-party,
+open source libraries the details of which can be found here:
+https://github.com/ausseabed/qax.
+
                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
