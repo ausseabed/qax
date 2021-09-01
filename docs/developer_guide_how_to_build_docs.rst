@@ -7,7 +7,7 @@ Requirements
 
 The documentation is built using ``sphinx``, so you need to have it:
 
-* ``pip install sphinx sphinx-autobuild``
+* ``pip install sphinx sphinx-autobuild myst-parser``
 
 
 First-time creation of documentation template
