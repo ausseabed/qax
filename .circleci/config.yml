@@ -79,6 +79,7 @@ jobs:
             conda install -y -c conda-forge certifi
             conda install -y -c conda-forge --file requirements_conda.txt
             conda install -y -c conda-forge --no-deps cartopy
+            conda install -y -c conda-forge --no-deps pyproj=2.6.1
             pip install click==7.1.2
             pip install coveralls
             pip install jsonschema
@@ -96,7 +97,6 @@ jobs:
             pip install C:\tmp\ausseabed.findergc.zip
             pip install C:\tmp\kmall.zip
             pip install pypiwin32
-            conda install -y -c conda-forge --no-deps pyproj=2.6.1
             pip install --no-deps C:\tmp\hyo2.abc.zip
             pip install .
       - run:
