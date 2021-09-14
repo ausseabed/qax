@@ -96,7 +96,7 @@ jobs:
             pip install C:\tmp\ausseabed.findergc.zip
             pip install C:\tmp\kmall.zip
             pip install pypiwin32
-            conda install -y -c conda-forge --no-deps pyproj
+            conda install -y -c conda-forge --no-deps pyproj=2.6.1
             pip install --no-deps C:\tmp\hyo2.abc.zip
             pip install .
       - run:
