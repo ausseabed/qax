@@ -6,12 +6,18 @@ from PySide2 import QtGui, QtCore, QtWidgets
 
 logger = logging.getLogger(__name__)
 
+raster_icon_warning = False
+
 
 def icon(*names, **kwargs):
     try:
         qta.icon(*names, **kwargs)
 
     except qta.iconic_font.FontError:
+        global raster_icon_warning
+        if not raster_icon_warning:
+            logger.info("Using raster icons")
+            raster_icon_warning = True
         # patch to solve https://docs.microsoft.com/en-US/troubleshoot/windows-client/shell-experience/feature-to-block-untrusted-fonts
         media_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "media"))
         icon_path = os.path.join(media_folder, "%s.png" % names[0])
