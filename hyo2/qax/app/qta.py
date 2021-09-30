@@ -11,7 +11,7 @@ raster_icon_warning = False
 
 def icon(*names, **kwargs):
     try:
-        qta.icon(*names, **kwargs)
+        return qta.icon(*names, **kwargs)
 
     except qta.iconic_font.FontError:
         global raster_icon_warning

@@ -4,9 +4,9 @@ from PySide2.QtGui import QIcon, QColor
 from PySide2.QtWidgets import QApplication, QDesktopWidget, QLineEdit, \
     QMainWindow, QPushButton, QToolBar
 from PySide2.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
-import qtawesome as qta
 import os
 
+from hyo2.qax.app import qta
 from hyo2.qax.app import app_info
 
 

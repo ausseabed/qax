@@ -4,13 +4,13 @@ from PySide2.QtWidgets import QApplication, QDialog, QLineEdit, \
     QFrame
 from PySide2.QtGui import QFont
 from PySide2 import QtCore
-import qtawesome as qta
 import os
 import time
 import multiprocessing as mp
 
 from ausseabed.mbesgc.lib.grid_transformer import GridTransformer
 
+from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.lib.data import RasterFileInfo
 
