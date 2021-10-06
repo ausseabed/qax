@@ -10,11 +10,11 @@ from PySide2.QtWidgets import QApplication, QDialog, QLineEdit, \
     QSizePolicy, QComboBox, QFileDialog, QPlainTextEdit, QProgressBar, \
     QFrame, QCheckBox
 from PySide2.QtGui import QFont
-import qtawesome as qta
 import multiprocessing as mp
 
 from hyo2.abc.lib.helper import Helper
 
+from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin
