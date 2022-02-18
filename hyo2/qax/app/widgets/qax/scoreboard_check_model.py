@@ -2,8 +2,8 @@ from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex
 from PySide2.QtGui import QColor, QFont, QBrush
 from typing import List
 import os
-import qtawesome as qta
 
+from hyo2.qax.app import qta
 from ausseabed.qajson.model import QajsonCheck, QajsonInfo, QajsonInputs
 
 

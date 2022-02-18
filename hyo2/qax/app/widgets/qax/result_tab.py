@@ -5,8 +5,8 @@ from typing import Optional, NoReturn
 import json
 import logging
 import os
-import qtawesome as qta
 
+from hyo2.qax.app import qta
 from hyo2.qax.app.widgets.qax.scoreboard_details import ScoreboardDetailsWidget
 from hyo2.qax.app.widgets.qax.summary_details import SummaryDetailsWidget
 from hyo2.qax.app.gui_settings import GuiSettings

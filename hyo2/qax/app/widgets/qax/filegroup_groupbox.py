@@ -4,9 +4,9 @@ from PySide2 import QtCore, QtGui, QtWidgets
 from typing import List, NoReturn
 import logging
 import os
-import qtawesome as qta
 import re
 
+from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.lib.plugin import QaxFileGroup
 

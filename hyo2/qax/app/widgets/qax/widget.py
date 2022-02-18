@@ -4,8 +4,8 @@ from PySide2 import QtGui, QtCore, QtWidgets
 from typing import Optional, NoReturn, List
 import logging
 import os
-import qtawesome as qta
 
+from hyo2.qax.app import qta
 from hyo2.abc.app.qt_progress import QtProgress
 from hyo2.qax.app.widgets.qax.main_tab import MainTab
 from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
