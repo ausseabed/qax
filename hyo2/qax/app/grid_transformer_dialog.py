@@ -53,8 +53,8 @@ class MultiprocessGridTransformerExecutor(mp.Process):
 
         gt = GridTransformer()
         gt.process(
-            self.inputs['Density'],
             self.inputs['Depth'],
+            self.inputs['Density'],
             self.inputs['Uncertainty'],
             self.inputs['output'],
             self._progress_callback,
