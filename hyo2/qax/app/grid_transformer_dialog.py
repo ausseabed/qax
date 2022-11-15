@@ -122,8 +122,8 @@ class QtGridTransformerThread(QtCore.QThread):
 
 
 input_band_names = [
-    "Density",
     "Depth",
+    "Density",
     "Uncertainty"
 ]
 
