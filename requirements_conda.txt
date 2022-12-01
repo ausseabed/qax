@@ -1,5 +1,5 @@
 GDAL==3.6.0
-PySide2
+PySide2==5.15.6
 qtawesome
 appdirs
 numpy==1.23.5
