@@ -1,9 +1,9 @@
-GDAL==2.4.4
+GDAL==3.6.0
 PySide2
 qtawesome
 appdirs
-numpy==1.19.1
+numpy==1.23.5
 jsonschema
-scipy=1.6.0
-numba==0.51.2
-numexpr==2.7.2
+scipy=1.9.3
+numba==0.56.4
+numexpr==2.8.3
