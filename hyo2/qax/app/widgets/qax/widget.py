@@ -52,7 +52,7 @@ class QAXWidget(QtWidgets.QTabWidget):
         # noinspection PyArgumentList
         self.idx_inputs = self.tabs.insertTab(
             0, self.tab_inputs,
-            qta.icon('mdi.file-multiple'), "")
+            qta.icon('fa.files-o'), "")
 
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
 
@@ -60,7 +60,7 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.tab_plugins.plugin_changed.connect(self._on_plugin_changed)
         self.idx_plugins = self.tabs.insertTab(
             1, self.tab_plugins,
-            qta.icon('mdi.format-list-checkbox'), "")
+            qta.icon('ri.list-check-2'), "")
         self.tabs.setTabToolTip(self.idx_plugins, "Plugins")
 
         self.tab_run = RunTab(self.prj)
