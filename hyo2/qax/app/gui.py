@@ -14,7 +14,12 @@ from hyo2.qax.lib.config import QaxConfig
 from hyo2.qax.lib.plugin import QaxPlugins
 
 logger = logging.getLogger(__name__)
-set_logging(ns_list=["hyo2.qax", ])
+set_logging(
+    ns_list=["hyo2.qax"],
+    default_logging=logging.ERROR,
+    hyo2_logging=logging.ERROR,
+    lib_logging=logging.ERROR
+)
 
 
 def qt_custom_handler(error_type: QtCore.QtMsgType,
