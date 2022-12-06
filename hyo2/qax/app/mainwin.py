@@ -285,11 +285,11 @@ class MainWin(QtWidgets.QMainWindow):
         gt_dialog.exec_()
 
     def quitAction(self):
-        reply = self.do_you_really_want("Quit", "quit %s" % self.name)
+        reply = self.do_you_really_want("Quit", f"quit {self.name}")
         if reply == QtWidgets.QMessageBox.Yes:
             # store window size
             self._persist_exit_settings()
-            QtWidgets.qApp.quit()
+            QApplication.instance().quit()
 
     def closeEvent(self, event):
         """ actions to be done before close the app """
