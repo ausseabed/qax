@@ -103,7 +103,7 @@ jobs:
       - run:
           name: Install PyInstaller and use it to build qax distribution, then zip
           command: |
-            pip install pyinstaller
+            pip install pyinstaller==5.6.2
             pyinstaller .\install\cli.spec
             ls
             ls C:\Users\circleci\project\dist
