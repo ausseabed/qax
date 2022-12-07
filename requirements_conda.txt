@@ -1,5 +1,6 @@
 GDAL==3.6.0
 PySide2==5.15.6
+qt-webengine==5.15.9
 qtawesome
 appdirs
 numpy==1.23.5
