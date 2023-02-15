@@ -274,6 +274,37 @@ class QaxCheckToolPlugin():
         data_level.checks.append(new_check)
         return new_check
 
+    def _get_qajson_checks(self, qajson: QajsonRoot) -> List[QajsonCheck]:
+        """ Gets a list of the qajson check objects that within this qajson
+        root object. Utility function
+        """
+        #  list of all the data levels
+        data_levels = [
+            a for a in dir(qajson.qa)
+            if isinstance(a, QajsonDataLevel)
+        ]
+
+        all_checks = []
+        # loop over the qajson tree finding all AajsonChecks that are
+        # implemented by this plugin
+        for data_level in data_levels:
+            for check in data_level.checks:
+                if self.implements_check(check.info.id):
+                    all_checks.append(check)
+        return all_checks
+
+    def _checks_filtered_by_file(self, filename: str, checks: List[QajsonCheck]) -> List[QajsonCheck]:
+      """ Filters the list of QajsonCheck objects so that it only includes checks
+      that have been run on this file.
+      """
+      filtered_checks = []
+      for check in checks:
+          for file in check.inputs.files:
+              file = QajsonFile()
+              if file.path == filename:
+                  filtered_checks.append(check)
+      return filtered_checks
+
     def update_qa_json(self, qa_json: QajsonRoot) -> NoReturn:
         """ Includes this plugins checks into the `qa_json` object based on
         the checks this plugin provides
