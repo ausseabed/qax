@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, NoReturn, Optional, Callable
+from typing import Dict, List, NoReturn, Optional, Callable, Tuple
 import importlib
 import re
 
@@ -367,6 +367,11 @@ class QaxCheckToolPlugin():
                 continue
             inputs.params.extend(params)
 
+    def implements_check(self, check_id: str) -> bool:
+        """ Does this plugin implement this check
+        """
+        return (self.get_check_reference(check_id) is not None)
+
     def get_check_reference(self, check_id: str) -> QaxCheckReference:
         """ gets a check reference with the given id, if not found return None
         """
@@ -407,6 +412,27 @@ class QaxCheckToolPlugin():
         """
         raise NotImplementedError
 
+    def get_summary_details(self) -> List[Tuple[str, str]]:
+        """ Gets a list of summary fields that can be extracted from this
+        plugin. This is returned as a list of tuples, each tuple being two
+        strings for the grouping of the field (section name) and the name
+        of the field.
+
+        Returns an empty list by default.
+        """
+        return []
+
+    def get_summary_value(
+            self,
+            field_section: str,
+            field_name: str,
+            filename: str,
+            qajson: QajsonRoot
+        ) -> object:
+        """ Gets the summary value from the qajson and returns it. This
+        value may be a string or number type.
+        """
+        raise NotImplementedError("Plugins must implement get_summary_value function")
 
 class QaxProfilePlugins():
     """ Manages a list of plugins that are specific to single profile
@@ -440,6 +466,16 @@ class QaxProfilePlugins():
         """
         for plugin in self.plugins:
             plugin.update_qa_json_input_params(qa_json, check_id, params)
+
+    def get_plugin_for_check(
+            self, check_id: str) -> Optional[QaxCheckToolPlugin]:
+        """ Gets the plugin that this check belongs to or return None if not found
+        """
+        for plugin in self.plugins:
+            check_ref = plugin.get_check_reference(check_id)
+            if check_ref is not None:
+                return plugin
+        return None
 
 
 class QaxPluginError(Exception):
@@ -537,6 +573,15 @@ class QaxPlugins():
             None
         )
         return match
+
+    def get_plugin_for_check(self, check_id: str) -> Optional[QaxCheckToolPlugin]:
+        """ Gets the plugin that this check belongs to or return None if not found
+        """
+        for plugin in self.plugins:
+            check_ref = plugin.get_check_reference(check_id)
+            if check_ref is not None:
+                return plugin
+        return None
 
     def get_profile_plugins(
             self, profile: QaxConfigProfile) -> QaxProfilePlugins:
