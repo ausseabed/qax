@@ -13,7 +13,7 @@ class TestParser(unittest.TestCase):
 
     def test_qajson_read(self):
         here = os.path.abspath(os.path.dirname(__file__))
-        test_file = Path(os.path.join(here, "test.json"))
+        test_file = Path(os.path.join(here, "export_test.json"))
 
         qajson = QajsonParser(test_file).root
 

@@ -306,7 +306,7 @@ class QajsonExcelExporter(QajsonExporter):
             output_file,
             engine='xlsxwriter'
         )
-        dataFrame.to_excel(writer, sheet_name='Sheet1')
+        dataFrame.to_excel(writer, sheet_name='Sheet1', index=False)
         writer.close()
 
     def export(

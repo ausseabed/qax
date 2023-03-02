@@ -280,8 +280,8 @@ class QaxCheckToolPlugin():
         """
         #  list of all the data levels
         data_levels = [
-            a for a in dir(qajson.qa)
-            if isinstance(a, QajsonDataLevel)
+            getattr(qajson.qa, a) for a in dir(qajson.qa)
+            if isinstance(getattr(qajson.qa, a), QajsonDataLevel)
         ]
 
         all_checks = []
@@ -300,10 +300,16 @@ class QaxCheckToolPlugin():
       filtered_checks = []
       for check in checks:
           for file in check.inputs.files:
-              file = QajsonFile()
               if file.path == filename:
                   filtered_checks.append(check)
       return filtered_checks
+
+    def _checks_filtered_by_name(self, check_name: str, checks: List[QajsonCheck]) -> List[QajsonCheck]:
+        filtered_checks = [
+            c for c in checks
+            if c.info.name == check_name
+        ]
+        return filtered_checks
 
     def update_qa_json(self, qa_json: QajsonRoot) -> NoReturn:
         """ Includes this plugins checks into the `qa_json` object based on
