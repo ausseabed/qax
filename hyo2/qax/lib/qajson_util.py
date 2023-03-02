@@ -49,6 +49,40 @@ class QajsonFileSummary():
         self.filename = filename
         self.sections: List[QajsonSummarySection] = []
 
+    @property
+    def summary_heading_label(self) -> str:
+        """ Generates a nice name based on the filename for inclusion
+        into the summary file.
+        Basic logic is as follows.
+        1. Identify which character is used to separate tokens in the
+           filename, based on how many times that character appears in
+           the filename.
+        2. Split the filename by that separator character
+        3. Rejoin the first three tokens with the separator
+
+        If there is no separator, then just use the filename without the
+        extension.
+        """
+        potential_separators = ['-', '_', ' ']
+        name_only = Path(self.filename).stem
+        separator = None
+        separator_count = 0
+        for sep in potential_separators:
+            c = name_only.count(sep)
+            if c > separator_count:
+                separator = sep
+                separator_count = c
+
+        if separator_count == 0:
+            return name_only
+
+        name_tokens = name_only.split(separator)
+        name_tokens = name_tokens[:3]
+
+        name = separator.join(name_tokens)
+
+        return name
+
     def add_section(self, section_name: str) -> QajsonSummarySection:
         new_section = QajsonSummarySection(section_name)
         self.sections.append(new_section)
@@ -278,6 +312,23 @@ class QajsonExcelExporter(QajsonExporter):
         self.description = "Save QAJSON to Microsoft Excel workbook"
         self.extension = "xlsx"
 
+    def _get_safe_shortname(self, file_summary: QajsonFileSummary, existing_data: List) -> str:
+        """ Ensures there are no duplicate short names included in the orderedDict
+        that is converted to pandas and then xls. Duplicate names must be avoided
+        as the dictionary will simply replace existing entries.
+        """
+        short_name = file_summary.summary_heading_label
+        count = 0
+        for fs in existing_data:
+            if fs.summary_heading_label == short_name:
+                count += 1
+
+        if count == 0:
+            return short_name
+        else:
+            return f"{short_name} ({count})"
+
+
     def _generate_summary_dataframe(
             self,
             qajson: QajsonRoot,
@@ -292,11 +343,14 @@ class QajsonExcelExporter(QajsonExporter):
         tableSummary.build_template()
         tableSummary.build()
 
+        processed_summaries = []
+
         data = OrderedDict()
         data[''] = tableSummary.template_file_summary.row_labels()
         for file_summary in tableSummary.file_summaries:
-            short_filename = Path(file_summary.filename).name
+            short_filename = self._get_safe_shortname(file_summary, processed_summaries)
             data[short_filename] = file_summary.row_values()
+            processed_summaries.append(file_summary)
 
         df = pd.DataFrame(data)
         return df
