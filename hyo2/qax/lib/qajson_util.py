@@ -3,9 +3,10 @@ user interface
 """
 from collections import OrderedDict
 from pathlib import Path
-from typing import List, TypeVar, Optional
+from typing import List, TypeVar, Optional, Tuple
 
 import pandas as pd
+import xlsxwriter
 
 from ausseabed.qajson.model import QajsonRoot, QajsonInfo
 from hyo2.qax.lib.plugin import QaxProfilePlugins, QaxCheckToolPlugin
@@ -107,27 +108,27 @@ class QajsonFileSummary():
                 clone_s.get_or_add_field(f.name)
         return clone_fs
 
-    def row_labels(self) -> List[str]:
+    def row_labels(self) -> List[Tuple[str, bool]]:
         """ Generates the list of row labels that should appear in the output
         table.
         """
         rows = []
         # the top left corner is blank
-        
+
         for section in self.sections:
             if section.name == 'header':
                 # then there's no label for the header
                 pass
             else:
-                rows.append(section.name)
+                rows.append((section.name, True))
             # now include a label for each one of the fields
             for field in section.fields:
-                rows.append(field.name)
+                rows.append((field.name, False))
 
         return rows
 
     def row_values(self) -> List[str]:
-        """ Generates the list of row labels that should appear in the output
+        """ Generates the list of row values that should appear in the output
         table.
         """
         values = []
@@ -331,36 +332,41 @@ class QajsonExcelExporter(QajsonExporter):
 
     def _generate_summary_dataframe(
             self,
-            qajson: QajsonRoot,
-            plugins: QaxProfilePlugins
+            tableSummary: QajsonTableSummary
         ) -> pd.DataFrame:
         """ Generate pandas data frame including summary data for all the
-        checks and files in this qajson
+        checks and files in this tableSummary
         """
-        tableSummary = QajsonTableSummary(qajson, plugins)
-        tableSummary.initialise_check_list()
-        tableSummary.initialise_file_list()
-        tableSummary.build_template()
-        tableSummary.build()
-
         processed_summaries = []
 
         data = OrderedDict()
-        data[''] = tableSummary.template_file_summary.row_labels()
+        row_label = [rl[0] for rl in tableSummary.template_file_summary.row_labels()]
+        data[''] = row_label
         for file_summary in tableSummary.file_summaries:
-            short_filename = self._get_safe_shortname(file_summary, processed_summaries)
+            short_filename = self._get_safe_shortname(
+                file_summary, processed_summaries)
             data[short_filename] = file_summary.row_values()
             processed_summaries.append(file_summary)
 
         df = pd.DataFrame(data)
         return df
 
-    def _write_formatted_file(self, dataFrame: pd.DataFrame, output_file: Path) -> None:
+    def _write_formatted_file(self, dataFrame: pd.DataFrame, tableSummary: QajsonTableSummary, output_file: Path) -> None:
         writer = pd.ExcelWriter(
             output_file,
             engine='xlsxwriter'
         )
         dataFrame.to_excel(writer, sheet_name='Sheet1', index=False)
+        workbook  = writer.book
+        worksheet: xlsxwriter.workbook.Worksheet = writer.sheets['Sheet1']
+
+        sectionStyle = workbook.add_format({'bg_color': 'B4C6E7'})
+        for rowIndex, value in enumerate(tableSummary.template_file_summary.row_labels()):
+            _, isSectionHeading = value
+            if isSectionHeading:
+                # +1 to row index because excel is 1 based indexing
+                worksheet.set_row(rowIndex + 1, None, sectionStyle)
+
         writer.close()
 
     def export(
@@ -371,8 +377,15 @@ class QajsonExcelExporter(QajsonExporter):
         ) -> None:
         """ Writes QAJSON to an XLSX file
         """
-        df = self._generate_summary_dataframe(qajson, plugins)
-        self._write_formatted_file(df, output_file=file)
+
+        tableSummary = QajsonTableSummary(qajson, plugins)
+        tableSummary.initialise_check_list()
+        tableSummary.initialise_file_list()
+        tableSummary.build_template()
+        tableSummary.build()
+
+        df = self._generate_summary_dataframe(tableSummary)
+        self._write_formatted_file(df, tableSummary, output_file=file)
 
 
 
