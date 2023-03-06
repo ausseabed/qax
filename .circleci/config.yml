@@ -90,6 +90,8 @@ jobs:
             pip install pytest-cov==4.0.0
             pip install setuptools==65.6.3
             pip install structlog==22.3.0
+            pip install XlsxWriter==3.0.8
+            pip install pandas==1.5.3
             pip install C:\tmp\ausseabed.qajson.zip
             pip install C:\tmp\pyall.zip
             pip install C:\tmp\pygsf.zip
