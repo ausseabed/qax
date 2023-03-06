@@ -360,12 +360,22 @@ class QajsonExcelExporter(QajsonExporter):
         workbook  = writer.book
         worksheet: xlsxwriter.workbook.Worksheet = writer.sheets['Sheet1']
 
+        # apply a blue background color to each of the section header rows
         sectionStyle = workbook.add_format({'bg_color': 'B4C6E7'})
         for rowIndex, value in enumerate(tableSummary.template_file_summary.row_labels()):
             _, isSectionHeading = value
             if isSectionHeading:
                 # +1 to row index because excel is 1 based indexing
                 worksheet.set_row(rowIndex + 1, None, sectionStyle)
+
+        firstColumnStyle = workbook.add_format({'text_wrap': True})
+        worksheet.set_column(0,0, width=25, cell_format=firstColumnStyle)
+
+        # set width of remaining columns that include data
+        worksheet.set_column(1, len(tableSummary.file_summaries) + 1, width=30)
+
+        # freeze top two rows and first column
+        worksheet.freeze_panes(2, 1)
 
         writer.close()
 
