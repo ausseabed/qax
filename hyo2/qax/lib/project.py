@@ -16,6 +16,9 @@ import traceback
 
 from hyo2.qax.lib.inputs import QAXInputs
 from hyo2.qax.lib.params import QAXParams
+from hyo2.qax.lib.config import QaxConfigProfile
+from hyo2.qax.lib.plugin import QaxPlugins
+from hyo2.qax.lib.qajson_util import QajsonExcelExporter
 
 
 logger = logging.getLogger(__name__)
@@ -144,6 +147,8 @@ class QAXProject(QtCore.QObject):
         self._p = QAXParams()
         self._i = QAXInputs()
 
+        self._profile = None
+
     @property
     def qa_json(self) -> Optional[QajsonRoot]:
         return self._qa_json
@@ -170,6 +175,14 @@ class QAXProject(QtCore.QObject):
     def output_folder(self, value: Optional[Path]) -> NoReturn:
         self._output_folder = value
 
+    @property
+    def profile(self) -> QaxConfigProfile:
+        return self._profile
+
+    @profile.setter
+    def profile(self, value: QaxConfigProfile) -> NoReturn:
+        self._profile = value
+
     def open_output_folder(self) -> None:
         if self.output_folder:
             Helper.explore_folder(str(self.output_folder))
@@ -194,6 +207,20 @@ class QAXProject(QtCore.QObject):
         logger.debug("save json to {}".format(path))
         with open(str(path), "w") as file:
             json.dump(self.qa_json.to_dict(), file, indent=4)
+
+    def export_qajson_excel(self, output_file: Path) -> bool:
+        profile_plugins = QaxPlugins.instance().get_profile_plugins(self.profile)
+        exporter = QajsonExcelExporter()
+        try:
+            exporter.export(
+                self.qa_json,
+                file=output_file,
+                plugins=profile_plugins
+            )
+            return True
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            return False
 
     def open_qa_json(self) -> NoReturn:
         path = self.qa_json_path

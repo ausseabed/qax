@@ -6,6 +6,7 @@ from hyo2.abc.lib.helper import Helper
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtGui import QIcon, QKeySequence
 from PySide2.QtWidgets import QAction, QApplication
+from pathlib import Path
 from typing import Optional, NoReturn, List
 from urllib.error import URLError
 from urllib.request import urlopen
@@ -113,6 +114,13 @@ class MainWin(QtWidgets.QMainWindow):
         saveas_action.setStatusTip("Save QAJSON as")
         saveas_action.triggered.connect(self.saveas_qajson)
         fileMenu.addAction(saveas_action)
+
+        export_qajson_excel_icon = qta.icon('fa5s.file-export')
+        export_qajson_excel_action = QAction(export_qajson_excel_icon, "Export to Excel...", self)
+        export_qajson_excel_action.setShortcuts(QKeySequence.SaveAs)
+        export_qajson_excel_action.setStatusTip("Export QAJSON as Excel file")
+        export_qajson_excel_action.triggered.connect(self.export_qajson_excel)
+        fileMenu.addAction(export_qajson_excel_action)
 
         open_action = QAction('&Open...', self)
         open_action.setShortcuts(QKeySequence.Open)
@@ -232,6 +240,13 @@ class MainWin(QtWidgets.QMainWindow):
         base_name = os.path.basename(self.qax_widget.prj.qa_json_path)
         self.update_status_bar("Saved {}".format(base_name), 1500)
 
+    def _export_qajson_excel(self, output: Path):
+        success = self.qax_widget.prj.export_qajson_excel(output_file=output)
+        if success:
+            self.update_status_bar("Saved {}".format(output.name), 1500)
+        else:
+            self.update_status_bar("Failed to export QAJSON to Excel", 1500)
+
     def save_qajson(self):
         if self.qax_widget.prj.qa_json_path is None:
             # we don't know what file was saved, or opened, so do "Save as..."
@@ -251,6 +266,19 @@ class MainWin(QtWidgets.QMainWindow):
             file_name = file_names[0]
             self.qax_widget.prj.qa_json_path = file_name
             self._save_qajson()
+
+    def export_qajson_excel(self):
+        # Save the QAJSON as an XLSX file (Excel)
+        dialog = QtWidgets.QFileDialog(self)
+        dialog.setAcceptMode(QtWidgets.QFileDialog.AcceptMode.AcceptSave)
+        dialog.setFileMode(QtWidgets.QFileDialog.AnyFile)
+        dialog.setNameFilter("Microsoft Excel (*.xlsx)")
+        if dialog.exec_():
+            file_names = dialog.selectedFiles()
+            if len(file_names) == 0:
+                return
+            file_name = file_names[0]
+            self._export_qajson_excel(Path(file_name))
 
     def open_qajson(self):
         dialog = QtWidgets.QFileDialog(self)

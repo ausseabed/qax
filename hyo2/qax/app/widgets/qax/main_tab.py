@@ -38,7 +38,6 @@ class MainTab(QtWidgets.QWidget):
         self.prj = prj
         self.parent_win = parent_win
 
-        self.selected_profile = None
         self.selected_check_tools = []
 
         # ui
@@ -74,7 +73,7 @@ class MainTab(QtWidgets.QWidget):
         self.profile_selection.initialize()
 
     def _on_profile_selected(self, profile):
-        self.selected_profile = profile
+        self.prj.profile = profile
         # propogate event up
         self.profile_selected.emit(profile)
         self.check_inputs_changed.emit()
@@ -85,7 +84,7 @@ class MainTab(QtWidgets.QWidget):
         all_file_groups = []
         for check_tool in check_tools:
             check_tool_plugin = QaxPlugins.instance().get_plugin(
-                self.selected_profile.name, check_tool.plugin_class)
+                self.prj.profile.name, check_tool.plugin_class)
             file_groups = check_tool_plugin.get_file_groups()
             all_file_groups.extend(file_groups)
         unique_file_groups = QaxFileGroup.merge(all_file_groups)
