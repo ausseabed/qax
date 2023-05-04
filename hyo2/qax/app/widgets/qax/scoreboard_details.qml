@@ -86,7 +86,7 @@ Pane {
             }
 
             ColumnLayout {
-              visible: manager.execution_status == 'failed'
+              visible: manager.execution_status == 'failed' || manager.execution_status == 'aborted'
               spacing: 4
               Text {
                 text: "Error Messages:"
