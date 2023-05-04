@@ -316,6 +316,7 @@ class ResultTab(QtWidgets.QWidget):
         checks = data_level.checks
 
         self.scoreboard_table_model.setChecks(checks)
+        self.score_board.resizeRowsToContents()
 
     def _on_clicked_scoreboard(self, selected_index):
         # use the selected_index is the row number (column too) selected by the

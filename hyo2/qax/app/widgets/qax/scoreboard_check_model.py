@@ -63,11 +63,12 @@ class ScoreBoardCheckModel(QAbstractTableModel):
                 return check_name
             elif index.column() == 2:
                 # file name column
-                file_item = ""
-                if len(check.inputs.files) > 0:
-                    full_path = check.inputs.files[0].path
+                filename_list = []
+                for f in check.inputs.files:
+                    full_path = f.path
                     _, file_name = os.path.split(full_path)
-                    file_item = file_name
+                    filename_list.append(file_name)
+                file_item = "\n".join(filename_list)
                 return file_item
             elif index.column() == 3:
                 # status column
@@ -133,6 +134,9 @@ class ScoreBoardCheckModel(QAbstractTableModel):
         elif role == Qt.ForegroundRole:
             if index.column() == 4:
                 return QColor(255, 0, 0, 0)
+        elif role == Qt.TextAlignmentRole:
+            if index.column() in [0, 1, 2]:
+                return (Qt.AlignLeft | Qt.AlignTop)
 
         return None
 
