@@ -78,7 +78,7 @@ class QajsonFileSummary():
             return name_only
 
         name_tokens = name_only.split(separator)
-        name_tokens = name_tokens[:3]
+        name_tokens = name_tokens[:4]
 
         name = separator.join(name_tokens)
 
