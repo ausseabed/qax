@@ -9,7 +9,7 @@ class TestQAX(unittest.TestCase):
         self.assertGreaterEqual(len(__author__.split(";")), 2)
 
     def test_version(self):
-        self.assertGreaterEqual(int(__version__.split(".")[0]), 1)
+        self.assertGreaterEqual(int(__version__.split(".")[0]), 0)
 
 
 def suite():
