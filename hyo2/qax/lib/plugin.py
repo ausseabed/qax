@@ -449,7 +449,7 @@ class QaxCheckToolPlugin():
         """
         raise NotImplementedError
 
-    def get_summary_details(self) -> List[Tuple[str, str]]:
+    def get_summary_details(self, qajson: QajsonRoot) -> List[Tuple[str, str]]:
         """ Gets a list of summary fields that can be extracted from this
         plugin. This is returned as a list of tuples, each tuple being two
         strings for the grouping of the field (section name) and the name

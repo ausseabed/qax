@@ -228,7 +228,7 @@ class QajsonTableSummary():
             qajson_check_info = check.check_info
             plugin = self.plugins.get_plugin_for_check(qajson_check_info.id)
             if plugin is not None:
-                sd_list = plugin.get_summary_details()
+                sd_list = plugin.get_summary_details(self.qajson)
                 for section_name, field_name in sd_list:
                     section = self.template_file_summary.get_or_add_section(
                         section_name)
@@ -241,7 +241,7 @@ class QajsonTableSummary():
             qajson_check_info = check.check_info
             plugin = self.plugins.get_plugin_for_check(qajson_check_info.id)
             if plugin is not None:
-                sd_list = plugin.get_summary_details()
+                sd_list = plugin.get_summary_details(self.qajson)
                 for p_section_name, p_field_name in sd_list:
                     if p_section_name == section_name and p_field_name == field_name:
                         return plugin
