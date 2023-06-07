@@ -899,6 +899,7 @@
                                 ]
                             },
                             "summary": {
+                                "under_absolute_threshold_count": 2,
                                 "total_soundings": 4742797,
                                 "percentage_over_threshold": 99.76277711232423,
                                 "under_threshold_soundings": 11251
@@ -1741,6 +1742,7 @@
                                 ]
                             },
                             "summary": {
+                                "under_absolute_threshold_count": 2,
                                 "total_soundings": 312451,
                                 "percentage_over_threshold": 99.34709762490759,
                                 "under_threshold_soundings": 2040
