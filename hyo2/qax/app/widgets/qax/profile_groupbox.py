@@ -8,7 +8,7 @@ import os
 from hyo2.qax.app.widgets.layout import FlowLayout
 from hyo2.qax.app.widgets.lines import QHLine
 from hyo2.qax.lib.config import QaxConfigCheckTool
-from hyo2.qax.lib.config import QaxConfigProfile
+from hyo2.qax.lib.config import QaxConfigProfile, QaxConfig, QaxConfigSpecification
 
 
 class ProfileGroupBox(QtWidgets.QGroupBox):
@@ -17,11 +17,12 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
     """
 
     profile_selected = QtCore.Signal(QaxConfigProfile)
+    specification_selected = QtCore.Signal(QaxConfigSpecification)
     # Signal is of type List[QaxConfigCheckTool]
     check_tool_selection_change = QtCore.Signal(object)
 
-    def __init__(self, parent_win, prj, config):
-        QtWidgets.QGroupBox.__init__(self, "Profile Settings")
+    def __init__(self, parent_win, prj, config: QaxConfig):
+        QtWidgets.QGroupBox.__init__(self, "Profile and Specification Settings")
 
         self.prj = prj
         self.parent_win = parent_win
@@ -31,22 +32,38 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         vbox = QtWidgets.QVBoxLayout()
         self.setLayout(vbox)
 
+        # Profile selection
         self.profile_name_label = QtWidgets.QLabel("Profile:")
         hbox = QtWidgets.QHBoxLayout()
         hbox.setAlignment(QtCore.Qt.AlignLeft)
         vbox.addLayout(hbox)
-        hbox.addWidget(self.profile_name_label)
+        vbox_profile_label_selection = QtWidgets.QVBoxLayout()
+        hbox.addLayout(vbox_profile_label_selection)
+        vbox_profile_label_selection.addWidget(self.profile_name_label)
 
         self.profile_combobox = QtWidgets.QComboBox()
         for profile in config.profiles:
             self.profile_combobox.addItem(profile.name, profile)
 
         self.profile_combobox.currentIndexChanged.connect(self.on_set_profile)
-        hbox.addWidget(self.profile_combobox)
+        vbox_profile_label_selection.addWidget(self.profile_combobox)
         self.setStyleSheet("QComboBox { min-width:400px; }")
 
         self.profile_description_label = QtWidgets.QLabel("")
-        hbox.addWidget(self.profile_description_label)
+        self.profile_description_label.setStyleSheet("padding-left :5px")
+        vbox_profile_label_selection.addWidget(self.profile_description_label)
+
+        # Specification selection
+        vbox_profile_specification_selection = QtWidgets.QVBoxLayout()
+        hbox.addLayout(vbox_profile_specification_selection)
+        vbox_profile_specification_selection.addWidget(QtWidgets.QLabel("Specification:"))
+
+        self.specification_combobox = QtWidgets.QComboBox()
+        self.specification_combobox.currentIndexChanged.connect(self.on_set_specification)
+        vbox_profile_specification_selection.addWidget(self.specification_combobox)
+        self.specification_description_label = QtWidgets.QLabel("")
+        self.specification_description_label.setStyleSheet("padding-left :5px")
+        vbox_profile_specification_selection.addWidget(self.specification_description_label)
 
         vbox.addWidget(QHLine())
 
@@ -90,6 +107,22 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
             self.check_tools_layout.addWidget(check_tool_widget)
             self.check_tool_checkboxes.append(check_tool_widget)
 
+    def update_specifications(self, profile: QaxConfigProfile):
+        """ updates the combobox list of specifications with the specifications
+        from the selected profile """
+        self.specification_combobox.clear()
+        for specification in profile.specifications:
+            self.specification_combobox.addItem(specification.name, specification)
+
+        if len(profile.specifications) > 0:
+            self.specification_combobox.setCurrentIndex(0)
+            self.specification_combobox.setEnabled(True)
+        else:
+            self.specification_combobox.setEnabled(False)
+            self.specification_description_label.setText(
+                "Profile does not include any specifications"
+            )
+
     def selected_check_tools(self) -> List[QaxConfigCheckTool]:
         """ Gets a list of check tools based on what is selected
         """
@@ -106,9 +139,21 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         profile = self.profile_combobox.itemData(currentIndex)
         if profile.description is not None:
             self.profile_description_label.setText(profile.description)
+        self.update_specifications(profile)
         self.update_check_tools(profile)
         self.profile_selected.emit(profile)
         self.on_check_tool_check_change()
+
+    def on_set_specification(self, currentIndex):
+        if currentIndex == -1:
+            self.specification_description_label.setText("")
+            return
+
+        specification = self.specification_combobox.itemData(currentIndex)
+        if specification.description is not None:
+            self.specification_description_label.setText(specification.description)
+
+        self.specification_selected.emit(specification)
 
     def on_check_tool_check_change(self):
         """ Event handler for user selection change of individual check tool
