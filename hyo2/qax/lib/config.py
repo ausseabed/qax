@@ -13,6 +13,8 @@ Module defines classes for QAX JSON config file. Hierarchy is as follows;
 QaxConfig
   QaxConfigProfile
     QaxConfigCheckTool
+  QaxConfigSpecification
+    QaxConfigParameter
 """
 
 
@@ -179,6 +181,10 @@ class QaxConfigProfile:
         """
         name = data['name']
 
+        description = None
+        if 'description' in data:
+            description = data['description']
+
         check_tools = []
         for check_tool_dict in data['checkTools']:
             check_tool = QaxConfigCheckTool.from_dict(check_tool_dict)
@@ -191,6 +197,7 @@ class QaxConfigProfile:
 
         profile = cls(
             name=name,
+            description=description,
             check_tools=check_tools,
             specifications=specifications
         )
@@ -199,11 +206,12 @@ class QaxConfigProfile:
     def __init__(
             self,
             name: str,
+            description: str,
             check_tools: List[QaxConfigCheckTool],
             specifications: List[QaxConfigSpecification]):
         self.name = name
         self.check_tools = check_tools
-        self.description = None
+        self.description = description
         self.specifications = specifications
 
     def __repr__(self):
@@ -243,7 +251,7 @@ class QaxConfig:
         else:
             self.path = path
 
-        self.profiles = []
+        self.profiles: List[QaxConfigProfile] = []
 
     def __get_config_files(self) -> List[Path]:
         config_files = []
