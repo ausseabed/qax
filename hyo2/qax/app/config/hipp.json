@@ -1,0 +1,54 @@
+{
+  "name": "HIPP",
+  "description": "HydroScheme Industry Partnership Program",
+  "checkTools": [
+    {
+      "name": "MBES Grid Checks",
+      "description": "QA checks for gridded bathymetry data",
+      "pluginClass": "ausseabed.mbesgc.qax.plugin.MbesGridChecksQaxPlugin",
+      "icon": "mbesgc.png",
+      "enabled": true,
+      "checked": true
+    },
+    {
+      "name": "Finder Grid Checks",
+      "pluginClass": "ausseabed.findergc.qax.plugin.FinderGridChecksQaxPlugin",
+      "description": "Flier Finder and Hole Finder checks",
+      "icon": "findergc.png",
+      "enabled": true,
+      "checked": true
+    },
+    {
+      "name": "Mate",
+      "description": "QA checks for raw bathymetry data",
+      "pluginClass": "hyo2.mate.qax.plugin.MateQaxPlugin",
+      "icon": "mate.png",
+      "enabled": true,
+      "checked": false
+    }
+  ],
+  "specifications": [
+    {
+      "name": "IHO 1a",
+      "description": "International Hydrographic Organization (IHO) order 1a",
+      "parameters": [
+        {
+          "checkId": "asd",
+          "name": "foo bar",
+          "value": 11
+        }
+      ]
+    },
+    {
+      "name": "IHO 1b",
+      "description": "International Hydrographic Organization (IHO) order 1b",
+      "parameters": [
+        {
+          "checkId": "asd",
+          "name": "foo bar",
+          "value": 22
+        }
+      ]
+    }
+  ]
+}
