@@ -67,6 +67,105 @@ class QaxConfigCheckTool:
         return msg
 
 
+class QaxConfigParameter:
+
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'QaxConfigParameter':
+        """
+        Function to support parsing config file
+        """
+        parameterName = data['name']
+        parameterValue = data['value']
+
+        checkId = None
+        if 'checkId' in data:
+            checkId = data['checkId']
+
+        checkName = None
+        if 'checkName' in data:
+            checkId = data['checkName']
+
+        p = cls(
+            checkId=checkId,
+            checkName=checkName,
+            parameterName=parameterName,
+            parameterValue=parameterValue
+        )
+        return p
+
+    def __init__(
+            self,
+            checkId: str = None,
+            checkName: str = None,
+            parameterName: str = None,
+            parameterValue: object = None
+        ) -> None:
+        """
+        A QAX config parameter is first matched to a check parameter value by
+        either the checkId (a UUID str) or checkName.
+
+        Parameters:
+        checkId (str): UUID string that matches on of the check UUIDs (as defined
+            in check implementation)
+        parameterName (str): Name of parameter (as defined in check implementation)
+        parameterValue (object): The value that will be used as the default for this
+            parameter when this specification is selected.
+        """
+        self.checkId = checkId
+        self.checkName = checkName
+        self.name = parameterName
+        self.value = parameterValue
+
+        if self.checkId is None and self.checkName is None:
+            raise RuntimeError("checkId and checkName cannot both be None")
+
+
+class QaxConfigSpecification:
+
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'QaxConfigSpecification':
+        """
+        Function to support parsing config file
+        """
+        name = None
+        if 'name' in data:
+            name = data['name']
+
+        description = None
+        if 'description' in data:
+            description = data['description']
+
+        parameters = []
+        if 'parameters' in data:
+            parameters_dict = data['parameters']
+            parameters = [QaxConfigParameter.from_dict(pd) for pd in parameters_dict]
+
+        p = cls(
+            name=name,
+            description=description,
+            parameters=parameters
+        )
+        return p
+
+    def __init__(
+            self,
+            name: str,
+            description: str = None,
+            parameters: List[QaxConfigParameter] = []
+        ) -> None:
+        """
+        Parameters:
+        name (str): the name of this specification (shown in list of specifications)
+        description (str): the description of this specification (shown after a
+            specification has been selected)
+        parameters (List[QaxConfigParameter]): list of default parameter values for
+            this specification
+        """
+        self.name = name
+        self.description = description
+        self.parameters = parameters
+
+
 class QaxConfigProfile:
     """
     Represents a single QAX Profile, a profile is a collection of QA check
@@ -85,22 +184,34 @@ class QaxConfigProfile:
             check_tool = QaxConfigCheckTool.from_dict(check_tool_dict)
             check_tools.append(check_tool)
 
+        specifications = []
+        if 'specifications' in data:
+            specifications_dict = data['specifications']
+            specifications = [QaxConfigSpecification.from_dict(pd) for pd in specifications_dict]
+
         profile = cls(
             name=name,
-            check_tools=check_tools
+            check_tools=check_tools,
+            specifications=specifications
         )
         return profile
 
-    def __init__(self, name: str, check_tools: List[QaxConfigCheckTool]):
+    def __init__(
+            self,
+            name: str,
+            check_tools: List[QaxConfigCheckTool],
+            specifications: List[QaxConfigSpecification]):
         self.name = name
         self.check_tools = check_tools
         self.description = None
+        self.specifications = specifications
 
     def __repr__(self):
         msg = super().__repr__()
         msg += "\n"
         msg += "name: {}".format(self.name)
         msg += "check tool count: {}".format(len(self.check_tools))
+        msg += "specification count: {}".format(len(self.specifications))
         return msg
 
 

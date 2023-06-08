@@ -33,5 +33,18 @@
       "enabled": true,
       "checked": false
     }
+  ],
+  "specifications": [
+    {
+      "name": "IHO 1a",
+      "description": "International Hydrographic Organization (IHO) order 1a",
+      "parameters": [
+        {
+          "checkId": "asd",
+          "name": "foo bar",
+          "value": 123
+        }
+      ]
+    }
   ]
 }
