@@ -1,6 +1,7 @@
 from ausseabed.qajson.model import QajsonRoot
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2.QtWidgets import QSizePolicy
 from typing import List, NoReturn
 import logging
 import os
@@ -35,35 +36,47 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         # Profile selection
         self.profile_name_label = QtWidgets.QLabel("Profile:")
         hbox = QtWidgets.QHBoxLayout()
-        hbox.setAlignment(QtCore.Qt.AlignLeft)
         vbox.addLayout(hbox)
         vbox_profile_label_selection = QtWidgets.QVBoxLayout()
+        vbox_profile_label_selection.setAlignment(QtCore.Qt.AlignTop)
         hbox.addLayout(vbox_profile_label_selection)
         vbox_profile_label_selection.addWidget(self.profile_name_label)
 
         self.profile_combobox = QtWidgets.QComboBox()
+        self.profile_combobox.setSizePolicy(
+            QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         for profile in config.profiles:
             self.profile_combobox.addItem(profile.name, profile)
 
         self.profile_combobox.currentIndexChanged.connect(self.on_set_profile)
         vbox_profile_label_selection.addWidget(self.profile_combobox)
-        self.setStyleSheet("QComboBox { min-width:400px; }")
 
         self.profile_description_label = QtWidgets.QLabel("")
+        self.profile_description_label.setSizePolicy(
+            QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.profile_description_label.setWordWrap(True)
         self.profile_description_label.setStyleSheet("padding-left :5px")
         vbox_profile_label_selection.addWidget(self.profile_description_label)
+        vbox_profile_label_selection.setAlignment(self.profile_description_label, QtCore.Qt.AlignTop)
 
         # Specification selection
         vbox_profile_specification_selection = QtWidgets.QVBoxLayout()
+        vbox_profile_specification_selection.setAlignment(QtCore.Qt.AlignTop)
         hbox.addLayout(vbox_profile_specification_selection)
         vbox_profile_specification_selection.addWidget(QtWidgets.QLabel("Specification:"))
 
         self.specification_combobox = QtWidgets.QComboBox()
+        self.specification_combobox.setSizePolicy(
+            QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         self.specification_combobox.currentIndexChanged.connect(self.on_set_specification)
         vbox_profile_specification_selection.addWidget(self.specification_combobox)
         self.specification_description_label = QtWidgets.QLabel("")
+        self.specification_description_label.setWordWrap(True)
+        self.specification_description_label.setSizePolicy(
+            QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         self.specification_description_label.setStyleSheet("padding-left :5px")
         vbox_profile_specification_selection.addWidget(self.specification_description_label)
+        vbox_profile_specification_selection.setAlignment(self.specification_description_label, QtCore.Qt.AlignTop)
 
         vbox.addWidget(QHLine())
 
@@ -139,6 +152,8 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         profile = self.profile_combobox.itemData(currentIndex)
         if profile.description is not None:
             self.profile_description_label.setText(profile.description)
+        else:
+            self.profile_description_label.setText("")
         self.update_specifications(profile)
         self.update_check_tools(profile)
         self.profile_selected.emit(profile)
