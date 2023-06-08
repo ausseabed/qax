@@ -24,14 +24,6 @@
       "icon": "findergc.png",
       "enabled": true,
       "checked": true
-    },
-    {
-      "name": "QC Tools",
-      "pluginClass": "hyo2.qax.plugins.placeholder.PlaceholderQaxPlugin",
-      "description": "Coming soon",
-      "icon": "qc_tools.png",
-      "enabled": true,
-      "checked": false
     }
   ],
   "specifications": [
@@ -42,7 +34,18 @@
         {
           "checkId": "asd",
           "name": "foo bar",
-          "value": 123
+          "value": 11
+        }
+      ]
+    },
+    {
+      "name": "IHO 1b",
+      "description": "International Hydrographic Organization (IHO) order 1b",
+      "parameters": [
+        {
+          "checkId": "asd",
+          "name": "foo bar",
+          "value": 22
         }
       ]
     }
