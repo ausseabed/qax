@@ -6,6 +6,7 @@ from typing import List, NoReturn
 import logging
 import os
 
+from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.layout import FlowLayout
 from hyo2.qax.app.widgets.lines import QHLine
 from hyo2.qax.lib.config import QaxConfigCheckTool
@@ -29,6 +30,9 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         self.parent_win = parent_win
         self.config = config
         self.check_tool_checkboxes = []
+
+        self.selected_profile: QaxConfigProfile = None
+        self.selected_specification: QaxConfigSpecification = None
 
         vbox = QtWidgets.QVBoxLayout()
         self.setLayout(vbox)
@@ -87,8 +91,21 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         vbox.addLayout(self.check_tools_layout)
 
     def initialize(self):
+        settings = GuiSettings.settings()
+        settings_selected_profile_name = settings.value("selected_profile", defaultValue="None")
+        settings_selected_specification_name = settings.value("selected_specification", defaultValue="None")
+
         self.profile_combobox.setCurrentIndex(0)
         self.on_set_profile(0)
+        for index, p in enumerate(self.config.profiles):
+            if settings_selected_profile_name != "None" and settings_selected_profile_name == p.name:
+                self.profile_combobox.setCurrentIndex(index)
+                self.on_set_profile(index)
+
+        for index, s in enumerate(self.selected_profile.specifications):
+            if settings_selected_specification_name != "None" and settings_selected_specification_name == s.name:
+                self.specification_combobox.setCurrentIndex(index)
+                self.on_set_specification(index)
 
     def update_check_tools(self, profile):
         """ Updates the list of check tool checkboxes based on the given
@@ -150,6 +167,7 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         """ Event handler for user selection of profile
         """
         profile = self.profile_combobox.itemData(currentIndex)
+        self.selected_profile = profile
         if profile.description is not None:
             self.profile_description_label.setText(profile.description)
         else:
@@ -162,9 +180,11 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
     def on_set_specification(self, currentIndex):
         if currentIndex == -1:
             self.specification_description_label.setText("")
+            self.selected_specification = None
             return
 
         specification = self.specification_combobox.itemData(currentIndex)
+        self.selected_specification = specification
         if specification.description is not None:
             self.specification_description_label.setText(specification.description)
 
@@ -179,3 +199,16 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         # we don't save the profile in the qajson file, so there's nothing we
         # can do here till qajson is updated
         pass
+
+    def persist_exit_settings(self):
+        settings = GuiSettings.settings()
+
+        if self.selected_profile is None:
+            settings.setValue("selected_profile", "None")
+        else:
+            settings.setValue("selected_profile", self.selected_profile.name)
+
+        if self.selected_specification is None:
+            settings.setValue("selected_specification", "None")
+        else:
+            settings.setValue("selected_specification", self.selected_specification.name)

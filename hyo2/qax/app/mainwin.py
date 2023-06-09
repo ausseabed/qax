@@ -334,6 +334,7 @@ class MainWin(QtWidgets.QMainWindow):
     def _persist_exit_settings(self):
         self.settings.setValue("qax_app_width", self.size().width())
         self.settings.setValue("qax_app_height", self.size().height())
+        self.qax_widget.persist_exit_settings()
 
     def do(self):
         logger.warning("DEV MODE")

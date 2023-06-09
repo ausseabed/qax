@@ -7,7 +7,6 @@ from typing import Optional, NoReturn, List
 import logging
 import os
 
-from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.profile_groupbox import ProfileGroupBox
 from hyo2.qax.app.widgets.qax.filegroup_groupbox \
     import FileGroupGroupBox
@@ -105,3 +104,6 @@ class MainTab(QtWidgets.QWidget):
     def update_ui(self, qajson: QajsonRoot) -> NoReturn:
         self.profile_selection.update_ui(qajson)
         self.file_group_selection.update_ui(qajson)
+
+    def persist_exit_settings(self):
+        self.profile_selection.persist_exit_settings()

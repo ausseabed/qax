@@ -176,3 +176,6 @@ class QAXWidget(QtWidgets.QTabWidget):
     def update_ui(self, qajson: QajsonRoot) -> NoReturn:
         self.tab_inputs.update_ui(qajson)
         self.tab_plugins.update_ui(qajson)
+
+    def persist_exit_settings(self):
+        self.tab_inputs.persist_exit_settings()
