@@ -7,6 +7,7 @@ from hyo2.qax.app.widgets.lines import QHLine
 from hyo2.qax.app.widgets.qax.check_param_widget import CheckParamWidget, \
     get_param_widget
 from hyo2.qax.lib.plugin import QaxCheckReference
+from hyo2.qax.lib.config import QaxConfigSpecification
 
 
 class CheckWidget(QtWidgets.QWidget):
@@ -19,7 +20,7 @@ class CheckWidget(QtWidgets.QWidget):
         QtWidgets.QWidget.__init__(self, parent=parent)
 
         self.check_reference = check_reference
-        self.param_widgets = []
+        self.param_widgets: List[CheckParamWidget] = []
 
         vbox = QtWidgets.QVBoxLayout()
         vbox.setContentsMargins(0, 4, 0, 4)
@@ -100,3 +101,12 @@ class CheckWidget(QtWidgets.QWidget):
             for widget_param in self.param_widgets:
                 if check_param.name == widget_param.param().name:
                     widget_param.value = check_param.value
+
+    def set_specification(self, specification: QaxConfigSpecification):
+        for param_widget in self.param_widgets:
+            for config_param in specification.parameters:
+                if (
+                        param_widget.param().name == config_param.name and
+                        self.check_reference.id == config_param.checkId
+                    ):
+                    param_widget.value = config_param.value

@@ -12,7 +12,7 @@ from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
 from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin
-from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
+from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecification
 from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin
 
 
@@ -45,6 +45,10 @@ class PluginsTab(QtWidgets.QWidget):
     def set_profile(self, profile: QaxConfigProfile):
         self.profile = profile
         self.update_plugin_tabs()
+
+    def set_specification(self, specification: QaxConfigSpecification):
+        for plugin_tab in self.plugin_tabs:
+            plugin_tab.set_specification(specification)
 
     def update_plugin_tabs(self):
         """ Updates what plugins are shown in the bottom tabs

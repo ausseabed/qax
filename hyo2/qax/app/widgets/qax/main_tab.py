@@ -10,7 +10,7 @@ import os
 from hyo2.qax.app.widgets.qax.profile_groupbox import ProfileGroupBox
 from hyo2.qax.app.widgets.qax.filegroup_groupbox \
     import FileGroupGroupBox
-from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
+from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecification
 from hyo2.qax.lib.plugin import QaxPlugins, QaxFileGroup
 
 
@@ -28,6 +28,7 @@ class MainTab(QtWidgets.QWidget):
     here = os.path.abspath(os.path.dirname(__file__))
 
     profile_selected = QtCore.Signal(QaxConfigProfile)
+    specification_selected = QtCore.Signal(QaxConfigSpecification)
     check_inputs_changed = QtCore.Signal()
 
     def __init__(self, parent_win, prj):
@@ -52,6 +53,8 @@ class MainTab(QtWidgets.QWidget):
             self, self.prj, QaxConfig.instance())
         self.profile_selection.profile_selected.connect(
             self._on_profile_selected)
+        self.profile_selection.specification_selected.connect(
+            self._on_specification_selected)
         self.profile_selection.check_tool_selection_change.connect(
             self._on_check_tools_selected)
         self.vbox.addWidget(self.profile_selection)
@@ -76,6 +79,10 @@ class MainTab(QtWidgets.QWidget):
         # propogate event up
         self.profile_selected.emit(profile)
         self.check_inputs_changed.emit()
+
+    def _on_specification_selected(self, specification: QaxConfigSpecification):
+        # propogate event up
+        self.specification_selected.emit(specification)
 
     def _on_check_tools_selected(self, check_tools):
         self.selected_check_tools = check_tools

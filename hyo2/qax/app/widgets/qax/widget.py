@@ -13,7 +13,7 @@ from hyo2.qax.app.widgets.qax.plugins_tab import PluginsTab
 from hyo2.qax.app.widgets.qax.result_tab import ResultTab
 from hyo2.qax.app.widgets.qax.run_tab import RunTab, QtCheckExecutorThread
 from hyo2.qax.app.widgets.widget import AbstractWidget
-from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile
+from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecification
 from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin
 from hyo2.qax.lib.project import QAXProject
 
@@ -47,6 +47,7 @@ class QAXWidget(QtWidgets.QTabWidget):
         # main tab
         self.tab_inputs = MainTab(parent_win=self, prj=self.prj)
         self.tab_inputs.profile_selected.connect(self._on_profile_selected)
+        self.tab_inputs.specification_selected.connect(self._on_specification_selected)
         self.tab_inputs.check_inputs_changed.connect(
             self._on_update_check_inputs)
         # noinspection PyArgumentList
@@ -95,6 +96,9 @@ class QAXWidget(QtWidgets.QTabWidget):
     def _on_profile_selected(self, profile: QaxConfigProfile):
         self.profile = profile
         self.tab_plugins.set_profile(self.profile)
+
+    def _on_specification_selected(self, specification: QaxConfigSpecification):
+        self.tab_plugins.set_specification(specification)
 
     def _on_update_check_inputs(self):
         """ Read the feature files provided by the user"""

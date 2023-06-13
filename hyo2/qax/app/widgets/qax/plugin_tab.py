@@ -10,6 +10,7 @@ import os
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
+from hyo2.qax.lib.config import QaxConfigSpecification
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference
 
 
@@ -88,3 +89,7 @@ class PluginTab(QtWidgets.QWidget):
     def update_ui(self, qajson: QajsonRoot) -> NoReturn:
         for check_widget in self.check_widgets:
             check_widget.update_ui(qajson)
+
+    def set_specification(self, specification: QaxConfigSpecification):
+        for check_widget in self.check_widgets:
+            check_widget.set_specification(specification)
