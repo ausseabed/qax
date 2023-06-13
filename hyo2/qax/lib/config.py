@@ -85,7 +85,7 @@ class QaxConfigParameter:
 
         checkName = None
         if 'checkName' in data:
-            checkId = data['checkName']
+            checkName = data['checkName']
 
         p = cls(
             checkId=checkId,
