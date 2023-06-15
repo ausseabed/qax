@@ -46,7 +46,7 @@ class MainWin(QtWidgets.QMainWindow):
         self.version = app_info.app_version
         self.setWindowTitle('{} {}'.format(self.name, self.version))
         self.setMinimumSize(QtCore.QSize(500, 800))
-        self.resize(QtCore.QSize(920, 840))
+        self.resize(QtCore.QSize(920, 1240))
 
         self.exception_signal.connect(self.show_exception_dialog)
 
