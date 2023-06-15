@@ -67,7 +67,7 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         vbox_profile_specification_selection = QtWidgets.QVBoxLayout()
         vbox_profile_specification_selection.setAlignment(QtCore.Qt.AlignTop)
         hbox.addLayout(vbox_profile_specification_selection)
-        vbox_profile_specification_selection.addWidget(QtWidgets.QLabel("Specification:"))
+        vbox_profile_specification_selection.addWidget(QtWidgets.QLabel("Standard:"))
 
         self.specification_combobox = QtWidgets.QComboBox()
         self.specification_combobox.setSizePolicy(
