@@ -28,24 +28,151 @@
   ],
   "specifications": [
     {
-      "name": "IHO 1a",
-      "description": "International Hydrographic Organization (IHO) order 1a",
+      "name": "IHO - 1a",
+      "description": "International Hydrographic Organization - 1a",
       "parameters": [
         {
-          "checkId": "asd",
-          "name": "foo bar",
-          "value": 11
+          "checkName": "Density Check",
+          "checkId": "5e2afd8a-2ced-4de8-80f5-111c459a7175",
+          "name": "Minimum Soundings per node",
+          "value": 5
+        },
+        {
+          "checkName": "Density Check",
+          "checkId": "5e2afd8a-2ced-4de8-80f5-111c459a7175",
+          "name": "Minimum Soundings per node at percentage",
+          "value": 9
+        },
+        {
+          "checkName": "Density Check",
+          "checkId": "5e2afd8a-2ced-4de8-80f5-111c459a7175",
+          "name": "Minimum Soundings per node percentage",
+          "value": 95.0
+        },
+
+        {
+          "checkName": "Total Vertical Uncertainty Check",
+          "checkId": "b5c0469c-6559-4aea-bf9c-d0b337550e89",
+          "name": "Constant Depth Error",
+          "value": 0.5
+        },
+        {
+          "checkName": "Total Vertical Uncertainty Check",
+          "checkId": "b5c0469c-6559-4aea-bf9c-d0b337550e89",
+          "name": "Factor of Depth Dependent Errors",
+          "value": 0.013
+        },
+
+        {
+          "checkName": "Resolution Check",
+          "checkId": "c73119ea-4f79-4001-86e3-11c4cbaaeb2d",
+          "name": "Feature Detection Size Multiplier",
+          "value": 0.5
+        },
+        {
+          "checkName": "Resolution Check",
+          "checkId": "c73119ea-4f79-4001-86e3-11c4cbaaeb2d",
+          "name": "Threshold Depth",
+          "value": 40.0
+        },
+        {
+          "checkName": "Resolution Check",
+          "checkId": "c73119ea-4f79-4001-86e3-11c4cbaaeb2d",
+          "name": "Above Threshold FDS Depth Multiplier",
+          "value": 0.0
+        },
+        {
+          "checkName": "Resolution Check",
+          "checkId": "c73119ea-4f79-4001-86e3-11c4cbaaeb2d",
+          "name": "Above Threshold FDS Depth Constant",
+          "value": 2.0
+        },
+        {
+          "checkName": "Resolution Check",
+          "checkId": "c73119ea-4f79-4001-86e3-11c4cbaaeb2d",
+          "name": "Below Threshold FDS Depth Multiplier",
+          "value": 0.1
+        },
+        {
+          "checkName": "Resolution Check",
+          "checkId": "c73119ea-4f79-4001-86e3-11c4cbaaeb2d",
+          "name": "Below Threshold FDS Depth Constant",
+          "value": 0.0
         }
       ]
     },
+
     {
-      "name": "IHO 1b",
-      "description": "International Hydrographic Organization (IHO) order 1b",
+      "name": "IHO - 1b",
+      "description": "International Hydrographic Organization - 1b",
       "parameters": [
         {
-          "checkId": "asd",
-          "name": "foo bar",
-          "value": 22
+          "checkName": "Density Check",
+          "checkId": "5e2afd8a-2ced-4de8-80f5-111c459a7175",
+          "name": "Minimum Soundings per node",
+          "value": 5
+        },
+        {
+          "checkName": "Density Check",
+          "checkId": "5e2afd8a-2ced-4de8-80f5-111c459a7175",
+          "name": "Minimum Soundings per node at percentage",
+          "value": 9
+        },
+        {
+          "checkName": "Density Check",
+          "checkId": "5e2afd8a-2ced-4de8-80f5-111c459a7175",
+          "name": "Minimum Soundings per node percentage",
+          "value": 95.0
+        },
+
+        {
+          "checkName": "Total Vertical Uncertainty Check",
+          "checkId": "b5c0469c-6559-4aea-bf9c-d0b337550e89",
+          "name": "Constant Depth Error",
+          "value": 0.5
+        },
+        {
+          "checkName": "Total Vertical Uncertainty Check",
+          "checkId": "b5c0469c-6559-4aea-bf9c-d0b337550e89",
+          "name": "Factor of Depth Dependent Errors",
+          "value": 0.013
+        },
+
+        {
+          "checkName": "Resolution Check",
+          "checkId": "c73119ea-4f79-4001-86e3-11c4cbaaeb2d",
+          "name": "Feature Detection Size Multiplier",
+          "value": 0.5
+        },
+        {
+          "checkName": "Resolution Check",
+          "checkId": "c73119ea-4f79-4001-86e3-11c4cbaaeb2d",
+          "name": "Threshold Depth",
+          "value": 40.0
+        },
+        {
+          "checkName": "Resolution Check",
+          "checkId": "c73119ea-4f79-4001-86e3-11c4cbaaeb2d",
+          "name": "Above Threshold FDS Depth Multiplier",
+          "value": 0.0
+        },
+        {
+          "checkName": "Resolution Check",
+          "checkId": "c73119ea-4f79-4001-86e3-11c4cbaaeb2d",
+          "name": "Above Threshold FDS Depth Constant",
+          "value": 2.0
+        },
+        {
+          "checkName": "Resolution Check",
+          "checkId": "c73119ea-4f79-4001-86e3-11c4cbaaeb2d",
+          "name": "Below Threshold FDS Depth Multiplier",
+          "value": 0.1
+        },
+        {
+          "checkName": "Resolution Check",
+          "checkId": "c73119ea-4f79-4001-86e3-11c4cbaaeb2d",
+          "name": "Below Threshold FDS Depth Constant",
+          "value": 0.0
         }
       ]
     }
