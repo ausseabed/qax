@@ -104,6 +104,8 @@ class QAXWidget(QtWidgets.QTabWidget):
         qa_json = self._build_qa_json()
         self.prj.qa_json = qa_json
 
+        self.status_message.emit(f"Parameter values updated to {specification.name} Standard", 2000)
+
     def _on_update_check_inputs(self):
         """ Read the feature files provided by the user"""
         qa_json = self._build_qa_json()
