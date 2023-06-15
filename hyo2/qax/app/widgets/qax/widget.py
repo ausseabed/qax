@@ -82,11 +82,13 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.tabs.currentChanged.connect(self.change_tabs)
 
     def initialize(self):
-        self.tab_inputs.initialize()
-        # todo: save last selected profile and set here as default.
+        # set initial profile, this may be replaced when the tab_inputs is initialised
+        # as that is where the config file is loaded and we read the selected profile
+        # info from the ast QAX session
         self.profile = QaxConfig.instance().profiles[0]
         self.tab_plugins.set_profile(self.profile)
 
+        self.tab_inputs.initialize()
         self.status_message.emit("Initialised", 1000)
 
     def _on_plugin_changed(self, plugin: QaxCheckToolPlugin):
