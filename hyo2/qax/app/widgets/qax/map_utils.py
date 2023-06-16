@@ -26,7 +26,7 @@ class MarkerItem(object):
         return self._size
 
     def set_size(self, value):
-        self._size = size
+        self._size = value
 
     def properties(self):
         return self._properties
@@ -57,7 +57,7 @@ class LineItem(object):
         return self._width
 
     def set_width(self, value):
-        self._width = size
+        self._width = value
 
 
 class PolygonItem(object):
@@ -94,7 +94,7 @@ class PolygonItem(object):
         return self._line_width
 
     def set_line_width(self, value):
-        self._line_width = size
+        self._line_width = value
 
 
 class MarkersModel(QAbstractListModel):
