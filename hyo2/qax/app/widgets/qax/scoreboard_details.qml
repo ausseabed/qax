@@ -18,6 +18,19 @@ Pane {
   Plugin {
     id: mapPlugin
     name: "osm"
+
+//    // https://services.ga.gov.au/gis/rest/services/NationalBaseMap/MapServer/tile
+//    PluginParameter {
+//      name: "osm.mapping.custom.host"
+//      value: "https://services.ga.gov.au/gis/rest/services/NationalBaseMap/MapServer/tile/"
+//    }
+// and add following in map definition
+// activeMapType: supportedMapTypes[supportedMapTypes.length - 1]
+
+    PluginParameter {
+      name: "osm.mapping.providersrepository.disabled"
+      value: true
+    }
   }
 
   SplitView {

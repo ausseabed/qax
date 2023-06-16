@@ -14,6 +14,11 @@ Pane {
   Plugin {
     id: mapPlugin
     name: "osm"
+
+    PluginParameter {
+      name: "osm.mapping.providersrepository.disabled"
+      value: true
+    }
   }
 
   SplitView {
