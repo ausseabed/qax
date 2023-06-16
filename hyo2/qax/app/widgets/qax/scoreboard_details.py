@@ -167,6 +167,9 @@ class ScoreboardDetailsWidget(QtWidgets.QGroupBox):
         self.polygonsModel = PolygonsModel()
         rc.setContextProperty('polygonsModel', self.polygonsModel)
 
+        self.extentsPolygonsModel = PolygonsModel()
+        rc.setContextProperty('extentsPolygonsModel', self.extentsPolygonsModel)
+
         self.dataModel = DictTreeModel()
         rc.setContextProperty('dataModel', self.dataModel)
 
@@ -189,6 +192,15 @@ class ScoreboardDetailsWidget(QtWidgets.QGroupBox):
             return None
         return check.outputs.data['map']
 
+    def get_check_extents_geojson(self, check):
+        if (check is None or
+                check.outputs is None or
+                check.outputs.data is None or
+                'extents' not in check.outputs.data):
+            # if there's no map data just return None
+            return None
+        return check.outputs.data['extents']
+
     def set_selected_check(self, check: QajsonCheck):
         if check.outputs is not None and check.outputs.data is not None:
             self.dataModel.set_data_dict(check.outputs.data)
@@ -200,5 +212,15 @@ class ScoreboardDetailsWidget(QtWidgets.QGroupBox):
             self.markersModel.add_from_geojson(geojson)
             self.linesModel.add_from_geojson(geojson, color='blue')
             self.polygonsModel.add_from_geojson(geojson, color='#80FF0000', line_color='#FFFF0000')
+
+        self.extentsPolygonsModel.remove_all()
+        extents_geojson = self.get_check_extents_geojson(check)
+        if extents_geojson is not None:
+            self.extentsPolygonsModel.add_from_geojson(
+                extents_geojson,
+                color='#00000000',
+                line_color='#AA000000',
+                line_width=2
+            )
 
         self.manager.set_check(check)

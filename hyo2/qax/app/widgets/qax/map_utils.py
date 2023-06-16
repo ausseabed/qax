@@ -361,7 +361,15 @@ class PolygonsModel(QAbstractListModel):
             return Qt.ItemIsEnabled
         return QAbstractListModel.flags(index) | Qt.ItemIsEditable
 
-    def add_from_geojson(self, geojson, color='green', line_color='blue'):
+    def add_from_geojson(
+            self,
+            geojson,
+            color='green',
+            line_color='blue',
+            line_width=5
+        ):
+        ''' Update this model with data from a geojson multipolygon
+        '''
         new_polys = []
         if not (geojson['type'] == 'MultiPolygon'):
             return
@@ -377,7 +385,8 @@ class PolygonsModel(QAbstractListModel):
             new_poly = PolygonItem(
                 poly_points,
                 color=color,
-                line_color=line_color
+                line_color=line_color,
+                line_width=line_width
             )
             new_polys.append(new_poly)
 

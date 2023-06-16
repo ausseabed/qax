@@ -273,6 +273,16 @@ Pane {
                   }
 
                   MapItemView {
+                    model: extentsPolygonsModel
+                    delegate: MapPolygon{
+                      path: polygonCoordinates
+                      border.width: lineWidth
+                      border.color: lineColor
+                      color: mcolor
+                    }
+                  }
+
+                  MapItemView {
                     model: linesModel
                     delegate: MapPolyline{
                       path: lineCoordinates
