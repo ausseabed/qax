@@ -306,9 +306,11 @@ class RunTab(QtWidgets.QWidget):
         log_layout.addWidget(log_label)
 
         self.log_messages = QPlainTextEdit()
-        log_font = QFont("monospace")
-        log_font.setStyleHint(QFont.TypeWriter)
-        self.log_messages.setFont(log_font)
+        doc: QtGui.QTextDocument = self.log_messages.document()
+        font = doc.defaultFont()
+        font.setFamily("Courier New")
+        doc.setDefaultFont(font)
+
         self.log_messages.setReadOnly(True)
         self.log_messages.setSizePolicy(
             QSizePolicy.Expanding,
