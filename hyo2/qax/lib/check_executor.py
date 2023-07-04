@@ -1,4 +1,6 @@
 from typing import List
+import logging
+import logging.handlers
 import multiprocessing as mp
 
 from ausseabed.qajson.model import QajsonRoot
@@ -181,7 +183,14 @@ class MultiprocessCheckExecutor(mp.Process, CheckExecutor):
         self.queue = queue
         self.stop_event = mp.Event()
 
+    def _configure_log(self):
+        h = logging.handlers.QueueHandler(self.queue)
+        root = logging.getLogger()
+        root.addHandler(h)
+        root.setLevel(logging.DEBUG)
+
     def run(self):
+        self._configure_log()
         # seems ugly, but is required
         # expect this is related to the fact both the Process and CheckExecutor
         # classes implement a `run` function.

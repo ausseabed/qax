@@ -41,6 +41,7 @@ class QtCheckExecutorThread(QtCore.QThread):
     check_tool_started = QtCore.Signal(object)
     checks_complete = QtCore.Signal()
     status_changed = QtCore.Signal(str)
+    log_recieved = QtCore.Signal(logging.LogRecord)
 
     def __init__(
             self,
@@ -87,6 +88,12 @@ class QtCheckExecutorThread(QtCore.QThread):
                     self.qajson_updated.emit()
                 elif isinstance(queue_item, ChecksCompleteQueueItem):
                     self.checks_complete.emit()
+                elif isinstance(queue_item, logging.LogRecord):
+                    self.log_recieved.emit(queue_item)
+                else:
+                    print("Other queue item")
+                    print(type(queue_item).__name__)
+                    print(queue_item)
 
         self.mp_checkexecutor.join()
 
@@ -111,6 +118,11 @@ class RunTab(QtWidgets.QWidget):
 
         # final setup
         self.set_run_stop_buttons_enabled(False)
+
+        self.log_formatter = logging.Formatter(
+            fmt='%(asctime)s %(levelname)s %(message)s',
+            datefmt='%H:%M:%S'
+        )
 
     def _add_check_outputs(self):
         co_groupbox = QGroupBox("Check outputs")
@@ -330,6 +342,7 @@ class RunTab(QtWidgets.QWidget):
 
     def _log_message(self, message):
         self.log_messages.appendPlainText(message)
+        self.log_messages.appendPlainText("")
 
     def run_executor(self, check_executor: QtCheckExecutorThread):
         # we pass the check_executor into the run tab as this is where the UI
@@ -347,6 +360,7 @@ class RunTab(QtWidgets.QWidget):
         self.check_executor.qajson_updated.connect(self._on_qajson_update)
         self.check_executor.checks_complete.connect(self._on_checks_complete)
         self.check_executor.status_changed.connect(self._on_status_change)
+        self.check_executor.log_recieved.connect(self._on_log_recieved)
         self.check_executor.start()
 
     def get_options(self) -> Dict:
@@ -396,3 +410,8 @@ class RunTab(QtWidgets.QWidget):
     @QtCore.Slot(str)
     def _on_status_change(self, status):
         self.status_name_text_label.setText(status)
+
+    @QtCore.Slot(logging.LogRecord)
+    def _on_log_recieved(self, log: logging.LogRecord):
+        msg = self.log_formatter.format(log)
+        self._log_message(msg)
