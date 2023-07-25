@@ -187,7 +187,11 @@ class MultiprocessCheckExecutor(mp.Process, CheckExecutor):
         h = logging.handlers.QueueHandler(self.queue)
         root = logging.getLogger()
         root.addHandler(h)
-        root.setLevel(logging.DEBUG)
+        root.setLevel(logging.WARNING)
+
+        qax_namespaces = ['ausseabed']
+        for ns in qax_namespaces:
+            logging.getLogger(ns).setLevel(logging.INFO)
 
     def run(self):
         self._configure_log()
