@@ -40,12 +40,6 @@
         {
           "checkName": "Density Check",
           "checkId": "5e2afd8a-2ced-4de8-80f5-111c459a7175",
-          "name": "Minimum Soundings per node at percentage",
-          "value": 9
-        },
-        {
-          "checkName": "Density Check",
-          "checkId": "5e2afd8a-2ced-4de8-80f5-111c459a7175",
           "name": "Minimum Soundings per node percentage",
           "value": 95.0
         },
@@ -115,12 +109,6 @@
         {
           "checkName": "Density Check",
           "checkId": "5e2afd8a-2ced-4de8-80f5-111c459a7175",
-          "name": "Minimum Soundings per node at percentage",
-          "value": 9
-        },
-        {
-          "checkName": "Density Check",
-          "checkId": "5e2afd8a-2ced-4de8-80f5-111c459a7175",
           "name": "Minimum Soundings per node percentage",
           "value": 95.0
         },
@@ -186,12 +174,6 @@
           "checkId": "5e2afd8a-2ced-4de8-80f5-111c459a7175",
           "name": "Minimum Soundings per node",
           "value": 5
-        },
-        {
-          "checkName": "Density Check",
-          "checkId": "5e2afd8a-2ced-4de8-80f5-111c459a7175",
-          "name": "Minimum Soundings per node at percentage",
-          "value": 9
         },
         {
           "checkName": "Density Check",
