@@ -36695,10 +36695,6 @@
                                 "value": 5
                             },
                             {
-                                "name": "Minimum Soundings per node at percentage",
-                                "value": 9
-                            },
-                            {
                                 "name": "Minimum Soundings per node percentage",
                                 "value": 95.0
                             }
