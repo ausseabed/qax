@@ -59,13 +59,12 @@ survey grid input adheres to specific requirement
 
 .. autoclass:: ausseabed.mbesgc.lib.mbesgridcheck.DensityCheck
 
-There are three parameters that can be changed to modify the Density Grid check
+There are two parameters that can be changed to modify the Density Grid check
 
 ================================================  ====================================
 Parameter                                         Description
 ================================================  ====================================
 Minimum Soundings per node (mspn)                 Value of density node threshold
-Minimum Soundings per node at percentage (mspna)  Percentage of nodes required to fail
 Minimum Soundings per node percentage (mspp)      Percentage of nodes required to pass
 ================================================  ====================================
 
@@ -78,7 +77,6 @@ Parameter                                         Value
 ================================================  ====================================
 Minimum Soundings per node (mspn)                 9
 Minimum Soundings per node at percentage (mspna)  100
-Minimum Soundings per node percentage (mspp)      0
 ================================================  ====================================
 
 The Density layer from your grid is then compared to the minimum sounding \
@@ -348,7 +346,6 @@ The parameters are as follows:
 Density Check
 
 #. Minimum Soundings per node - Minimum number required in density layer of density layer of gridded surface
-#. Minimum Soundings per node at percentage - Minimum number required in density layer of density layer of gridded surface linked with the percentage below
 #. Minimum Soundings per node percentage - Percentage of cells required to pass with the minimum number from above
 
 Resolution Check
