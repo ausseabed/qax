@@ -48,7 +48,7 @@ jobs:
           name: Update conda, install qax environment
           command: |
             conda update conda
-            conda install python=3.10
+            conda install python=3.10.8=h0269646_0_cpython
             Write-Host "$env:CONDA_ROOT"
       - run:
           name: Download GitHub based dependencies
@@ -64,6 +64,7 @@ jobs:
             $client.DownloadFile("https://github.com/ausseabed/kmall/archive/master.zip","C:\tmp\kmall.zip")
       - run:
           name: Activate the qax conda environment, update the version and install the package
+          no_output_timeout: 30m
           command: |
             $env:CIRCLE_TAG | out-file -Encoding ascii -filepath ./version.txt
             pwd
