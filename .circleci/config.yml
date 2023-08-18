@@ -48,7 +48,7 @@ jobs:
           name: Update conda, install qax environment
           command: |
             conda update conda
-            conda install python=3.10.8=h0269646_0_cpython
+            conda install -y -c conda-forge python=3.10.8=h0269646_0_cpython
             Write-Host "$env:CONDA_ROOT"
       - run:
           name: Download GitHub based dependencies
