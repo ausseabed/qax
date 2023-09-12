@@ -10,8 +10,3 @@ setuptools==65.6.3
 structlog==22.3.0
 XlsxWriter==3.0.8
 pandas==1.5.3
-git+https://github.com/ausseabed/qajson.git@master#egg=ausseabed.qajson
-git+https://github.com/ausseabed/pyall.git@master#egg=pyall
-git+https://github.com/ausseabed/pygsf.git@master#egg=pygsf
-git+https://github.com/ausseabed/mate.git@master#egg=hyo2.mate
-git+https://github.com/ausseabed/kmall.git@master#egg=kmall
