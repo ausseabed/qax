@@ -22,7 +22,8 @@ Installation latest executable installer package (.exe)
 
     The QAX logo.
 
-If you are on Windows, you can easily install QAX from the latest executable package installer found `here <https://github.com/ausseabed/qax/releases.html>`_.
+If you are on Windows, you can easily install QAX from the latest executable package installer
+found `here <https://github.com/ausseabed/qax/releases>`_.
 
 .. note::
     This is the recomended install method for anyone just wanting to use the QAX application
@@ -31,75 +32,111 @@ Create your own environment and run QAX from source
 -----------------------------------------------------
 There are 3 steps
 
-#. Establish conda environment that is able to run QAX
-#. Clone code repositories and install unbundled
-#. Install unbundled module for QAX
+#. Create conda environment and install the necessary dependencies needed to run QAX
+#. Clone (or download) code repositories for QAX plugins and other dependencies
+#. Install and run QAX
 
-Establish conda environment that is able to run QAX
+Create conda environment for QAX
 ******************************************************
 Start by installing `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ (on Windows) and installing necessary dependencies (NumPy, GDAL, hyo2.abc, hyo2.mate) and  QAX itself.
-The following command sequence is suggested:
-::
-    conda create -y -n qax python=3.7
+The following command sequence is suggested: ::
+
+    conda create -y -n qax python=3.10
     conda activate qax
     
-    conda install -y -c conda-forge git
-    cd <directory where qax environment was created>
-    git clone https://github.com/ausseabed/qax
-    cd .\qax
+    conda install -y -c conda-forge certifi
     conda install -y -c conda-forge --file requirements_conda.txt
     conda install -y -c conda-forge --no-deps cartopy
-    conda install -y -c conda-forge  --no-deps pyproj
-    pip install -r requirements.txt
-    pip install --no-deps git+git://github.com/hydroffice/hyo2_abc.git@master#egg=hyo2.abc
-    
-Clone code repositories you want to contribute to and install unbundled
-*************************************************************************
-You need to remove from the requirements.txt file any modules you want to install unbundled.  
-As an example if you wanted to contribute to mate plugin then remove it from the requirements.txt file and after that install requirements according to requirements.txt
-::
-    pip install -r requirements.txt
-    
-You then need to install the modules you wish to contibute to unbundled, as per the example
-::
-    git clone https:\\github.com\ausseabed\mate
-    pip install -e .\mate\
-    
-Do the above for all modules you want to install unbundled, e.g. pyall, pygsf, qajson etc.
+    conda install -y -c conda-forge --no-deps pyproj=3.4.0
 
-Clone code repositories and install unbundled
-***************************************************
-Clone QAX and install unbundled
-::
-    git clone https:\\github.com\ausseabed\qax
-    pip install .\qax\
+    pip install -r requirements.txt
+
+If running on Windows the following package needs to be installed::
+
+    pip install pypiwin32
+
+
+Clone (or download) code repositories for QAX plugins
+*******************************************************
+
+Clone (or download) each of the following repositories:
+
+* https://github.com/ausseabed/qajson
+* https://github.com/ausseabed/pyall
+* https://github.com/ausseabed/pygsf
+* https://github.com/ausseabed/mate
+* https://github.com/ausseabed/mbes-grid-checks
+* https://github.com/ausseabed/finder-grid-checks
+* https://github.com/hydroffice/hyo2_abc
+* https://github.com/ausseabed/kmall
+
+Note: It is recomended that each of these repositories be stored at the same
+directory structure level as the qax repository.
+
+
+Install each of the cloned repositories into the `qax` environment. Use the
+`-e` argument to have these installed in an editable mode as this better supports
+development workflows::
+
+    cd qajson
+    pip install -e .
+    cd ..
+
+    cd pyall
+    pip install .
+    cd ..
+
+    cd pygsf
+    pip install .
+    cd ..
+
+    cd mate
+    pip install -e .
+    cd ..
+
+    cd mbes-grid-checks
+    pip install -e .
+    cd ..
+
+    cd finder-grid-checks
+    pip install -e .
+    cd ..
+
+    cd hyo2_abc
+    pip install .
+    cd ..
+
+    cd kmall
+    pip install .
+    cd ..
+
+Install and run QAX
+*********************
+
+Install the qax package::
+
+    cd qax
+    pip install -e .
+
+QAX can then be run with the following command::
+
+    python hyo2\qax\app\__main__.py
+
+
 
 Build your own executable from source
 -----------------------------------------
 There are 3 steps
 
-#. Establish conda environment that is able to run QAX
+#. Follow the above process to create QAX environment
 #. Use `pyinstaller` to generate a redistributable directory of the dependencies included in the conda env
 #. Use Inno Setup to build an msi install file from the redistributable directory contents
 
-Establish conda environment that is able to run QAX
-*******************************************************
-Start by installing `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ (on Windows) and installing necessary dependencies (NumPy, GDAL, hyo2.abc, hyo2.mate) and  QAX itself. *pyinstaller will also need to be installed in this environment.*
-The following command sequence is suggested:
-:: 
-    conda create -y -n qax python=3.7
-    conda activate qax
-    
-    conda install -y pip
-    conda install -y -c conda-forge --file requirements_conda.txt
-    conda install -y -c conda-forge --no-deps cartopy
-    pip install -r requirements.txt
-    pip install pypiwin32
-    conda install -y -c conda-forge  --no-deps pyproj
-    
-    pip install --no-deps git+git://github.com/hydroffice/hyo2_abc.git@master#egg=hyo2.abc
+::
 
-    pip install .
+
+Install pyinstaller
+*********************
 
     pip install pyinstaller
 
