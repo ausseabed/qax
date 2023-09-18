@@ -22,6 +22,7 @@ from hyo2.qax.app.widgets.qax.manual import ManualWindow
 from hyo2.qax.lib import lib_info
 from hyo2.qax.app import app_info
 from hyo2.qax.app.widgets.qax.widget import QAXWidget
+from hyo2.qax.app.widgets.qax.settings_dialog import SettingsDialog
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.grid_transformer_dialog import GridTransformerDialog
 
@@ -127,6 +128,14 @@ class MainWin(QtWidgets.QMainWindow):
         open_action.setStatusTip("Open QAJSON")
         open_action.triggered.connect(self.open_qajson)
         fileMenu.addAction(open_action)
+
+        fileMenu.addSeparator()
+
+        settings_icon = qta.icon('fa5s.cog')
+        settings_action = QAction(settings_icon, "Settings...", self)
+        settings_action.setStatusTip("View/Edit QAX settings")
+        settings_action.triggered.connect(self.open_settings)
+        fileMenu.addAction(settings_action)
 
         fileMenu.addSeparator()
 
@@ -311,6 +320,11 @@ class MainWin(QtWidgets.QMainWindow):
         gt_dialog = GridTransformerDialog()
         gt_dialog.show()
         gt_dialog.exec_()
+
+    def open_settings(self):
+        settings_dialog = SettingsDialog()
+        settings_dialog.show()
+        settings_dialog.exec_()
 
     def quitAction(self):
         reply = self.do_you_really_want("Quit", f"quit {self.name}")
