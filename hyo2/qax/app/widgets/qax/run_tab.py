@@ -16,6 +16,7 @@ from hyo2.abc.lib.helper import Helper
 
 from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
+from hyo2.qax.app import gui_settings_const
 from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin
 from hyo2.qax.lib.check_options import CheckOption
@@ -182,12 +183,12 @@ class RunTab(QtWidgets.QWidget):
         output_folder = QFileDialog.getExistingDirectory(
             self,
             f"Select folder for spatial outputs",
-            GuiSettings.settings().value("spatial_outputs"),
+            GuiSettings.settings().value(gui_settings_const.spatial_outputs_folder),
             QFileDialog.ShowDirsOnly)
 
         if os.path.exists(output_folder):
             GuiSettings.settings().setValue(
-                "spatial_outputs", output_folder)
+                gui_settings_const.spatial_outputs_folder, output_folder)
 
         self.output_folder_input.setText(output_folder)
 

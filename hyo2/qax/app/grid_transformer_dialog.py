@@ -12,6 +12,7 @@ from ausseabed.mbesgc.lib.grid_transformer import GridTransformer
 
 from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
+from hyo2.qax.app import gui_settings_const
 from hyo2.qax.lib.data import RasterFileInfo
 
 
@@ -127,9 +128,6 @@ input_band_names = [
     "Uncertainty"
 ]
 
-# names used in config file to remember locations user last opened file from
-input_folder_settings = 'grid_transformer_input_folder'
-output_folder_settings = 'grid_transformer_output_folder'
 
 
 class GridTransformerInputBand(QWidget):
@@ -236,14 +234,14 @@ class GridTransformerInputBand(QWidget):
         selections, _ = QFileDialog.getOpenFileNames(
             self,
             f"Open {self.band_name} file",
-            GuiSettings.settings().value(input_folder_settings),
+            GuiSettings.settings().value(gui_settings_const.input_folder_settings),
             filters)
         if len(selections) == 0:
             return
         last_open_folder = os.path.dirname(selections[0])
         if os.path.exists(last_open_folder):
             GuiSettings.settings().setValue(
-                input_folder_settings, last_open_folder)
+                gui_settings_const.input_folder_settings, last_open_folder)
 
         self._set_filename(selections[0])
 
@@ -365,14 +363,14 @@ class GridTransformerDialog(QDialog):
         filename, _ = QFileDialog.getSaveFileName(
             self,
             f"Select output file",
-            GuiSettings.settings().value(output_folder_settings),
+            GuiSettings.settings().value(gui_settings_const.output_folder_settings),
             filters)
         if filename is None:
             return
         last_open_folder = os.path.dirname(filename)
         if os.path.exists(last_open_folder):
             GuiSettings.settings().setValue(
-                output_folder_settings, last_open_folder)
+                gui_settings_const.output_folder_settings, last_open_folder)
 
         self._set_output_filename(filename)
 
