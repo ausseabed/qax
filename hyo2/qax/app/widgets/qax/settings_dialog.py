@@ -4,9 +4,15 @@ from PySide2.QtWidgets import QApplication, QDialog, QLineEdit, \
     QFrame
 from PySide2.QtGui import QFont, QIntValidator
 from PySide2 import QtCore
+from typing import Any
 
 from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
+from hyo2.qax.app import gui_settings_const
+
+GRIDPROCESSING_TILE_SIZE_MIN = 2000
+GRIDPROCESSING_TILE_SIZE_MAX = 200000
+GRIDPROCESSING_TILE_SIZE_DEFAULT = 40000
 
 
 class SettingsDialog(QDialog):
@@ -35,7 +41,37 @@ class SettingsDialog(QDialog):
         close_layout.addWidget(button_close)
         self.layout.addLayout(close_layout)
 
-    def _add_gridprocessing(self):
+        self._load_data_from_config()
+
+    def __get_gridprocessing_tile_size(self, cfg_var_name: str) -> int:
+        val = GuiSettings.settings().value(cfg_var_name)
+        return self.__sanitise_tile_size(val)
+
+    def __sanitise_tile_size(self, val: Any) -> int:
+        if val is None:
+            return GRIDPROCESSING_TILE_SIZE_DEFAULT
+        try:
+            ival = int(val)
+            if ival < GRIDPROCESSING_TILE_SIZE_MIN:
+                return GRIDPROCESSING_TILE_SIZE_MIN
+            elif ival > GRIDPROCESSING_TILE_SIZE_MAX:
+                return GRIDPROCESSING_TILE_SIZE_MAX
+            else:
+                return ival
+        except ValueError:
+            return GRIDPROCESSING_TILE_SIZE_DEFAULT
+
+    def _load_data_from_config(self) -> None:
+        gp_t_x = self.__get_gridprocessing_tile_size(
+            gui_settings_const.gridprocessing_tile_x
+        )
+        self.processingtile_x.setText(str(gp_t_x))
+        gp_t_y = self.__get_gridprocessing_tile_size(
+            gui_settings_const.gridprocessing_tile_y
+        )
+        self.processingtile_y.setText(str(gp_t_y))
+
+    def _add_gridprocessing(self) -> None:
         # Grid Processing config options
         gridprocessing_groupbox = QGroupBox("Grid Processing")
         gridprocessing_groupbox.setSizePolicy(
@@ -73,9 +109,18 @@ class SettingsDialog(QDialog):
 
         processingtile_layout = QHBoxLayout()
         gridprocessing_layout.addLayout(processingtile_layout)
-        processingtile_layout.setSpacing(4)
+        processingtile_layout.setSpacing(32)
 
-        processingtile_size_validator = QIntValidator(2000, 100000)
+        processingtile_size_validator = QIntValidator(
+            GRIDPROCESSING_TILE_SIZE_MIN, GRIDPROCESSING_TILE_SIZE_MAX
+        )
+
+        processingtile_layout_x = QHBoxLayout()
+        processingtile_layout.addLayout(processingtile_layout_x)
+        processingtile_layout_x.setSpacing(4)
+        processingtile_layout_y = QHBoxLayout()
+        processingtile_layout.addLayout(processingtile_layout_y)
+        processingtile_layout_y.setSpacing(4)
 
         self.processingtile_x = QLineEdit()
         self.processingtile_x.setValidator(processingtile_size_validator)
@@ -93,16 +138,22 @@ class SettingsDialog(QDialog):
         self.processingtile_y.setSizePolicy(
             QSizePolicy.Expanding,
             QSizePolicy.Expanding)
-        processingtile_layout.addWidget(QLabel('x tile size: '))
-        processingtile_layout.addWidget(self.processingtile_x)
-        processingtile_layout.addWidget(QLabel('y tile size:'))
-        processingtile_layout.addWidget(self.processingtile_y)
+        processingtile_layout_x.addWidget(QLabel('x tile size: '))
+        processingtile_layout_x.addWidget(self.processingtile_x)
+        processingtile_layout_y.addWidget(QLabel('y tile size:'))
+        processingtile_layout_y.addWidget(self.processingtile_y)
 
     def _on_processingtile_x_changed(self, x):
-        pass
+        GuiSettings.settings().setValue(
+            gui_settings_const.gridprocessing_tile_x,
+            self.__sanitise_tile_size(x)
+        )
 
     def _on_processingtile_y_changed(self, y):
-        pass
+        GuiSettings.settings().setValue(
+            gui_settings_const.gridprocessing_tile_y,
+            self.__sanitise_tile_size(y)
+        )
 
     def close_dialog(self):
         self.close()
