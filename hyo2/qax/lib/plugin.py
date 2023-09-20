@@ -236,6 +236,20 @@ class QaxCheckToolPlugin():
         else:
             return None
 
+    @property
+    def gridprocessing_tile_x(self) -> str:
+        if CheckOption.gridprocessing_tile_x in self.options:
+            return self.options[CheckOption.gridprocessing_tile_x]
+        else:
+            return None
+
+    @property
+    def gridprocessing_tile_y(self) -> str:
+        if CheckOption.gridprocessing_tile_y in self.options:
+            return self.options[CheckOption.gridprocessing_tile_y]
+        else:
+            return None
+
     def get_file_groups(self) -> List[QaxFileGroup]:
         """ Generate a list of file groups for this check tool plugin
         """

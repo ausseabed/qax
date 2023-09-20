@@ -14,6 +14,9 @@ import multiprocessing as mp
 
 from hyo2.abc.lib.helper import Helper
 
+from hyo2.qax.app.gui_settings import GuiSettings
+from hyo2.qax.app import gui_settings_const
+
 from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app import gui_settings_const
@@ -368,11 +371,21 @@ class RunTab(QtWidgets.QWidget):
         ''' Gets a list of options based on user entered data. eg; the spatial
         output specifications.
         '''
-        return {
+        options = {
             CheckOption.spatial_output_qajson: self.qajson_spatial_checkbox.isChecked(),
             CheckOption.spatial_output_export: self.export_spatial_checkbox.isChecked(),
             CheckOption.spatial_output_export_location: self.output_folder_input.text()
         }
+
+        # check if the user has provided non-default values for the processing
+        # tile size, and if so pass them into all the checks via the options dict
+        gp_t_x = GuiSettings.settings().value(gui_settings_const.gridprocessing_tile_x)
+        gp_t_y = GuiSettings.settings().value(gui_settings_const.gridprocessing_tile_y)
+        if gp_t_x is not None and gp_t_y is not None:
+            options[CheckOption.gridprocessing_tile_x] = int(gp_t_x)
+            options[CheckOption.gridprocessing_tile_y] = int(gp_t_y)
+
+        return options
 
     def _click_run(self):
         self.run_checks.emit()
