@@ -17,4 +17,4 @@ dependencies:
   - numexpr==2.8.3
   - pip>=20.1
   - pip:
-    - -r file:requirements.txt
+    - -r requirements.txt
