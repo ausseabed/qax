@@ -34,6 +34,7 @@ jobs:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
           environment-file: conda-environment.yaml
+          activate-environment: build-qax
 
       # avoid building with --no-deps; can lead to broken libraries; pulled the packages into requirements.txt
       # - name: Install packages with no-deps
@@ -49,7 +50,7 @@ jobs:
         run: |
           echo "${{  github.ref_name }}" >> version.txt
           conda info --envs
-          conda activate buildqax
+          conda activate build-qax
           pip install .
 
       # yes we could have a separate job, specificially a sphinx build action

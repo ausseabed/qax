@@ -1,4 +1,4 @@
-name: buildqax
+name: build-qax
 channels:
   - conda-forge
   - defaults
