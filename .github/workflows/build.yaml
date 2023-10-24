@@ -24,7 +24,7 @@ jobs:
           # Increase this value to reset cache if setup.py has not changed
           CACHE_NUMBER: 0
         with:
-          # path: ~/conda_pkgs_dir
+          path: ~/conda_pkgs_dir
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
             hashFiles('conda-environment.yaml') }}
