@@ -92,3 +92,4 @@ jobs:
 # https://github.com/marketplace/actions/setup-micromamba
 # https://carpentries-incubator.github.io/introduction-to-conda-for-data-scientists/04-sharing-environments/index.html#:~:text=Conda%20uses%20YAML%20(%E2%80%9CYAML%20Ain,style%20indentation%20to%20indicate%20nesting.
 # https://saturncloud.io/blog/how-to-create-a-conda-environment-based-on-a-yaml-file-a-guide-for-data-scientists/
+# https://github.com/actions/runner-images/blob/main/images/win/Windows2022-Readme.md
