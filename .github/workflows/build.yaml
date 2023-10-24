@@ -5,6 +5,7 @@ on:
     branches:
       # don't need to build anything just yet
       - 'gh-actions/**'
+  workflow_dispatch:
 
 jobs:
   build:
