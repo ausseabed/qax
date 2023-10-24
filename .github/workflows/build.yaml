@@ -48,6 +48,7 @@ jobs:
         shell: bash -l {0}
         run: |
           echo "${{  github.ref_name }}" >> version.txt
+          conda info --envs
           conda activate buildqax
           pip install .
 
