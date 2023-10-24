@@ -3,7 +3,8 @@ name: QAX Windows Build
 on:
   push:
     branches:
-      - gh-actions
+      # don't need to build anything just yet
+      - 'gh-actions/**'
 
 jobs:
   build:
@@ -23,7 +24,7 @@ jobs:
           # Increase this value to reset cache if setup.py has not changed
           CACHE_NUMBER: 0
         with:
-          path: ~/conda_pkgs_dir
+          # path: ~/conda_pkgs_dir
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
             hashFiles('conda-environment.yaml') }}
@@ -34,16 +35,43 @@ jobs:
           python-version: ${{ matrix.python-version }}
           environment-file: conda-environment.yaml
 
-      - name: Install packages with no-deps
+      # avoid building with --no-deps; can lead to broken libraries; pulled the packages into requirements.txt
+      # - name: Install packages with no-deps
+      #   shell: bash -l {0}
+      #   run: |
+      #     conda install -y -c conda-forge --no-deps --file requirements-no-deps.txt
+      #     pip install .
+      #
+      #
+
+      - name: Install QAX
         shell: bash -l {0}
         run: |
-          conda install -y -c conda-forge --no-deps --file requirements-no-deps.txt
+          echo "${{  github.ref_name }}.zip" >> version.txt
           pip install .
+
+      # yes we could have a separate job, specificially a sphinx build action
+      # and then upload the artifact and then download it within the win-builder
+      - name: Docs-build
+        shell: bash -l {0}
+        run: |
+          sphinx-build -b html docs docs/_build/html
 
       - name: Pyinstaller
         shell: bash -l {0}
         run: |
           pyinstaller .\install\cli.spec
+
+      - name: Zip container
+        shell: bash -l {0}
+        run: |
+          tar -czf "qax_dist_${{  github.ref_name }}.zip" dist/qax
+
+      - name: Run inno setup
+        shell: bash -l {0}
+        run: |
+          cp version.txt install/  # rework. the qax.iss requires a C def titled MyAppVersion
+          ISCC install/qax.iss
 
 # TODO; docs build, windows installer inno setup, gh release, 
 
