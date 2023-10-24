@@ -1,0 +1,20 @@
+name: buildqax
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - certifi
+  - GDAL==3.6.0
+  - qt-webengine==5.15.9
+  - qtawesome
+  - cartopy
+  - pyproj=3.4.0
+  - PySide2==5.15.6
+  - appdirs
+  - numpy==1.23.5
+  - scipy=1.9.3
+  - numba==0.56.4
+  - numexpr==2.8.3
+  - pip>=20.1
+  - pip:
+    - -r file:requirements.txt
