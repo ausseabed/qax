@@ -3,8 +3,7 @@ name: QAX Windows Build
 on:
   push:
     branches:
-      # don't need to build anything just yet
-      - 'gh-actions/**'
+      - 'gh-actions'
   workflow_dispatch:
 
 jobs:
@@ -48,11 +47,13 @@ jobs:
       - name: Install QAX
         shell: bash -l {0}
         run: |
-          echo "${{  github.ref_name }}.zip" >> version.txt
+          echo "${{  github.ref_name }}" >> version.txt
           pip install .
 
       # yes we could have a separate job, specificially a sphinx build action
-      # and then upload the artifact and then download it within the win-builder
+      # and then upload the artifact and then download it within the win-builder.
+      # However, for a distributable build, it makes more sense to build everything
+      # from the same environment rather than separate jobs to ensure consistency.
       - name: Docs-build
         shell: bash -l {0}
         run: |
@@ -73,6 +74,21 @@ jobs:
         run: |
           cp version.txt install/  # rework. the qax.iss requires a C def titled MyAppVersion
           ISCC install/qax.iss
+
+      - name: Upload QAX Windows distribution
+        uses: actions/upload-artifact@v3
+        with:
+          name: QAX-Distribution
+          path: "qax_dist_${{  github.ref_name }}.zip"
+          retention-days: 6
+
+      - name: Upload QAX Windows Setup
+        uses: actions/upload-artifact@v3
+        with:
+          name: QAX-Setup
+          path: "qax_setup_${{  github.ref_name }}.exe"
+          retention-days: 6
+
 
 # TODO; docs build, windows installer inno setup, gh release, 
 
