@@ -6,6 +6,7 @@ dependencies:
   - git
   - certifi
   - GDAL==3.6.0
+  - sphinx
   - qt-webengine==5.15.9
   - qtawesome
   - cartopy
