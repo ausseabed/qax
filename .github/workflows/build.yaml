@@ -48,6 +48,7 @@ jobs:
         shell: bash -l {0}
         run: |
           echo "${{  github.ref_name }}" >> version.txt
+          conda activate buildqax
           pip install .
 
       # yes we could have a separate job, specificially a sphinx build action
