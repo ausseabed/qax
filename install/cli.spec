@@ -8,8 +8,8 @@ qax_root = os.path.abspath(os.path.join(SPECPATH, '..'))
 
 print(os.environ)
 
-conda_prefix = 'c:\\tools\\miniconda3'
-epsg_data = os.path.abspath(os.path.join(conda_prefix , 'Library\\share\\epsg'))
+conda_prefix = os.path.join(os.path.expanduser("~"), "miniconda3", "envs", "buildqax")
+# epsg_data = os.path.abspath(os.path.join(conda_prefix , 'Library\\share\\epsg'))  # this dir doesn't exist
 proj_data = os.path.abspath(os.path.join(conda_prefix , 'Library\\share\\proj'))
 
 qt_platforms = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\platforms'))
