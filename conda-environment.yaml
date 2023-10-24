@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - git
   - certifi
   - GDAL==3.6.0
   - qt-webengine==5.15.9
