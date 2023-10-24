@@ -1,0 +1,66 @@
+name: QAX Windows Build
+
+on:
+  push:
+    branches:
+      - gh-actions
+
+jobs:
+  build:
+    # whilst we might never need it, it does however fleshout the idea of multiple os and py builds
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ["windows-latest"]
+        python-version: ["3.10"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache conda
+        uses: actions/cache@v3
+        env:
+          # Increase this value to reset cache if setup.py has not changed
+          CACHE_NUMBER: 0
+        with:
+          path: ~/conda_pkgs_dir
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
+            hashFiles('conda-environment.yaml') }}
+
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+          environment-file: conda-environment.yaml
+
+      - name: Install packages with no-deps
+        shell: bash -l {0}
+        run: |
+          conda install -y -c conda-forge --no-deps --file requirements-no-deps.txt
+          pip install .
+
+      - name: Pyinstaller
+        shell: bash -l {0}
+        run: |
+          pyinstaller .\install\cli.spec
+
+# TODO; docs build, windows installer inno setup, gh release, 
+
+      # mamba outlay, caching for day builds
+      # - name: Get current date
+      #   id: date
+      #   run: echo "date=$(date +%Y-%m-%d)" >> "${GITHUB_OUTPUT}"
+      # - uses: mamba-org/setup-micromamba@v1
+      #   with:
+      #     environment-file: environment.yml
+          # cache for same day builds
+      #     cache-environment-key: environment-${{ steps.date.outputs.date }}
+      #     cache-downloads-key: downloads-${{ steps.date.outputs.date }}
+
+# https://dev.to/epassaro/caching-anaconda-environments-in-github-actions-5hde
+# https://github.com/mamba-org/setup-micromamba
+# https://github.com/mamba-org/setup-micromamba#notes-on-caching
+# https://github.com/marketplace/actions/setup-micromamba
+# https://carpentries-incubator.github.io/introduction-to-conda-for-data-scientists/04-sharing-environments/index.html#:~:text=Conda%20uses%20YAML%20(%E2%80%9CYAML%20Ain,style%20indentation%20to%20indicate%20nesting.
+# https://saturncloud.io/blog/how-to-create-a-conda-environment-based-on-a-yaml-file-a-guide-for-data-scientists/
