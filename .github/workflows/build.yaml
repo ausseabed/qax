@@ -15,6 +15,9 @@ jobs:
         os: ["windows-latest"]
         python-version: ["3.10"]
 
+    env:
+      VERSION: "v10.0.0.dev0"
+
     steps:
       - uses: actions/checkout@v4
 
@@ -48,7 +51,8 @@ jobs:
       - name: Install QAX
         shell: bash -l {0}
         run: |
-          echo "${{  github.ref_name }}" >> version.txt
+          # echo "${{ github.ref_name }}" >> version.txt
+          echo "${{ env.VERSION }}" >> version.txt
           conda info --envs
           conda activate build-qax
           pip install .
@@ -70,7 +74,8 @@ jobs:
       - name: Zip container
         shell: bash -l {0}
         run: |
-          tar -czf "qax_dist_${{  github.ref_name }}.zip" dist/qax
+          # tar -czf "qax_dist_${{ github.ref_name }}.zip" dist/qax
+          tar -czf "qax_dist_${{ env.VERSION }}.zip" dist/qax
 
       - name: Run inno setup
         shell: bash -l {0}
@@ -82,14 +87,16 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: QAX-Distribution
-          path: "qax_dist_${{  github.ref_name }}.zip"
+          # path: "qax_dist_${{ github.ref_name }}.zip"
+          path: "qax_dist_${{ env.VERSION }}.zip"
           retention-days: 6
 
       - name: Upload QAX Windows Setup
         uses: actions/upload-artifact@v3
         with:
           name: QAX-Setup
-          path: "qax_setup_${{  github.ref_name }}.exe"
+          # path: "qax_setup_${{ github.ref_name }}.exe"
+          path: "qax_setup_${{ evn.VERSION }}.exe"
           retention-days: 6
 
 
