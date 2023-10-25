@@ -37,7 +37,7 @@ jobs:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
           environment-file: conda-environment.yaml
-          activate-environment: build-qax
+          activate-environment: ~/miniconda/envs/build-qax
 
       # avoid building with --no-deps; can lead to broken libraries; pulled the packages into requirements.txt
       # - name: Install packages with no-deps
@@ -64,22 +64,28 @@ jobs:
       - name: Docs-build
         shell: bash -l {0}
         run: |
+          conda activate build-qax
           sphinx-build -b html docs docs/_build/html
 
       - name: Pyinstaller
         shell: bash -l {0}
         run: |
+          conda activate build-qax
+          echo "${{ CONDA }}"
+          ls ~/miniconda/envs
           pyinstaller install/cli.spec
 
       - name: Zip container
         shell: bash -l {0}
         run: |
+          conda activate build-qax
           # tar -czf "qax_dist_${{ github.ref_name }}.zip" dist/qax
           tar -czf "qax_dist_${{ env.VERSION }}.zip" dist/qax
 
       - name: Run inno setup
         shell: bash -l {0}
         run: |
+          conda activate build-qax
           cp version.txt install/  # rework. the qax.iss requires a C def titled MyAppVersion
           ISCC install/qax.iss
 
