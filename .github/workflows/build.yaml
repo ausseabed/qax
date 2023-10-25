@@ -89,6 +89,8 @@ jobs:
           conda activate ~/miniconda/envs/build-qax
           cp version.txt install/  # rework. the qax.iss requires a C def titled MyAppVersion
           ISCC install/qax.iss
+          pwd
+          ls -lh .
 
       - name: Upload QAX Windows distribution
         uses: actions/upload-artifact@v3
