@@ -71,7 +71,6 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate build-qax
-          echo "${{ CONDA }}"
           ls ~/miniconda/envs
           pyinstaller install/cli.spec
 
