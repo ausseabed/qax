@@ -69,7 +69,7 @@ jobs:
       - name: Pyinstaller
         shell: bash -l {0}
         run: |
-          pyinstaller .\install\cli.spec
+          pyinstaller install/cli.spec
 
       - name: Zip container
         shell: bash -l {0}
