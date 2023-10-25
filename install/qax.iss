@@ -27,7 +27,7 @@ LicenseFile=..\dist\qax\hyo2\qax\app\media\LICENSE
 OutputBaseFilename=qax_setup_{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
-OutputDir={#WorkDir}\qax
+OutputDir={#WorkDir}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
