@@ -96,7 +96,7 @@ jobs:
         with:
           name: QAX-Setup
           # path: "qax_setup_${{ github.ref_name }}.exe"
-          path: "qax_setup_${{ evn.VERSION }}.exe"
+          path: "qax_setup_${{ env.VERSION }}.exe"
           retention-days: 6
 
 
