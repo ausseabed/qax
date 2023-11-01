@@ -18,22 +18,13 @@ def read(*parts):
         return fp.read()
 
 
-def find_version(*file_paths):
-    if os.path.isfile('version.txt'):
-        with open('version.txt', 'r') as file:
-            return file.read()
-
-    raise RuntimeError("Unable to find version string.")
-
-
 # ------------------------------------------------------------------
 #                          POPULATE SETUP
 
 setup(
     name="hyo2.qax",
-    version=find_version("hyo2", "qax", "__init__.py"),
     license="LGPLv3 license",
-
+    use_scm_version=True,
     namespace_packages=["hyo2"],
     packages=find_packages(
         exclude=[
@@ -53,6 +44,7 @@ setup(
     setup_requires=[
         "setuptools",
         "wheel",
+        "setuptools_scm",
     ],
     install_requires=[
         "jsonschema",
