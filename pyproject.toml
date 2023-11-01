@@ -2,5 +2,5 @@
 requires = ["setuptools>=60", "setuptools-scm>=8.0", "wheel"]
 
 [tool.setuptools_scm]
-write_to = "qax/_version.py"
+write_to = "hyo2.qax/_version.py"
 version_scheme = "no-guess-dev"
