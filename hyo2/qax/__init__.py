@@ -4,17 +4,20 @@ QAX
 """
 
 import logging
-import os
+try:
+    from importlib import metadata as _md
+except ImportError:
+    # Running on pre-3.8 Python; use importlib-metadata package
+    import importlib_metadata as _md
+
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-if os.path.isfile('version.txt'):
-    with open('version.txt', 'r') as file:
-        __version__ = file.read()
-        logger.info("Read version from file {}".format(__version__))
-else:
-    logger.warn("no version.txt found")
-    __version__ = 'unknown'
+try:
+    __version__ = _md.version(__name__)
+except _md.PackageNotFoundError:
+    # keeping the original logic of specifying unknown
+    __version__ = "unknown"
 
 name = "QAX"
 __author__ = 'gmasetti@ccom.unh.edu; tyanne.faulkes@noaa.gov'
