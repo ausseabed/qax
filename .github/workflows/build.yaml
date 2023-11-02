@@ -55,7 +55,8 @@ jobs:
       - name: Install QAX
         shell: bash -l {0}
         run: |
-          conda activate ~/miniconda/envs/build-qax
+          # conda activate ~/miniconda/envs/build-qax
+          conda activate build-qax
           pip install .
 
       - name: Set Version Env
@@ -84,7 +85,9 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate ~/miniconda/envs/build-qax
-          tar -czf "qax_dist_${{ env.VERSION }}.zip" dist/qax
+          ls ~/miniconda/envs/build-qax/Lib/site-packages/hyo2/qax
+          # tar -czf "qax_dist_${{ env.VERSION }}.zip" dist/qax
+          zip -r "qax_dist_${{ env.VERSION }}.zip" dist/
 
       - name: Run inno setup
         shell: bash -l {0}
