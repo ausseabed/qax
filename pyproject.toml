@@ -6,6 +6,7 @@ requires = ["setuptools>=60", "setuptools-scm>=8.0", "wheel"]
 
 [project]
 name = "hyo2.qax"
+dynamic = ["version"]
 
 [tool.setuptools_scm]
 write_to = "hyo2/qax/_version.py"
