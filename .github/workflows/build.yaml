@@ -3,7 +3,7 @@ name: QAX Windows Build
 on:
   push:
     branches:
-      - 'gh-actions'
+      - 'auto-versioning'
   workflow_dispatch:
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
 
     env:
       # mostly used as helpers for retrieving as env vars within inno setup
-      VERSION: "v10.0.0.dev0"
+      # VERSION: "v10.0.0.dev0"
       WORKDIR: ${{ github.workspace }}
 
     steps:
@@ -54,10 +54,16 @@ jobs:
         shell: bash -l {0}
         run: |
           # echo "${{ github.ref_name }}" >> version.txt
-          echo "${{ env.VERSION }}" >> version.txt
-          conda info --envs
+          # echo "${{ env.VERSION }}" >> version.txt
+          # conda info --envs
           conda activate ~/miniconda/envs/build-qax
           pip install .
+
+      - name: Set Version Env
+        shell: bash -l {0}
+        run: |
+          conda activate ~/miniconda/envs/build-qax
+          echo "VERSION=$(python -m setuptools_scm)" >> $GITHUB_ENV
 
       # yes we could have a separate job, specificially a sphinx build action
       # and then upload the artifact and then download it within the win-builder.
@@ -73,7 +79,6 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate ~/miniconda/envs/build-qax
-          ls ~/miniconda/envs
           pyinstaller install/cli.spec
 
       - name: Zip container
@@ -87,10 +92,8 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate ~/miniconda/envs/build-qax
-          cp version.txt install/  # rework. the qax.iss requires a C def titled MyAppVersion
+          # cp version.txt install/  # rework. the qax.iss requires a C def titled MyAppVersion
           ISCC install/qax.iss
-          pwd
-          ls -lh .
 
       - name: Upload QAX Windows distribution
         uses: actions/upload-artifact@v3
