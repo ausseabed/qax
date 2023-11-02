@@ -1,8 +1,5 @@
 syntax: glob
 
-# version should be created from git tag, or made manually.
-version.txt
-
 # As written by qax
 settings.ini
 
@@ -60,6 +57,7 @@ var/
 _build/
 docs/_build/*
 *.html
+_version.py
 
 # cython
 *.pyxbldc
