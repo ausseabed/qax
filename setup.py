@@ -25,7 +25,6 @@ setup(
     name="hyo2.qax",
     license="LGPLv3 license",
     use_scm_version=True,
-    namespace_packages=["hyo2"],
     packages=find_packages(
         exclude=[
             "*.tests",
