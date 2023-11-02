@@ -17,6 +17,7 @@ try:
     __version__ = _md.version(__name__)
 except _md.PackageNotFoundError:
     # keeping the original logic of specifying unknown
+    logger.warn("module version not found")
     __version__ = "unknown"
 
 name = "QAX"
