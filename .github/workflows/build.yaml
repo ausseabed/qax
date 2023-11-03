@@ -55,7 +55,10 @@ jobs:
       - name: Install QAX
         shell: bash -l {0}
         run: |
+          conda info --envs
           conda activate ~/miniconda/envs/build-qax
+          conda info --envs
+          which pip
           pip install .
 
       - name: Set Version Env
@@ -72,12 +75,14 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate ~/miniconda/envs/build-qax
+          conda info --envs
           sphinx-build -b html docs docs/_build/html
 
       - name: Pyinstaller
         shell: bash -l {0}
         run: |
           conda activate ~/miniconda/envs/build-qax
+          conda info --envs
           pyinstaller install/cli.spec
 
       - name: Zip container
