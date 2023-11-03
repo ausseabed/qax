@@ -55,8 +55,7 @@ jobs:
       - name: Install QAX
         shell: bash -l {0}
         run: |
-          # conda activate ~/miniconda/envs/build-qax
-          conda activate build-qax
+          conda activate ~/miniconda/envs/build-qax
           pip install .
 
       - name: Set Version Env
