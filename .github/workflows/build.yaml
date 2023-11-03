@@ -98,14 +98,14 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           # name: QAX-Distribution
-          name: "qax_dist_${{ env.VERSION }}.zip"
-          path: dist/
+          name: "qax_dist_${{ env.VERSION }}"
+          path: "qax_dist_${{ env.VERSION }}.tar.gz"
           retention-days: 6
 
       - name: Upload QAX Windows Setup
         uses: actions/upload-artifact@v3
         with:
-          name: QAX-Setup
+          name: "qax_setup_${{ env.VERSION }}"
           path: "qax_setup_${{ env.VERSION }}.exe"
           retention-days: 6
 
