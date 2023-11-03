@@ -80,13 +80,13 @@ jobs:
           conda activate ~/miniconda/envs/build-qax
           pyinstaller install/cli.spec
 
-      - name: Zip container
-        shell: bash -l {0}
-        run: |
-          conda activate ~/miniconda/envs/build-qax
-          ls ~/miniconda/envs/build-qax/Lib/site-packages/hyo2/qax
-          # tar -czf "qax_dist_${{ env.VERSION }}.zip" dist/qax
-          zip -r "qax_dist_${{ env.VERSION }}.zip" dist/
+      # - name: Zip container
+      #   shell: bash -l {0}
+      #   run: |
+      #     conda activate ~/miniconda/envs/build-qax
+      #     ls ~/miniconda/envs/build-qax/Lib/site-packages/hyo2/qax
+      #     # tar -czf "qax_dist_${{ env.VERSION }}.zip" dist/qax
+      #     zip -r "qax_dist_${{ env.VERSION }}.zip" dist/
 
       - name: Run inno setup
         shell: bash -l {0}
@@ -97,8 +97,9 @@ jobs:
       - name: Upload QAX Windows distribution
         uses: actions/upload-artifact@v3
         with:
-          name: QAX-Distribution
-          path: "qax_dist_${{ env.VERSION }}.zip"
+          # name: QAX-Distribution
+          name: "qax_dist_${{ env.VERSION }}.zip"
+          path: dist/
           retention-days: 6
 
       - name: Upload QAX Windows Setup
