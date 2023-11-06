@@ -3,6 +3,8 @@ requires = ["setuptools>=60", "setuptools-scm>=8.0", "wheel"]
 
 # [tool.setuptools]
 # packages = ["hyo2.qax"]
+[tool.distutils.bdist_wheel]
+universal = true
 
 [project]
 name = "hyo2.qax"
