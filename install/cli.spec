@@ -2,6 +2,8 @@
 
 import os
 
+from PyInstaller.utils.hooks import copy_metadata, collect_data_files
+
 
 spec_root = os.path.abspath(SPECPATH)
 qax_root = os.path.abspath(os.path.join(SPECPATH, '..'))
@@ -27,22 +29,26 @@ hooks_dir = os.path.join(spec_root ,'hooks')
 
 block_cipher = None
 
+# build data reqs
+datas = []
+datas += collect_data_files('hyo2.qax', include_py_files=True)
+datas += copy_metadata('hyo2.qax')
+datas.append((proj_data ,"Library\\share\\proj"))
+datas.append((qt_platforms ,"platforms"))
+datas.append((qt_webengine_res ,"."))
+datas.append((qt_webengine ,"."))
+datas.append((qt_libs ,"."))
+datas.append((qml_libs ,"."))
+datas.append((pyside2_libs, "PySide2"))
+datas.append((styles_libs, "styles"))
+datas.append((platformthemes_libs, "plugins\\platformthemes"))
+datas.append((geoservices_libs, "geoservices"))
+datas.append((r'..\docs\_build\html', "docs\_build\html"))
+
 a = Analysis(['cli.py'],
              pathex=[qax_root, bin_dir],
              binaries=[],
-             datas=[
-                 (proj_data ,"Library\\share\\proj"),
-                 (qt_platforms ,"platforms"),
-                 (qt_webengine_res ,"."),
-                 (qt_webengine ,"."),
-                 (qt_libs ,"."),
-                 (qml_libs ,"."),
-                 (pyside2_libs, "PySide2"),
-                 (styles_libs, "styles"),
-                 (platformthemes_libs, "plugins\\platformthemes"),
-                 (geoservices_libs, "geoservices"),
-                 (r'..\docs\_build\html', "docs\_build\html"),
-             ],
+             datas=datas,
              hiddenimports=['PySide2.QtPrintSupport','PySide2.QtWebChannel','PySide2.QtWebEngineCore','PySide2.QtQuick', 'pyproj', 'hyo2.abc', 'hyo2.mate','hyo2.qax','hyo2.mate.qax.plugin', 'hyo2.qax.plugins.test', 'hyo2.qax.plugins.placeholder', 'ausseabed.mbesgc', 'ausseabed.mbesgc.qax.plugin', 'ausseabed.findergc', 'ausseabed.findergc.qax.plugin'],
              hookspath=[hooks_dir],
              runtime_hooks=[],
