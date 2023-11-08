@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - 'auto-versioning'
+    # tags:
+    #   - 'v[0-9]+.[0-9]+.[0-9]+'
   workflow_dispatch:
 
 jobs:
@@ -90,8 +92,11 @@ jobs:
         run: |
           conda activate ~/miniconda/envs/build-qax
           ls ~/miniconda/envs/build-qax/Lib/site-packages/hyo2/qax
+          # tarballs may cause user questions to come back
+          # will switch to 7z later
           tar -czf "qax_dist_${{ env.VERSION }}.tar.gz" dist/qax
           # zip -r "qax_dist_${{ env.VERSION }}.zip" dist/
+          # 7z "qax_dist_${{ env.VERSION }}.zip" dist/
 
       - name: Run inno setup
         shell: bash -l {0}
@@ -113,6 +118,16 @@ jobs:
           name: "qax_setup_${{ env.VERSION }}"
           path: "qax_setup_${{ env.VERSION }}.exe"
           retention-days: 6
+
+      # - name: release
+      #   uses: Roang-zero1/github-create-release-action@v2
+      #   if: startsWith(github.ref, 'refs/tags/v')
+      #   with:
+      #     args: "qax_dist_${{ env.VERSION }}.tar.gz qax_setup_${{ env.VERSION }}.exe"
+
+  # release:
+  #   needs: build
+  #   if: startsWith(github.ref, 'refs/tags/v')
 
 
 # TODO; docs build, windows installer inno setup, gh release, 
