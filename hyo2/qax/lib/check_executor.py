@@ -6,6 +6,8 @@ import multiprocessing as mp
 from ausseabed.qajson.model import QajsonRoot
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxPlugins
 
+logger = logging.getLogger(__name__)
+
 
 class CheckExecutor():
     """ Executes checks sequentially, calling a number of functions throughout
@@ -75,13 +77,24 @@ class CheckExecutor():
 
             check_tool.options = self.options
 
-            check_tool.run(
-                self.qa_json,
-                self._progress_callback,
-                self._qajson_update_callback,
-                self.is_stopped
-            )
-            self._increment_check_number()
+            try:
+                check_tool.run(
+                    self.qa_json,
+                    self._progress_callback,
+                    self._qajson_update_callback,
+                    self.is_stopped
+                )
+                self._increment_check_number()
+            except Exception as ex:
+                # catch all exceptions a check may throw and stop running checks
+                # ideally checks would catch errors before this point
+                self._set_status("Error")
+                self.stopped = True
+                logger.error(f"Failed to run check {check_tool.description}")
+                logger.error(ex, exc_info=True)
+                self._checks_complete()
+                return
+
         if self.is_stopped():
             self._set_status("Stopped")
         else:

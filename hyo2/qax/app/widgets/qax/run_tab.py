@@ -62,6 +62,7 @@ class QtCheckExecutorThread(QtCore.QThread):
             self.queue
         )
         self.mp_running = False
+        self.qa_json = qa_json
         # options such as what output to generate, where to put it. Keys come
         # from check_options.py
         self.options = {}
