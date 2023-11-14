@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ["windows-latest"]
+        os: ["windows-latest", "ubuntu-latest"]
         python-version: ["3.10"]
 
     env:
@@ -37,6 +37,18 @@ jobs:
         with:
           env-name: "${{ env.CONDA_ENV }}"
 
+      - name: Build Docs Linux
+        if: matrix.os == 'ubuntu-latest'
+        uses: ./.github/actions/docs-linux
+        with:
+          env-name: "${{ env.CONDA_ENV }}"
+
+      - name: Build Docs Windows
+        if: matrix.os == 'windows-latest'
+        uses: ./.github/actions/docs-windows
+        with:
+          env-name: "${{ env.CONDA_ENV }}"
+
       - name: Windows Distributions
         if: matrix.os == 'windows-latest'
         uses: ./.github/actions/windows
@@ -46,11 +58,16 @@ jobs:
 
       - name: Upload
         if: matrix.os == 'windows-latest'
-        uses: ./.github/actions/upload
+        uses: ./.github/actions/upload-qax-windows
         with:
           dist-name: "qax_dist_${{ steps.qax-build.outputs.version }}"
-          dist-path: "qax_dist_${{ steps.qax-build.outputs.version }}.tar.gz"
+          dist-path: "qax_dist_${{ steps.qax-build.outputs.version }}.zip"
           setup-name: "qax_setup_${{ steps.qax-build.outputs.version }}"
           setup-path: "qax_setup_${{ steps.qax-build.outputs.version }}.exe"
+
+      - name: Upload PDF Doc
+        if: matrix.os == 'ubuntu-latest'
+        uses: ./.github/actions/upload-pdf-doc
+        with:
           pdf-name: "HydrOfficeQAX.pdf"
           pdf-path: "docs/_build/latex/HydrOfficeQAX.pdf"

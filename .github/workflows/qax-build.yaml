@@ -65,7 +65,7 @@ jobs:
         uses: ./.github/actions/upload-qax-windows
         with:
           dist-name: "qax_dist_${{ steps.qax-build.outputs.version }}"
-          dist-path: "qax_dist_${{ steps.qax-build.outputs.version }}.tar.gz"
+          dist-path: "qax_dist_${{ steps.qax-build.outputs.version }}.zip"
           setup-name: "qax_setup_${{ steps.qax-build.outputs.version }}"
           setup-path: "qax_setup_${{ steps.qax-build.outputs.version }}.exe"
 
@@ -84,6 +84,6 @@ jobs:
           github.repository_owner == 'ausseabed'
         uses: ./.github/actions/release
         with:
-          dist-path: "qax_dist_${{ steps.qax-build.outputs.version }}.tar.gz"
+          dist-path: "qax_dist_${{ steps.qax-build.outputs.version }}.zip"
           setup-path: "qax_setup_${{ steps.qax-build.outputs.version }}.exe"
           # pdf-path: "docs/_build/latex/HydrOfficeQAX.pdf"
