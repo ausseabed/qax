@@ -22,10 +22,7 @@ runs:
       shell: bash -l {0}
       run: |
         conda activate ~/miniconda/envs/${{ inputs.env-name }}
-        # tarballs may cause user questions to come back
-        # will switch to 7z later
-        tar -czf "qax_dist_${{ inputs.qax-version }}.tar.gz" dist/qax
-        # 7z "qax_dist_${{ env.VERSION }}.zip" dist/
+        7z "qax_dist_${{ inputs.qax-version }}.zip" dist/
 
     - name: Run inno setup
       shell: bash -l {0}
