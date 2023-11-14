@@ -1,0 +1,27 @@
+name: "QAX Linux Docs Build"
+description: "Build QAX Docs on Linux"
+
+inputs:
+  env-name:
+    description: "Name for Conda environment"
+    required: true
+    default: "build-qax"
+
+runs:
+  using: "composite"
+  steps:
+    # A specific action to build docs on Linux, mainly to see if
+    # building the PDF leads to a non-error exit code from the shell
+    # On Windows, the shell kept exiting with an error, despite the fact that
+    # the PDF would get built, and no errors listed in the log.
+    - name: Linux-Docs-Build
+      shell: bash -l {0}
+      run: |
+        conda activate ~/miniconda/envs/${{ inputs.env-name }}
+        # conda install -y -c conda-forge texlive-core
+        # texlive-core on conda is broken, and has been for some time apparently
+        sudo apt-get install texlive-latex-extra latexmk texlive
+        cd docs
+        make html
+        make latexpdf
+        cd ../

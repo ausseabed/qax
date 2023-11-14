@@ -58,7 +58,11 @@ copyright = u'2019, CCOM/JHC,UNH'
 # built documents.
 #
 # The full version, including alpha/beta/rc tags and any other build metadata.
-release = _md.version('hyo2.qax')
+try:
+    release = _md.version('hyo2.qax')
+except _md.PackageNotFoundError:
+    # technically an uninstalled package, but using 'unknown' is simply keeping legacy
+    release = 'unknown'
 
 # The short X.Y.Z version.
 splits = release.split('.')

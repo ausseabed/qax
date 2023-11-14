@@ -1,0 +1,24 @@
+name: "GitHub release"
+description: "Release official QAX builds to GitHub"
+
+inputs:
+  dist-path:
+    description: "Pathname to zipped QAX distribution build."
+    required: true
+  setup-path:
+    description: "Pathname to QAX setup installer."
+    required: true
+  # pdf-path:
+  #   description: "Pathname to QAX PDF document."
+  #   required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Release the QAX
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          "${{ inputs.dist-path }}"
+          "${{ inputs.setup-path }}"
+          # "${{ inputs.pdf-path }}"

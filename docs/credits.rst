@@ -15,4 +15,4 @@ NOAA bugs and feature requests: `OCS.QCtools@noaa.gov <mailto:OCS.QCtools@noaa.g
 
 Feel free to contact us for comments and suggestions:
 
-* `AusSeabed<mailto:AusSeabed@ga.gov.au>`_
+* `AusSeabed <mailto:AusSeabed@ga.gov.au>`_

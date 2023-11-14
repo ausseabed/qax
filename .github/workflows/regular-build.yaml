@@ -1,0 +1,56 @@
+name: QAX-tip
+
+on:
+  schedule:
+    # every Sunday at 10pm UTC
+    - cron: "0 22 * * 0"
+
+jobs:
+  build:
+    if: github.repository_owner == 'ausseabed'
+    # whilst we might never need it, it does however fleshout the idea of multiple os and py builds
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ["windows-latest"]
+        python-version: ["3.10"]
+
+    env:
+      # mostly used as helpers for retrieving as env vars within inno setup
+      WORKDIR: ${{ github.workspace }}
+      CONDA_ENV: "build-qax"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 'develop'
+
+      - name: Establish Env
+        uses: ./.github/actions/environment
+        with:
+          env-name: "${{ env.CONDA_ENV }}"
+
+      - name: Build QAX
+        id: qax-build
+        uses: ./.github/actions/build-qax
+        with:
+          env-name: "${{ env.CONDA_ENV }}"
+
+      - name: Windows Distributions
+        if: matrix.os == 'windows-latest'
+        uses: ./.github/actions/windows
+        with:
+          env-name: "${{ env.CONDA_ENV }}"
+          qax-version: "${{ steps.qax-build.outputs.version }}"
+
+      - name: Upload
+        if: matrix.os == 'windows-latest'
+        uses: ./.github/actions/upload
+        with:
+          dist-name: "qax_dist_${{ steps.qax-build.outputs.version }}"
+          dist-path: "qax_dist_${{ steps.qax-build.outputs.version }}.tar.gz"
+          setup-name: "qax_setup_${{ steps.qax-build.outputs.version }}"
+          setup-path: "qax_setup_${{ steps.qax-build.outputs.version }}.exe"
+          pdf-name: "HydrOfficeQAX.pdf"
+          pdf-path: "docs/_build/latex/HydrOfficeQAX.pdf"

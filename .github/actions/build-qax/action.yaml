@@ -1,0 +1,47 @@
+name: "Build QAX"
+description: "Build the QAX program."
+
+inputs:
+  env-name:
+    description: "Name for Conda environment"
+    required: true
+    default: "build-qax"
+
+outputs:
+  version:
+    description: "QAX build version id"
+    value: ${{ steps.qax-version.outputs.version }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install QAX
+      shell: bash -l {0}
+      run: |
+        conda activate ~/miniconda/envs/${{ inputs.env-name }}
+        pip install .
+
+    - id: qax-version
+      name: QAX Version
+      shell: bash -l {0}
+      run: |
+        conda activate ~/miniconda/envs/${{ inputs.env-name }}
+        echo "version=$(python -m setuptools_scm)" >> "$GITHUB_OUTPUT"
+
+    # yes we could have a separate job, specificially a sphinx build action
+    # and then upload the artifact and then download it within the win-builder.
+    # However, for a distributable build, it makes more sense to build everything
+    # from the same environment rather than separate jobs to ensure consistency.
+    # Also wanting to avoid individual package installs, unfortunately for some
+    # packages, they're os specific and conda currently doesn't have a method
+    # to support different os's via environment.yaml
+    # - name: Docs-build-Windows
+    #   if: ${{ matrix.os }} == 'windows-latest'
+    #   shell: bash -l {0}
+    #   run: |
+    #     conda activate ~/miniconda/envs/${{ inputs.env-name }}
+    #     conda install -y -c conda-forge miktex
+    #     cd docs
+    #     ./make.bat html
+    #     ./make.bat latexpdf
+    #     cd ../

@@ -7,12 +7,13 @@ dependencies:
   - certifi
   - GDAL==3.6.0
   - sphinx
-  - qt-webengine==5.15.9
+  - qt-main==5.15.8
+  - qt-webengine==5.15.8
   - qtawesome
   - cartopy
   - pyproj=3.4.0
-  - PySide2==5.15.6
-  - appdirs
+  - pyside2==5.15.8
+  - pywin32
   - numpy==1.23.5
   - scipy=1.9.3
   - numba==0.56.4

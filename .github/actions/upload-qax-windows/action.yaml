@@ -1,0 +1,29 @@
+name: "Upload QAX Artifacts"
+description: "Uploads the QAX artifacts (dist, setup) for the current workflow."
+
+inputs:
+  dist-name:
+    required: true
+  dist-path:
+    required: true
+  setup-name:
+    required: true
+  setup-path:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Upload QAX Windows distribution
+      uses: actions/upload-artifact@v3
+      with:
+        name: "${{ inputs.dist-name }}"
+        path: "${{ inputs.dist-path }}"
+        retention-days: 6
+
+    - name: Upload QAX Windows Setup
+      uses: actions/upload-artifact@v3
+      with:
+        name: "${{ inputs.setup-name }}"
+        path: "${{ inputs.setup-path }}"
+        retention-days: 6

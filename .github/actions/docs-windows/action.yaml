@@ -1,0 +1,26 @@
+name: "QAX Windows Docs Build"
+description: "Build QAX Docs on Windows"
+
+inputs:
+  env-name:
+    description: "Name for Conda environment"
+    required: true
+    default: "build-qax"
+
+runs:
+  using: "composite"
+  steps:
+    # yes we could have a separate job, specificially a sphinx build action
+    # and then upload the artifact and then download it within the win-builder.
+    # However, for a distributable build, it makes more sense to build everything
+    # from the same environment rather than separate jobs to ensure consistency.
+    # Also wanting to avoid individual package installs, unfortunately for some
+    # packages, they're os specific and conda currently doesn't have a method
+    # to support different os's via environment.yaml
+    - name: Windows-Docs-Build
+      shell: bash -l {0}
+      run: |
+        conda activate ~/miniconda/envs/${{ inputs.env-name }}
+        cd docs
+        ./make.bat html
+        cd ../
