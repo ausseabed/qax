@@ -22,7 +22,7 @@ runs:
       shell: bash -l {0}
       run: |
         conda activate ~/miniconda/envs/${{ inputs.env-name }}
-        7z "qax_dist_${{ inputs.qax-version }}.zip" dist/
+        7z a "qax_dist_${{ inputs.qax-version }}.zip" dist/
 
     - name: Run inno setup
       shell: bash -l {0}
