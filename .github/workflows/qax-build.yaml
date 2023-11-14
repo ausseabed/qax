@@ -3,10 +3,7 @@ name: QAX Build
 on:
   push:
     branches:
-      - 'composite-actions'
-      - 'linux-docs'
       - 'master'
-      - 'pywin32-fixes'
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
   pull_request:
@@ -21,7 +18,6 @@ jobs:
     strategy:
       matrix:
         os: ["windows-latest", "ubuntu-latest"]
-        # os: ["ubuntu-latest"]
         python-version: ["3.10"]
 
     env:
