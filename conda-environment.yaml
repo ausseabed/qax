@@ -1,0 +1,23 @@
+name: qax
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - git
+  - certifi
+  - GDAL==3.6.0
+  - sphinx
+  - qt-main==5.15.8
+  - qt-webengine==5.15.8
+  - qtawesome
+  - cartopy
+  - pyproj=3.4.0
+  - pyside2==5.15.8
+  - pywin32
+  - numpy==1.23.5
+  - scipy=1.9.3
+  - numba==0.56.4
+  - numexpr==2.8.3
+  - pip>=20.1
+  - pip:
+    - -r requirements.txt

@@ -3,10 +3,10 @@
 
 #define MyAppName "QAX"
 
-#include "version.txt"
-
 #define MyAppPublisher "AusSeabed Development Team"
 #define MyAppURL "https://github.com/ausseabed/qax"
+#define MyAppVersion GetEnv("VERSION")
+#define WorkDir GetEnv("WORKDIR")
 
 
 [Setup]
@@ -27,6 +27,7 @@ LicenseFile=..\dist\qax\hyo2\qax\app\media\LICENSE
 OutputBaseFilename=qax_setup_{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
+OutputDir={#WorkDir}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

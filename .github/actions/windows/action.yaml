@@ -1,0 +1,33 @@
+name: "Create Windows distributions"
+description: "Create Windows distributions (pyinstaller dist, inno setup)"
+
+inputs:
+  env-name:
+    description: "Name for Conda environment"
+    required: true
+  qax-version:
+    description: "Version identifier for current QAX build"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Pyinstaller
+      shell: bash -l {0}
+      run: |
+        conda activate ~/miniconda/envs/${{ inputs.env-name }}
+        pyinstaller install/cli.spec
+
+    - name: Zip container
+      shell: bash -l {0}
+      run: |
+        conda activate ~/miniconda/envs/${{ inputs.env-name }}
+        7z a "qax_dist_${{ inputs.qax-version }}.zip" dist/
+
+    - name: Run inno setup
+      shell: bash -l {0}
+      env:
+        VERSION: "${{ inputs.qax-version }}"
+      run: |
+        conda activate ~/miniconda/envs/${{ inputs.env-name }}
+        ISCC install/qax.iss
