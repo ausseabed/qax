@@ -5,7 +5,7 @@ inputs:
   env-name:
     description: "Name for Conda environment"
     required: true
-    default: "build-qax"
+    default: "qax"
 
 runs:
   using: "composite"

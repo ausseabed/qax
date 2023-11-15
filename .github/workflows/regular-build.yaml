@@ -18,7 +18,7 @@ jobs:
     env:
       # mostly used as helpers for retrieving as env vars within inno setup
       WORKDIR: ${{ github.workspace }}
-      CONDA_ENV: "build-qax"
+      CONDA_ENV: "qax"
 
     steps:
       - uses: actions/checkout@v4
