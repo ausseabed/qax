@@ -38,77 +38,12 @@ There are 3 steps
 
 Create conda environment for QAX
 ******************************************************
-Start by installing `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ (on Windows) and installing necessary dependencies (NumPy, GDAL, hyo2.abc, hyo2.mate) and  QAX itself.
+Start by installing `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ (on Windows) and and then establishing an environment to install necessary dependencies (eg NumPy, GDAL, hyo2.abc, hyo2.mate) via the `conda-environment.yaml` file, followed by  QAX itself.
 The following command sequence is suggested: ::
 
     conda create -y -n qax python=3.10
+    conda env update --file conda-environment.yaml
     conda activate qax
-    
-    conda install -y -c conda-forge certifi
-    conda install -y -c conda-forge --file requirements_conda.txt
-    conda install -y -c conda-forge --no-deps cartopy
-    conda install -y -c conda-forge --no-deps pyproj=3.4.0
-
-    pip install -r requirements.txt
-
-If running on Windows the following package needs to be installed::
-
-    pip install pypiwin32
-
-
-Clone (or download) code repositories for QAX plugins
-*******************************************************
-
-Clone (or download) each of the following repositories:
-
-* https://github.com/ausseabed/qajson
-* https://github.com/ausseabed/pyall
-* https://github.com/ausseabed/pygsf
-* https://github.com/ausseabed/mate
-* https://github.com/ausseabed/mbes-grid-checks
-* https://github.com/ausseabed/finder-grid-checks
-* https://github.com/hydroffice/hyo2_abc
-* https://github.com/ausseabed/kmall
-
-Note: It is recomended that each of these repositories be stored at the same
-directory structure level as the qax repository.
-
-
-Install each of the cloned repositories into the `qax` environment. Use the
-`-e` argument to have these installed in an editable mode as this better supports
-development workflows::
-
-    cd qajson
-    pip install -e .
-    cd ..
-
-    cd pyall
-    pip install .
-    cd ..
-
-    cd pygsf
-    pip install .
-    cd ..
-
-    cd mate
-    pip install -e .
-    cd ..
-
-    cd mbes-grid-checks
-    pip install -e .
-    cd ..
-
-    cd finder-grid-checks
-    pip install -e .
-    cd ..
-
-    cd hyo2_abc
-    pip install .
-    cd ..
-
-    cd kmall
-    pip install .
-    cd ..
 
 Install and run QAX
 *********************
@@ -116,7 +51,7 @@ Install and run QAX
 Install the qax package::
 
     cd qax
-    pip install -e .
+    pip install .
 
 QAX can then be run with the following command::
 
@@ -134,11 +69,6 @@ There are 3 steps
 
 ::
 
-
-Install pyinstaller
-*********************
-
-    pip install pyinstaller
 
 Use `pyinstaller` to generate a redistributable directory of the dependencies included in the conda env
 **********************************************************************************************************
