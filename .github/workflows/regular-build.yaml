@@ -60,10 +60,10 @@ jobs:
         if: matrix.os == 'windows-latest'
         uses: ./.github/actions/upload-qax-windows
         with:
-          dist-name: "qax_dist_${{ steps.qax-build.outputs.version }}"
-          dist-path: "qax_dist_${{ steps.qax-build.outputs.version }}.zip"
-          setup-name: "qax_setup_${{ steps.qax-build.outputs.version }}"
-          setup-path: "qax_setup_${{ steps.qax-build.outputs.version }}.exe"
+          dist-name: "qax_dist_v${{ steps.qax-build.outputs.version }}"
+          dist-path: "qax_dist_v${{ steps.qax-build.outputs.version }}.zip"
+          setup-name: "qax_setup_v${{ steps.qax-build.outputs.version }}"
+          setup-path: "qax_setup_v${{ steps.qax-build.outputs.version }}.exe"
 
       - name: Upload PDF Doc
         if: matrix.os == 'ubuntu-latest'
