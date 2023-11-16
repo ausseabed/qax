@@ -15,10 +15,16 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - id: download
+      name: Download PDF artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: 'HydrOfficeQAX.pdf'
+
     - name: Release the QAX
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          "${{ inputs.dist-path }}"
-          "${{ inputs.setup-path }}"
-          # "${{ inputs.pdf-path }}"
+          ${{ inputs.dist-path }}
+          ${{ inputs.setup-path }}
+          HydrOfficeQAX.pdf
