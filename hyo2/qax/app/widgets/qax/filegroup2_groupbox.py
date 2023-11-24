@@ -137,10 +137,11 @@ class FileGroup2GroupBox(QGroupBox):
 
     def __add_new_files(self, filenames: list[str]) -> None:
         for filename in filenames:
+            ft = self.plugin_service.identify_file_group(filename)
             gr = GroupRow(
                 filename=filename,
                 dataset='default',
-                file_type=self.available_types[0]
+                file_type=ft
             )
             self.rows.append(gr)
 
