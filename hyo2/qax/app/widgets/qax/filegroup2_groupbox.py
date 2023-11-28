@@ -3,7 +3,10 @@ import os
 
 from typing import Optional
 from PySide2 import QtCore, QtGui
-from PySide2.QtWidgets import QSizePolicy, QComboBox, QTableWidget, QGroupBox, QVBoxLayout, QHBoxLayout, QTableWidgetItem, QPushButton, QFileDialog, QHeaderView
+from PySide2.QtWidgets import \
+    QSizePolicy, QComboBox, QTableWidget, QGroupBox, QVBoxLayout, \
+    QHBoxLayout, QTableWidgetItem, QPushButton, QFileDialog, QHeaderView, \
+    QDialog, QDialogButtonBox, QLabel, QLineEdit
 
 from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
@@ -48,6 +51,37 @@ class GroupRow:
 
     def __str__(self) -> str:
         return f"{self.filename_short} {self.dataset} {self.file_type}"
+
+
+class NewDatasetDialog(QDialog):
+    """ Simple dialog window to prompt user for a new dataset name
+    """
+
+    def __init__(self, parent=None, default_name="new dataset"):
+        super().__init__(parent)
+
+        self.setWindowTitle("New dataset")
+
+        self.layout = QVBoxLayout()
+        message = QLabel("Enter name for new dataset")
+        self.layout.addWidget(message)
+
+        self.name_field = QLineEdit()
+        self.name_field.setText(default_name)
+        self.layout.addWidget(self.name_field)
+
+        QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        self.button_box = QDialogButtonBox(QBtn)
+        self.button_box.accepted.connect(self.accept)
+        self.button_box.rejected.connect(self.reject)
+        self.layout.addWidget(self.button_box)
+
+        self.setLayout(self.layout)
+
+    def get_name(self) -> str:
+        """ Get the name entered by the user in the dialog
+        """
+        return self.name_field.text()
 
 
 class FileGroup2GroupBox(QGroupBox):
@@ -120,8 +154,11 @@ class FileGroup2GroupBox(QGroupBox):
                 QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
             for ds in self.available_datasets:
                 item_dataset.addItem(ds)
+            item_dataset.addItem("New...")
             item_dataset.setCurrentIndex(self.available_datasets.index(row.dataset))
-            # item_dataset.currentIndexChanged.connect(lambda: self._dataset_changed(item_dataset, row))
+            item_dataset.currentIndexChanged.connect(
+                lambda x, row=row: self._dataset_changed(x, row)
+            )
             self.table.setCellWidget(i, 1, item_dataset)
 
             item_type = QComboBox()
@@ -147,8 +184,36 @@ class FileGroup2GroupBox(QGroupBox):
 
         self.__update_table()
 
-    def _dataset_changed(self, cb: QComboBox, row:GroupRow):
-        print(cb)
+    def __get_new_dataset_name(self, count=1) -> str:
+        """ Generates a new default name based on a simple number
+        sequence
+        """
+        test_name = f"dataset {count:02}"
+        if test_name in self.available_datasets:
+            return self.__get_new_dataset_name(count=count+1)
+        return test_name
+
+    def _dataset_changed(self, index: int, row:GroupRow):
+        if index >= len(self.available_datasets):
+            # then 'New...' has been selected
+            ndd = NewDatasetDialog(self, self.__get_new_dataset_name())
+            if ndd.exec_():
+                new_ds_name = ndd.get_name()
+                self.available_datasets.append(new_ds_name)
+                row.dataset = new_ds_name
+                self.__update_table()
+                # we need to call this explicitly presumably because the table
+                # doesn't correctly pick up that the qcombobox within this cell
+                # has changed its size (as it has a dataset name with a new width)
+                self.table.horizontalHeader().resizeSections()
+            else:
+                # we don't change anything (as the user has cancelled)
+                # but updating the table will reselect whatever was selected
+                # here before the user selected 'New...' from the list
+                self.__update_table()
+        else:
+            # then user has selected from the existing list, just update the row
+            row.dataset = self.available_datasets[index]
         print(row)
 
     def _file_type_changed(self, index: int, row:GroupRow):
