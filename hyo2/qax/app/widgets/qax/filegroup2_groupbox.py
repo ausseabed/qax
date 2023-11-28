@@ -101,28 +101,19 @@ class FileGroup2GroupBox(QGroupBox):
         self.available_datasets.append("default")
         self.available_types: list[str] = []
 
-
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
 
-        # colors = [("Red", "#FF0000"),
-        #   ("Green", "#00FF00"),
-        #   ("Blue", "#0000FF"),
-        #   ("Black", "#000000"),
-        #   ("White", "#FFFFFF"),
-        #   ("Electric Green", "#41CD52"),
-        #   ("Dark Blue", "#222840"),
-        #   ("Yellow", "#F9E56d")
-        # ]
-
         self.table = QTableWidget()
-        self.table.setColumnCount(3)
-        self.table.setHorizontalHeaderLabels(["Filename", "Dataset", "Type"])
+        self.table.setColumnCount(4)
+        self.table.setHorizontalHeaderLabels(["Filename", "Dataset", "Type", ""])
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        self.table.verticalHeader().setVisible(False)
 
-
+        self.cross_icon = qta.icon('fa.close')
 
         main_layout.addWidget(self.table)
 
@@ -134,11 +125,12 @@ class FileGroup2GroupBox(QGroupBox):
         self.add_file_button.setIcon(qta.icon('fa.folder-open'))
         self.add_file_button.setToolTip("Add survey product files")
         self.add_file_button.clicked.connect(self._click_add_file)
-        self.clear_file_button = QPushButton()
-        button_layout.addWidget(self.clear_file_button)
-        self.clear_file_button.setText("Clear Files")
-        self.clear_file_button.setToolTip("Clear all survey product files")
-        self.clear_file_button.clicked.connect(self._click_clear_files)
+        self.remove_all_files_button = QPushButton()
+        self.remove_all_files_button.setText("Remove All Files")
+        self.remove_all_files_button.setIcon(self.cross_icon)
+        self.remove_all_files_button.setToolTip("Remove all survey product files")
+        self.remove_all_files_button.clicked.connect(self._click_remove_all_files)
+        button_layout.addWidget(self.remove_all_files_button)
 
         main_layout.addLayout(button_layout)
 
@@ -172,6 +164,27 @@ class FileGroup2GroupBox(QGroupBox):
             )
             self.table.setCellWidget(i, 2, item_type)
 
+            item_remove_button = QPushButton()
+            item_remove_button.setText("")
+            item_remove_button.setIcon(self.cross_icon)
+            item_remove_button.clicked.connect(
+                lambda x=1, row=row: self._remove_file(x, row)
+            )
+            self.table.setCellWidget(i, 3, item_remove_button)
+
+        # we need to call this explicitly presumably because the table
+        # doesn't correctly pick up that the qcombobox within this cell
+        # has changed its size (as it has a dataset name with a new width)
+        self.table.horizontalHeader().resizeSections()
+
+    def _remove_file(self, x, row:GroupRow):
+        self.rows.remove(row)
+        self.__update_table()
+
+    def _click_remove_all_files(self):
+        self.rows.clear()
+        self.__update_table()
+
     def __add_new_files(self, filenames: list[str]) -> None:
         for filename in filenames:
             ft = self.plugin_service.identify_file_group(filename)
@@ -202,10 +215,6 @@ class FileGroup2GroupBox(QGroupBox):
                 self.available_datasets.append(new_ds_name)
                 row.dataset = new_ds_name
                 self.__update_table()
-                # we need to call this explicitly presumably because the table
-                # doesn't correctly pick up that the qcombobox within this cell
-                # has changed its size (as it has a dataset name with a new width)
-                self.table.horizontalHeader().resizeSections()
             else:
                 # we don't change anything (as the user has cancelled)
                 # but updating the table will reselect whatever was selected
@@ -262,17 +271,6 @@ class FileGroup2GroupBox(QGroupBox):
 
         self.__add_new_files(new_selected_files)
         # self.filenames_added.emit(new_selected_files)
-
-
-    def _click_clear_files(self):
-        print("files clear")
-
-
-    def get_rgb_from_hex(self, code):
-        code_hex = code.replace("#", "")
-        rgb = tuple(int(code_hex[i:i+2], 16) for i in (0, 2, 4))
-        
-        return QtGui.QColor.fromRgb(rgb[0], rgb[1], rgb[2])
 
     def set_plugin_service(self, ps: PluginService):
         self.plugin_service = ps
