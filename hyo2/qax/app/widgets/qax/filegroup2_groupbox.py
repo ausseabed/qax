@@ -13,7 +13,7 @@ from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.lib.plugin import QaxFileGroup
 from hyo2.qax.lib.plugin_service import PluginService
 
-from ausseabed.qajson.model import QajsonRoot
+from ausseabed.qajson.model import QajsonRoot, QajsonFile
 
 
 logger = logging.getLogger(__name__)
@@ -286,6 +286,26 @@ class FileGroup2GroupBox(QGroupBox):
     #     self.file_groups = file_groups
     #     self.available_types = [fg.name for fg in self.file_groups]
     #     self.__update_table()
+
+
+    def get_grouped_files(self) -> list[list[QajsonFile]]:
+        """ Returns a list of lists containing QajsonFiles, each nested list
+        is a grouping based on the 'Dataset' specified by the user.
+        """
+        # key is dataset name, value is list of files that belong to dataset
+        group_dict: dict[str, list[QajsonFile]] = {}
+        for row in self.rows:
+            qf = QajsonFile(row.filename, row.file_type, None)
+            if row.dataset in group_dict:
+                # dataset already added to dict
+                pass
+            else:
+                # need to create new file list for this row
+                qf_list: list[QajsonFile] = []
+                group_dict[row.dataset] = qf_list
+            group_dict[row.dataset].append(qf)
+
+        return list(group_dict.values())
 
 
     def update_ui(self, qajson: QajsonRoot) -> None:
