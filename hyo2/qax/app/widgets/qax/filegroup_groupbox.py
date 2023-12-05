@@ -13,7 +13,7 @@ from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.lib.plugin import QaxFileGroup
 from hyo2.qax.lib.plugin_service import PluginService
 
-from ausseabed.qajson.model import QajsonRoot, QajsonFile
+from ausseabed.qajson.model import QajsonRoot, QajsonFile, QajsonDataLevel
 
 
 logger = logging.getLogger(__name__)
@@ -281,17 +281,6 @@ class FileGroupGroupBox(QGroupBox):
         self.available_types = self.plugin_service.get_all_file_group_names()
         self.__update_table()
 
-    # def update_file_groups(
-    #         self, file_groups: list[QaxFileGroup]
-    #     ) -> None:
-    #     """ Update what file groups should be open'able in this file
-    #     selection widget
-    #     """
-    #     self.file_groups = file_groups
-    #     self.available_types = [fg.name for fg in self.file_groups]
-    #     self.__update_table()
-
-
     def get_grouped_files(self) -> list[list[QajsonFile]]:
         """ Returns a list of lists containing QajsonFiles, each nested list
         is a grouping based on the 'Dataset' specified by the user.
@@ -311,9 +300,76 @@ class FileGroupGroupBox(QGroupBox):
 
         return list(group_dict.values())
 
+    def __is_same_qajsonfile(self, a: QajsonFile, b: QajsonFile) -> bool:
+        """ Compares two QajsonFile objects
+        """
+        # this should likely be a part of the qajson lib
+        return a.file_type == b.file_type and a.path == b.path
+
+    def __is_same_qajsonfile_group(self, a: list[QajsonFile], b: list[QajsonFile]) -> bool:
+        """ Compares two lists of QajsonFile objects
+        """
+        # this should likely be a part of the qajson lib
+        for i in a:
+            found = False
+            for j in b:
+                if self.__is_same_qajsonfile(i, j):
+                    found = True
+            if not found:
+                return False
+        return True
 
     def update_ui(self, qajson: QajsonRoot) -> None:
-        pass
+        """ Updates this UI component to show the information within the qajson
+        object. In this case the files, and their grouping.
+        """
+        # we need to build a list of the groups within the QAJSON. Groups will probably
+        # be duplicated across the different checks so we need to de-duplicate them
+        # before presenting to the user in the UI
 
+        # first we build a list of all the groups across all check definitions in the
+        # QAJSON, this *will* include duplicates
+        all_groups: list[list[QajsonFile]] = []
 
+        # create a list of all data levels, this makes it easier to iterate over
+        all_dl: list[QajsonDataLevel] = []
+        all_dl.append(qajson.qa.get_data_level('raw_data'))
+        all_dl.append(qajson.qa.get_data_level('survey_products'))
 
+        # for each data level and each check in these, grab the group of files
+        for dl in all_dl:
+            if dl is None:
+                continue
+
+            for c in dl.checks:
+                if c.inputs is None:
+                    continue
+
+                all_groups.append(c.inputs.files)
+
+        # now create a list of groups that doesn't include duplicates
+        groups: list[list[QajsonFile]] = []
+        for ag in all_groups:
+            exists_already = False
+            for g in groups:
+                if self.__is_same_qajsonfile_group(ag, g):
+                    exists_already = True
+            if not exists_already:
+                groups.append(ag)
+
+        # now 'convert' these groups of files into the self.rows list used by this
+        # UI component
+        for g in groups:
+            ds_name = self.__get_new_dataset_name()
+            self.available_datasets.append(ds_name)
+            for f in g:
+                if f.file_type not in self.available_types:
+                    self.available_types.append(f.file_type)
+                self.rows.append(GroupRow(
+                    filename=f.path,
+                    dataset=ds_name,
+                    file_type=f.file_type
+                ))
+
+        # recreate the table with this data derived from the QAJSON
+        self.__update_table()
