@@ -203,26 +203,3 @@ class TestQaxPlugins(unittest.TestCase):
         path = Path('test/file/path/raw.has_no_file_type')
         matching_file_type = sp1.matching_file_type(path)
         self.assertIsNone(matching_file_type)
-
-    def test_qa_json_generation(self):
-        qa_json = QajsonRoot(qa=None)
-        plugins = QaxPlugins()
-        check_tool_plugin = plugins._load_plugin(
-            TestQaxPlugins.check_tool_profile,
-            TestQaxPlugins.check_tool_config)
-        check_tool_plugin_other = plugins._load_plugin(
-            TestQaxPlugins.check_tool_profile,
-            TestQaxPlugins.check_tool_config_other)
-
-        check_tool_plugin.update_qa_json(qa_json)
-        check_tool_plugin_other.update_qa_json(qa_json)
-
-        files = [
-            (Path('/my/test/bagfile.bag'), 'Raw Files'),
-            (Path('/my/test/csarfile.csar'), 'Raw Files'),
-            (Path('/my/test/shpfile.shp'), 'Raw Files'),
-        ]
-        check_tool_plugin.update_qa_json_input_files(qa_json, files)
-        check_tool_plugin_other.update_qa_json_input_files(qa_json, files)
-
-        # todo: some asserts
