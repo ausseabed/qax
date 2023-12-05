@@ -7,8 +7,8 @@ import logging
 import os
 
 from hyo2.qax.app.widgets.qax.profile_groupbox import ProfileGroupBox
-from hyo2.qax.app.widgets.qax.filegroup2_groupbox \
-    import FileGroup2GroupBox
+from hyo2.qax.app.widgets.qax.filegroup_groupbox \
+    import FileGroupGroupBox
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecification
 from hyo2.qax.lib.plugin import QaxPlugins, QaxFileGroup, QaxCheckToolPlugin
 from hyo2.qax.lib.plugin_service import PluginService
@@ -49,21 +49,21 @@ class MainTab(QtWidgets.QWidget):
             self._on_check_tools_selected)
         self.vbox.addWidget(self.profile_selection)
 
-        self.file_group2_selection = FileGroup2GroupBox(self, self.prj)
-        self.file_group2_selection.setSizePolicy(
+        self.file_group_selection = FileGroupGroupBox(self, self.prj)
+        self.file_group_selection.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.vbox.addWidget(self.file_group2_selection)
+        self.vbox.addWidget(self.file_group_selection)
 
         self._on_check_tools_selected(
             self.profile_selection.selected_check_tools())
-        self.file_group2_selection.filenames_added.connect(
-            self._on_file_group2_files_changed)
-        self.file_group2_selection.filenames_removed.connect(
-            self._on_file_group2_files_changed)
-        self.file_group2_selection.dataset_changed.connect(
-            self._on_file_group2_files_changed)
-        self.file_group2_selection.filetype_changed.connect(
-            self._on_file_group2_files_changed)
+        self.file_group_selection.filenames_added.connect(
+            self._on_file_group_files_changed)
+        self.file_group_selection.filenames_removed.connect(
+            self._on_file_group_files_changed)
+        self.file_group_selection.dataset_changed.connect(
+            self._on_file_group_files_changed)
+        self.file_group_selection.filetype_changed.connect(
+            self._on_file_group_files_changed)
 
     def initialize(self):
         self.profile_selection.initialize()
@@ -87,14 +87,14 @@ class MainTab(QtWidgets.QWidget):
                 self.prj.profile.name, check_tool.plugin_class)
 
             plugins.append(check_tool_plugin)
-        self.file_group2_selection.set_plugin_service(PluginService(plugins))
+        self.file_group_selection.set_plugin_service(PluginService(plugins))
 
         self.check_inputs_changed.emit()
 
     def _on_file_group_files_added(self, file_group):
         self.check_inputs_changed.emit()
 
-    def _on_file_group2_files_changed(self):
+    def _on_file_group_files_changed(self):
         self.check_inputs_changed.emit()
 
     def _on_file_group_files_removed(self, file_group):
@@ -102,7 +102,7 @@ class MainTab(QtWidgets.QWidget):
 
     def update_ui(self, qajson: QajsonRoot) -> NoReturn:
         self.profile_selection.update_ui(qajson)
-        self.file_group2_selection.update_ui(qajson)
+        self.file_group_selection.update_ui(qajson)
 
     def persist_exit_settings(self):
         self.profile_selection.persist_exit_settings()

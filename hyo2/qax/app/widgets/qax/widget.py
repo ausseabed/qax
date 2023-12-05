@@ -136,7 +136,7 @@ class QAXWidget(QtWidgets.QTabWidget):
         # a new check reference to the QAJSON
         # If there's multiple groups (datasets in UI) of files, then the same check
         # will be added multiple times with different sets of input files.
-        grouped_files = self.tab_inputs.file_group2_selection.get_grouped_files()
+        grouped_files = self.tab_inputs.file_group_selection.get_grouped_files()
         for file_group_list in grouped_files:
             # the plugin function we use to check if the group of files is suitable
             # for a specific check uses a simple tuple list (not a list of QajsonFiles)

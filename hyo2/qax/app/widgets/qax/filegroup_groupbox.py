@@ -84,7 +84,7 @@ class NewDatasetDialog(QDialog):
         return self.name_field.text()
 
 
-class FileGroup2GroupBox(QGroupBox):
+class FileGroupGroupBox(QGroupBox):
 
     filenames_added = QtCore.Signal()
     filenames_removed = QtCore.Signal()
