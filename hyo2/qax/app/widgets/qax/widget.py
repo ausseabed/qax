@@ -41,12 +41,7 @@ class QAXWidget(QtWidgets.QTabWidget):
         # make tabs
         self.tabs = self
 
-        # self.vbox = QtWidgets.QVBoxLayout()
-        # self.setLayout(self.vbox)
-        # self.vbox.addWidget(self.tabs)
-        # self.tabs.setContentsMargins(0, 0, 0, 0)
         self.tabs.setIconSize(QtCore.QSize(72, 72))
-        # self.tabs.setTabPosition(QtWidgets.QTabWidget.South)
         # main tab
         self.tab_inputs = MainTab(parent_win=self, prj=self.prj)
         self.tab_inputs.profile_selected.connect(self._on_profile_selected)
@@ -122,6 +117,8 @@ class QAXWidget(QtWidgets.QTabWidget):
         """
         root = QajsonRoot(None)
 
+        # Add the root Qa object to the QAJSON
+
         # assume schema naming convention is
         #  `some_path/v0.1.2/qa.schema.json` or similar
         last_path = QajsonParser.schema_paths()[-1]
@@ -134,6 +131,11 @@ class QAXWidget(QtWidgets.QTabWidget):
         root.qa.get_or_add_data_level('raw_data')
         root.qa.get_or_add_data_level('survey_products')
 
+        # for each set of grouped files, loop through all the checks and see if
+        # the group of files are suitable for that check. If they are, then add
+        # a new check reference to the QAJSON
+        # If there's multiple groups (datasets in UI) of files, then the same check
+        # will be added multiple times with different sets of input files.
         grouped_files = self.tab_inputs.file_group2_selection.get_grouped_files()
         for file_group_list in grouped_files:
             # the plugin function we use to check if the group of files is suitable
@@ -154,7 +156,10 @@ class QAXWidget(QtWidgets.QTabWidget):
                         qajson_inputs = qajson_check.get_or_add_inputs()
                         qajson_inputs.files.extend(file_group_list)
 
-        # update the qajson object with the check tool details
+        # now update the qajson object with the check tool details
+        # Here we apply the one set of input parameters enetered by the user on
+        # the plugin params tab and include them in the definitions for all the
+        # checks we created in the above loop.
         for config_check_tool in self.tab_inputs.selected_check_tools:
             plugin_check_tool = QaxPlugins.instance().get_plugin(
                 self.profile.name, config_check_tool.plugin_class)
@@ -162,17 +167,6 @@ class QAXWidget(QtWidgets.QTabWidget):
                 # then the qajson includes a check tool that isn't available within
                 # the current profile
                 continue
-            # # update the `root` qa json object with the selected checks
-            # plugin_check_tool.update_qa_json(root)
-
-            # # get a list of user selected files from the relevant controls
-            # # for this plugin (based on the file groups)
-            # file_groups = plugin_check_tool.get_file_groups()
-            # all_files = self.tab_inputs.file_group_selection.get_files(
-            #     file_groups)
-            # # update the `root` qa json object with files selected by the
-            # # user
-            # plugin_check_tool.update_qa_json_input_files(root, all_files)
 
             # get the plugin tab for the current check tool
             plugin_tab = next(
