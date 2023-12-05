@@ -17,6 +17,9 @@ from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecificat
 from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin
 from hyo2.qax.lib.project import QAXProject
 
+from ausseabed.qajson.parser import QajsonParser
+from ausseabed.qajson.model import QajsonRoot, QajsonQa, QajsonDataLevel, \
+    QajsonParam, QajsonCheck, QajsonInfo, QajsonGroup, QajsonFile
 
 logger = logging.getLogger(__name__)
 
@@ -119,6 +122,38 @@ class QAXWidget(QtWidgets.QTabWidget):
         """
         root = QajsonRoot(None)
 
+        # assume schema naming convention is
+        #  `some_path/v0.1.2/qa.schema.json` or similar
+        last_path = QajsonParser.schema_paths()[-1]
+        version = last_path.parent.name[1:]
+        root.qa = QajsonQa(
+            version=version,
+            raw_data=None,
+            survey_products=None,
+        )
+        root.qa.get_or_add_data_level('raw_data')
+        root.qa.get_or_add_data_level('survey_products')
+
+        grouped_files = self.tab_inputs.file_group2_selection.get_grouped_files()
+        for file_group_list in grouped_files:
+            # the plugin function we use to check if the group of files is suitable
+            # for a specific check uses a simple tuple list (not a list of QajsonFiles)
+            # so we need to convert this
+            paths_and_types = [(Path(f.path), f.file_type) for f in file_group_list]
+
+            for config_check_tool in self.tab_inputs.selected_check_tools:
+                plugin_check_tool = QaxPlugins.instance().get_plugin(
+                    self.profile.name,
+                    config_check_tool.plugin_class
+                )
+
+                for check in plugin_check_tool.checks():
+                    if check.supports_files(paths_and_types):
+                        data_level = root.qa.get_or_add_data_level(check.data_level)
+                        qajson_check = plugin_check_tool.add_check(data_level, check)
+                        qajson_inputs = qajson_check.get_or_add_inputs()
+                        qajson_inputs.files.extend(file_group_list)
+
         # update the qajson object with the check tool details
         for config_check_tool in self.tab_inputs.selected_check_tools:
             plugin_check_tool = QaxPlugins.instance().get_plugin(
@@ -127,17 +162,17 @@ class QAXWidget(QtWidgets.QTabWidget):
                 # then the qajson includes a check tool that isn't available within
                 # the current profile
                 continue
-            # update the `root` qa json object with the selected checks
-            plugin_check_tool.update_qa_json(root)
+            # # update the `root` qa json object with the selected checks
+            # plugin_check_tool.update_qa_json(root)
 
-            # get a list of user selected files from the relevant controls
-            # for this plugin (based on the file groups)
-            file_groups = plugin_check_tool.get_file_groups()
-            all_files = self.tab_inputs.file_group_selection.get_files(
-                file_groups)
-            # update the `root` qa json object with files selected by the
-            # user
-            plugin_check_tool.update_qa_json_input_files(root, all_files)
+            # # get a list of user selected files from the relevant controls
+            # # for this plugin (based on the file groups)
+            # file_groups = plugin_check_tool.get_file_groups()
+            # all_files = self.tab_inputs.file_group_selection.get_files(
+            #     file_groups)
+            # # update the `root` qa json object with files selected by the
+            # # user
+            # plugin_check_tool.update_qa_json_input_files(root, all_files)
 
             # get the plugin tab for the current check tool
             plugin_tab = next(

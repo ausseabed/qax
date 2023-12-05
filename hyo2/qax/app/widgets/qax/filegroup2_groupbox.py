@@ -86,7 +86,10 @@ class NewDatasetDialog(QDialog):
 
 class FileGroup2GroupBox(QGroupBox):
 
-    filenames_added = QtCore.Signal(list[str])
+    filenames_added = QtCore.Signal()
+    filenames_removed = QtCore.Signal()
+    dataset_changed = QtCore.Signal()
+    filetype_changed = QtCore.Signal()
 
     def __init__(self, parent_win, prj):
         QGroupBox.__init__(self, "Survey Products")
@@ -180,6 +183,7 @@ class FileGroup2GroupBox(QGroupBox):
     def _remove_file(self, x, row:GroupRow):
         self.rows.remove(row)
         self.__update_table()
+        self.filenames_removed.emit()
 
     def _click_remove_all_files(self):
         self.rows.clear()
@@ -223,11 +227,11 @@ class FileGroup2GroupBox(QGroupBox):
         else:
             # then user has selected from the existing list, just update the row
             row.dataset = self.available_datasets[index]
-        print(row)
+        self.dataset_changed.emit()
 
     def _file_type_changed(self, index: int, row:GroupRow):
         row.file_type = self.available_types[index]
-        print(row)
+        self.filetype_changed.emit()
 
     def _click_add_file(self):
         import_folder_name = "import_folder_all"
@@ -270,7 +274,7 @@ class FileGroup2GroupBox(QGroupBox):
         ]
 
         self.__add_new_files(new_selected_files)
-        # self.filenames_added.emit(new_selected_files)
+        self.filenames_added.emit()
 
     def set_plugin_service(self, ps: PluginService):
         self.plugin_service = ps

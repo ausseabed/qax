@@ -10,8 +10,11 @@ import os
 from hyo2.qax.app.widgets.qax.profile_groupbox import ProfileGroupBox
 from hyo2.qax.app.widgets.qax.filegroup_groupbox \
     import FileGroupGroupBox
+from hyo2.qax.app.widgets.qax.filegroup2_groupbox \
+    import FileGroup2GroupBox
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecification
-from hyo2.qax.lib.plugin import QaxPlugins, QaxFileGroup
+from hyo2.qax.lib.plugin import QaxPlugins, QaxFileGroup, QaxCheckToolPlugin
+from hyo2.qax.lib.plugin_service import PluginService
 
 
 # Use NSURL as a workaround to pyside/Qt4 behaviour for dragging and dropping
@@ -62,14 +65,28 @@ class MainTab(QtWidgets.QWidget):
         self.file_group_selection = FileGroupGroupBox(self, self.prj)
         self.file_group_selection.setSizePolicy(
             QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.vbox.addWidget(self.file_group_selection)
+        # self.vbox.addWidget(self.file_group_selection)
+
+        self.file_group2_selection = FileGroup2GroupBox(self, self.prj)
+        self.file_group2_selection.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.vbox.addWidget(self.file_group2_selection)
 
         self._on_check_tools_selected(
             self.profile_selection.selected_check_tools())
-        self.file_group_selection.files_added.connect(
-            self._on_file_group_files_added)
-        self.file_group_selection.files_removed.connect(
-            self._on_file_group_files_removed)
+        self.file_group2_selection.filenames_added.connect(
+            self._on_file_group2_files_changed)
+        self.file_group2_selection.filenames_removed.connect(
+            self._on_file_group2_files_changed)
+        self.file_group2_selection.dataset_changed.connect(
+            self._on_file_group2_files_changed)
+        self.file_group2_selection.filetype_changed.connect(
+            self._on_file_group2_files_changed)
+
+        # self.file_group_selection.files_added.connect(
+        #     self._on_file_group_files_added)
+        # self.file_group_selection.files_removed.connect(
+        #     self._on_file_group_files_removed)
 
     def initialize(self):
         self.profile_selection.initialize()
@@ -87,22 +104,32 @@ class MainTab(QtWidgets.QWidget):
     def _on_check_tools_selected(self, check_tools):
         self.selected_check_tools = check_tools
 
-        all_file_groups = []
+        plugins: list[QaxCheckToolPlugin] = []
+
+        # all_file_groups = []
         for check_tool in check_tools:
             check_tool_plugin = QaxPlugins.instance().get_plugin(
                 self.prj.profile.name, check_tool.plugin_class)
-            file_groups = check_tool_plugin.get_file_groups()
-            all_file_groups.extend(file_groups)
-        unique_file_groups = QaxFileGroup.merge(all_file_groups)
 
-        if self.file_group_selection is not None:
-            # it may be None during initialisation
-            self.file_group_selection.update_file_groups(
-                unique_file_groups)
+            plugins.append(check_tool_plugin)
+
+        #     file_groups = check_tool_plugin.get_file_groups()
+        #     all_file_groups.extend(file_groups)
+        # unique_file_groups = QaxFileGroup.merge(all_file_groups)
+
+        # if self.file_group_selection is not None:
+        #     # it may be None during initialisation
+        #     self.file_group_selection.update_file_groups(
+        #         unique_file_groups)
+
+        self.file_group2_selection.set_plugin_service(PluginService(plugins))
 
         self.check_inputs_changed.emit()
 
     def _on_file_group_files_added(self, file_group):
+        self.check_inputs_changed.emit()
+
+    def _on_file_group2_files_changed(self):
         self.check_inputs_changed.emit()
 
     def _on_file_group_files_removed(self, file_group):
