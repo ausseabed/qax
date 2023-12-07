@@ -238,7 +238,7 @@ class ResultTab(QtWidgets.QWidget):
         self.json_text_group.setLayout(vbox)
 
         self.json_viewer = QtWidgets.QTextEdit()
-        font = QtGui.QFont("Courier")
+        font = QtGui.QFont("Monospace", 10)
         font.setStyleHint(QtGui.QFont.TypeWriter)
         self.json_viewer.setCurrentFont(font)
 
