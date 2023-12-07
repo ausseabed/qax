@@ -3,6 +3,12 @@
 import sys
 import os
 
+try:
+    from importlib import metadata as _md
+except ImportError:
+    # Running on pre-3.8 Python; use importlib-metadata package
+    import importlib_metadata as _md
+
 this = os.path.dirname(os.path.abspath(__file__))
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -51,10 +57,20 @@ copyright = u'2019, CCOM/JHC,UNH'
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-# The short X.Y version.
-version = '1.0'
-# The full version, including alpha/beta/rc tags.
-release = '1.0.0'
+# The full version, including alpha/beta/rc tags and any other build metadata.
+try:
+    release = _md.version('hyo2.qax')
+except _md.PackageNotFoundError:
+    # technically an uninstalled package, but using 'unknown' is simply keeping legacy
+    release = 'unknown'
+
+# The short X.Y.Z version.
+splits = release.split('.')
+if len(splits) > 1:  # otherwise default is set to 'unknown'
+    version = '.'.join(splits[:3])
+else:
+    version = release
+
 
 numfig = True
 

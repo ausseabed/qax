@@ -1,0 +1,29 @@
+name: "Build QAX"
+description: "Build the QAX program."
+
+inputs:
+  env-name:
+    description: "Name for Conda environment"
+    required: true
+    default: "qax"
+
+outputs:
+  version:
+    description: "QAX build version id"
+    value: ${{ steps.qax-version.outputs.version }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install QAX
+      shell: bash -l {0}
+      run: |
+        conda activate ~/miniconda/envs/${{ inputs.env-name }}
+        pip install .
+
+    - id: qax-version
+      name: QAX Version
+      shell: bash -l {0}
+      run: |
+        conda activate ~/miniconda/envs/${{ inputs.env-name }}
+        echo "version=$(python -m setuptools_scm)" >> "$GITHUB_OUTPUT"

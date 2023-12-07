@@ -1,0 +1,32 @@
+name: "Setup QAX Environment"
+description: "Establish an environment that can build QAX in its entirety."
+
+inputs:
+  env-name:
+    description: "Name for Conda environment"
+    required: true
+    default: "qax"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache conda
+      uses: actions/cache@v3
+      env:
+        # Increase this value to reset cache if setup.py has not changed
+        CACHE_NUMBER: 0
+      with:
+        path: ~/conda_pkgs_dir
+        key:
+          ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
+          hashFiles('conda-environment.yaml') }}
+
+    # using mamba as the solver (much faster than classic)
+    - name: Create conda env
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        python-version: ${{ matrix.python-version }}
+        environment-file: conda-environment.yaml
+        activate-environment: ~/miniconda/envs/${{ inputs.env-name }}
+        mamba-version: "*"

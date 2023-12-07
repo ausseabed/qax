@@ -1,0 +1,18 @@
+name: "Upload QAX PDF Documentation"
+description: "Uploads the PDF version of the QAX documentation."
+
+inputs:
+  pdf-name:
+    required: true
+  pdf-path:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Upload QAX PDF Document
+      uses: actions/upload-artifact@v3
+      with:
+        name: "${{ inputs.pdf-name }}"
+        path: "${{ inputs.pdf-path }}"
+        retention-days: 6

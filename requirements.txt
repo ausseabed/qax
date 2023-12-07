@@ -10,3 +10,17 @@ setuptools==65.6.3
 structlog==22.3.0
 XlsxWriter==3.0.8
 pandas==1.5.3
+pyinstaller==5.6.2
+cartopy
+pyproj==3.4.0
+setuptools-scm>=8.0
+myst-parser
+platformdirs
+git+https://github.com/ausseabed/qajson.git
+git+https://github.com/ausseabed/pyall.git
+git+https://github.com/ausseabed/pygsf.git
+git+https://github.com/ausseabed/mate.git
+git+https://github.com/ausseabed/mbes-grid-checks.git
+git+https://github.com/ausseabed/finder-grid-checks.git
+git+https://github.com/ausseabed/kmall.git
+git+https://github.com/hydroffice/hyo2_abc.git
