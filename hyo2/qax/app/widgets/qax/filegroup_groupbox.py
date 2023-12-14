@@ -96,6 +96,10 @@ class FileGroupGroupBox(QGroupBox):
         self.prj = prj
         self.parent_win = parent_win
 
+        # for sorting
+        self.sort_reversed = False
+        self.last_sort_column = -1
+
         self.plugin_service:Optional[PluginService] = None
         self.no_checks_selected_layout = None
 
@@ -115,10 +119,11 @@ class FileGroupGroupBox(QGroupBox):
         self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
         self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
         self.table.verticalHeader().setVisible(False)
+        # for sorting
+        self.table.horizontalHeader().sectionClicked.connect(self._click_header)
+        main_layout.addWidget(self.table)
 
         self.cross_icon = qta.icon('fa.close')
-
-        main_layout.addWidget(self.table)
 
         button_layout = QHBoxLayout()
         button_layout.addStretch()
@@ -137,7 +142,28 @@ class FileGroupGroupBox(QGroupBox):
 
         main_layout.addLayout(button_layout)
 
-    def __update_table(self):
+    def _click_header(self, header_index: int) -> None:
+        # implement a very simple sort for the file list table. Qt provides a more
+        # native/advanced method to do this,
+        if self.last_sort_column == header_index:
+            # if the user has clicked the same column header twice then reverse the
+            # sort order for this column
+            self.sort_reversed =  not self.sort_reversed
+
+        # sort the rows list (in place) by whatever column the user has clicked
+        if header_index == 0:
+            self.rows.sort(key=lambda x: x.filename_short, reverse=self.sort_reversed)
+        elif header_index == 1:
+            self.rows.sort(key=lambda x: x.dataset, reverse=self.sort_reversed)
+        elif header_index == 2:
+            self.rows.sort(key=lambda x: x.file_type, reverse=self.sort_reversed)
+        # once the list has been updated we need to update the table UI to match
+        self.__update_table()
+        # remember what column was last sorted by so we can reverse it if the user
+        # clicks again
+        self.last_sort_column = header_index
+
+    def __update_table(self) -> None:
         self.table.setRowCount(len(self.rows))
         for i, row in enumerate(self.rows):
             item_filename = QTableWidgetItem(row.filename_short)
