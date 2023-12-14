@@ -6,7 +6,7 @@ from PySide2 import QtCore, QtGui
 from PySide2.QtWidgets import \
     QSizePolicy, QComboBox, QTableWidget, QGroupBox, QVBoxLayout, \
     QHBoxLayout, QTableWidgetItem, QPushButton, QFileDialog, QHeaderView, \
-    QDialog, QDialogButtonBox, QLabel, QLineEdit
+    QDialog, QDialogButtonBox, QLabel, QLineEdit, QAbstractItemView
 
 from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
@@ -112,13 +112,18 @@ class FileGroupGroupBox(QGroupBox):
         self.setLayout(main_layout)
 
         self.table = QTableWidget()
+        # hide the table row numbers
+        self.table.verticalHeader().setVisible(False)
         self.table.setColumnCount(4)
         self.table.setHorizontalHeaderLabels(["Filename", "Dataset", "Type", ""])
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
         self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
-        self.table.verticalHeader().setVisible(False)
+        # don't highlight the column headers when one of them is clicked (for sorting)
+        self.table.horizontalHeader().setHighlightSections(False)
+        # there's no need to select any rows in this table
+        self.table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         # for sorting
         self.table.horizontalHeader().sectionClicked.connect(self._click_header)
         main_layout.addWidget(self.table)
@@ -157,13 +162,27 @@ class FileGroupGroupBox(QGroupBox):
             self.rows.sort(key=lambda x: x.dataset, reverse=self.sort_reversed)
         elif header_index == 2:
             self.rows.sort(key=lambda x: x.file_type, reverse=self.sort_reversed)
-        # once the list has been updated we need to update the table UI to match
-        self.__update_table()
         # remember what column was last sorted by so we can reverse it if the user
         # clicks again
         self.last_sort_column = header_index
+        # once the list has been updated we need to update the table UI to match
+        self.__update_table()
 
     def __update_table(self) -> None:
+        # show and hide the little ^ char Qt uses to show sorting
+        if (self.last_sort_column == -1):
+            self.table.horizontalHeader().setSortIndicatorShown(False)
+        else:
+            self.table.horizontalHeader().setSortIndicatorShown(True)
+        # update the order and column being sorted on (if any)
+        if (self.last_sort_column != -1):
+            order = (
+                QtCore.Qt.SortOrder.DescendingOrder
+                if self.sort_reversed
+                else QtCore.Qt.SortOrder.AscendingOrder
+            )
+            self.table.horizontalHeader().setSortIndicator(self.last_sort_column, order)
+
         self.table.setRowCount(len(self.rows))
         for i, row in enumerate(self.rows):
             item_filename = QTableWidgetItem(row.filename_short)
