@@ -244,6 +244,8 @@ class FileGroupGroupBox(QGroupBox):
             )
             self.rows.append(gr)
 
+        # files won't be sorted when new ones are added
+        self.last_sort_column = -1
         self.__update_table()
 
     def __get_new_dataset_name(self, count=1) -> str:
