@@ -20,6 +20,7 @@ runs:
         conda activate ~/miniconda/envs/${{ inputs.env-name }}
         # conda install -y -c conda-forge texlive-core
         # texlive-core on conda is broken, and has been for some time apparently
+        sudo apt-get update
         sudo apt-get install texlive-latex-extra latexmk texlive
         cd docs
         make html
