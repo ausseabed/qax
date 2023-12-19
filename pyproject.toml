@@ -8,7 +8,19 @@ universal = true
 
 [project]
 name = "hyo2.qax"
-dynamic = ["version"]
+dynamic = [
+    "version",
+    "description",
+    "dependencies",
+    "gui-scripts",
+    "classifiers",
+    "optional-dependencies",
+    "keywords",
+    "authors",
+    "license",
+    "readme",
+    "requires-python",
+]
 
 [tool.setuptools_scm]
 write_to = "hyo2/qax/_version.py"
