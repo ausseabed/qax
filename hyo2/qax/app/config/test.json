@@ -1,0 +1,13 @@
+{
+  "name": "Test",
+  "checkTools": [
+    {
+      "name": "Point Cloud Checks",
+      "pluginClass": "ausseabed.mbespc.qax.plugin.PointCloudChecksQaxPlugin",
+      "description": "Point cloud density check",
+      "enabled": true,
+      "checked": true
+    }
+  ],
+  "specifications": []
+}

@@ -22,5 +22,6 @@ git+https://github.com/ausseabed/pygsf.git
 git+https://github.com/ausseabed/mate.git
 git+https://github.com/ausseabed/mbes-grid-checks.git
 git+https://github.com/ausseabed/finder-grid-checks.git
+git+https://github.com/ausseabed/point-cloud-checks.git
 git+https://github.com/ausseabed/kmall.git
 git+https://github.com/hydroffice/hyo2_abc.git
