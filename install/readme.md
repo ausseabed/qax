@@ -14,17 +14,9 @@ Move on to step 2 when qax runs in this environment.
 
 The following command sequence should work, maybe.
 
-    conda create -y -n qax python=3.7
+    conda create -y -n qax python=3.10
     conda activate qax
-
-    conda install -y pip
-    conda install -y -c conda-forge --file requirements_conda.txt
-    conda install -y -c conda-forge --no-deps cartopy
-    pip install -r requirements.txt
-    pip install pypiwin32
-    conda install -y -c conda-forge  --no-deps pyproj
-
-    pip install --no-deps git+git://github.com/hydroffice/hyo2_abc.git@master#egg=hyo2.abc
+    conda env update --file conda-environment.yaml
 
     pip install .
 
