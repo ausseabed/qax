@@ -206,7 +206,13 @@ class FileGroupGroupBox(QGroupBox):
                 QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
             for t in self.available_types:
                 item_type.addItem(t)
-            item_type.setCurrentIndex(self.available_types.index(row.file_type))
+
+            try:
+                row_type_index = self.available_types.index(row.file_type)
+            except ValueError as ex:
+                row_type_index = self.available_types.index("Unknown")
+
+            item_type.setCurrentIndex(row_type_index)
             item_type.currentIndexChanged.connect(
                 lambda x, row=row: self._file_type_changed(x, row)
             )
