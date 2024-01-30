@@ -14,7 +14,7 @@
 {% set black = '#1a2126' %}
 {% set light_black = '#3e4549' %}
 {% set very_light_black = '#cccdce' %}
-{% set page_width = 965 %}
+{% set page_width = 900 %}
 {% set sidebar_width = 165 %}
 {% set body_font_stack = 'Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif' %}
 {% set headline_font_stack = 'Futura, "Trebuchet MS", Arial, sans-serif' %}

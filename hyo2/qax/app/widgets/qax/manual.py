@@ -1,8 +1,8 @@
 import sys
 from PySide2.QtCore import QUrl, QFileInfo
 from PySide2.QtGui import QIcon, QColor
-from PySide2.QtWidgets import QApplication, QDesktopWidget, QLineEdit, \
-    QMainWindow, QPushButton, QToolBar
+from PySide2.QtWidgets import QLineEdit, \
+    QMainWindow, QPushButton, QToolBar, QVBoxLayout, QWidget
 from PySide2.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
 import os
 
@@ -36,9 +36,13 @@ class ManualWindow(QMainWindow):
         self.address_line_edit.setVisible(False)
         self.toolbar.addWidget(self.address_line_edit)
 
+        self.main_widget = QWidget()
+        self.layout = QVBoxLayout()
+        self.main_widget.setLayout(self.layout)
+        self.setCentralWidget(self.main_widget)
+
         self.web_engine_view = QWebEngineView()
-        self.web_engine_view.setZoomFactor(2.0)
-        self.setCentralWidget(self.web_engine_view)
+        self.layout.addWidget(self.web_engine_view)
         initialUrl = self.docs_url()
 
         self.address_line_edit.setText(str(initialUrl))
