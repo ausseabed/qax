@@ -30,6 +30,10 @@ class ManualWindow(QMainWindow):
         self.forward_button.setIcon(qta.icon('fa.arrow-right'))
         self.forward_button.clicked.connect(self.forward)
         self.toolbar.addWidget(self.forward_button)
+        self.home_button = QPushButton()
+        self.home_button.setIcon(qta.icon('fa.home'))
+        self.home_button.clicked.connect(self.home)
+        self.toolbar.addWidget(self.home_button)
 
         self.address_line_edit = QLineEdit()
         self.address_line_edit.returnPressed.connect(self.load)
@@ -43,10 +47,10 @@ class ManualWindow(QMainWindow):
 
         self.web_engine_view = QWebEngineView()
         self.layout.addWidget(self.web_engine_view)
-        initialUrl = self.docs_url()
+        self.initialUrl = QUrl(self.docs_url())
 
-        self.address_line_edit.setText(str(initialUrl))
-        self.web_engine_view.load(QUrl(initialUrl))
+        self.address_line_edit.setText(str(self.initialUrl))
+        self.web_engine_view.load(self.initialUrl)
         self.web_engine_view.page().urlChanged.connect(self.urlChanged)
 
     def docs_url(self):
@@ -66,6 +70,9 @@ class ManualWindow(QMainWindow):
 
     def forward(self):
         self.web_engine_view.page().triggerAction(QWebEnginePage.Forward)
+
+    def home(self):
+        self.web_engine_view.load(self.initialUrl)
 
     def urlChanged(self, url):
         self.address_line_edit.setText(url.toString())
