@@ -1,7 +1,7 @@
 import sys
 from PySide2.QtCore import QUrl, QFileInfo
 from PySide2.QtGui import QIcon, QColor
-from PySide2.QtWidgets import QLineEdit, \
+from PySide2.QtWidgets import QLineEdit, QApplication, \
     QMainWindow, QPushButton, QToolBar, QVBoxLayout, QWidget
 from PySide2.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
 import os
@@ -11,6 +11,26 @@ from hyo2.qax.app import app_info
 
 
 class ManualWindow(QMainWindow):
+
+    # singleton instance for the Manual Dialog window
+    _instance = None
+
+    # Use a combination of this class method and singleton instance
+    # to enable this function to be called from anywhere in the QAX
+    # code base
+    @classmethod
+    def show_manual(cls):
+        if (ManualWindow._instance is None):
+            man_win = ManualWindow()
+            app = QApplication.instance()
+            available_geometry = app.desktop().availableGeometry(man_win)
+            man_win.resize(
+                available_geometry.width() * 2 / 3,
+                available_geometry.height() * 2 / 3)
+            ManualWindow._instance = man_win
+    
+        ManualWindow._instance.show()
+        ManualWindow._instance.activateWindow()
 
     def __init__(self):
         super(ManualWindow, self).__init__()

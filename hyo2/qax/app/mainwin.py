@@ -306,15 +306,7 @@ class MainWin(QtWidgets.QMainWindow):
             self.update_status_bar("Opened {}".format(base_name), 1500)
 
     def open_manual(self):
-        man_win = ManualWindow()
-        app = QApplication.instance()
-        available_geometry = app.desktop().availableGeometry(man_win)
-        man_win.resize(
-            available_geometry.width() * 2 / 3,
-            available_geometry.height() * 2 / 3)
-        man_win.show()
-
-        self.manual_window = man_win
+        ManualWindow.show_manual()
 
     def open_gridtransformer(self):
         gt_dialog = GridTransformerDialog()
