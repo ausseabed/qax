@@ -6,9 +6,12 @@ from typing import List, NoReturn
 import logging
 import os
 
+from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.layout import FlowLayout
 from hyo2.qax.app.widgets.lines import QHLine
+from hyo2.qax.app.widgets.qax.manual import ManualWindow, ManualButton
+import hyo2.qax.app.widgets.qax.manual_links as manual_links
 from hyo2.qax.lib.config import QaxConfigCheckTool
 from hyo2.qax.lib.config import QaxConfigProfile, QaxConfig, QaxConfigSpecification
 
@@ -38,13 +41,22 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         self.setLayout(vbox)
 
         # Profile selection
+        profile_label_layout = QtWidgets.QHBoxLayout()
         self.profile_name_label = QtWidgets.QLabel("Profile:")
+        profile_label_layout.addWidget(self.profile_name_label)
+        self.profile_help = ManualButton(
+            manual_links.INTERFACE_PROFILE,
+            "Show profile help"
+        )
+        profile_label_layout.addWidget(self.profile_help)
+        profile_label_layout.addStretch(1)
+
         hbox = QtWidgets.QHBoxLayout()
         vbox.addLayout(hbox)
         vbox_profile_label_selection = QtWidgets.QVBoxLayout()
         vbox_profile_label_selection.setAlignment(QtCore.Qt.AlignTop)
         hbox.addLayout(vbox_profile_label_selection)
-        vbox_profile_label_selection.addWidget(self.profile_name_label)
+        vbox_profile_label_selection.addLayout(profile_label_layout)
 
         self.profile_combobox = QtWidgets.QComboBox()
         self.profile_combobox.setSizePolicy(
