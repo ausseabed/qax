@@ -2,7 +2,8 @@ import sys
 from PySide2.QtCore import QUrl, QFileInfo, QTimer
 from PySide2.QtGui import QIcon, QColor
 from PySide2.QtWidgets import QLineEdit, QApplication, \
-    QMainWindow, QPushButton, QToolBar, QVBoxLayout, QWidget
+    QMainWindow, QPushButton, QToolBar, QVBoxLayout, QWidget, \
+    QHBoxLayout, QLabel
 from PySide2.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
 import os
 
@@ -152,7 +153,7 @@ class ManualButton(QPushButton):
     def __init__(self, link: str, tooltip: str = None):
         super(ManualButton, self).__init__()
 
-        self.setIcon(qta.icon('fa.info-circle'))
+        self.setIcon(qta.icon('fa.info-circle', color='grey'))
         if tooltip is not None:
             self.setToolTip(tooltip)
         self.clicked.connect(self._click_show_manual)
@@ -171,3 +172,25 @@ class ManualButton(QPushButton):
 
     def _click_show_manual(self):
         ManualWindow.show_manual(self.link)
+
+
+class ManualLabelButton(QWidget):
+    """
+    Widget implementation that includes a label for something, and a help
+    button.
+    """
+
+    def __init__(self, link: str, label: str, tooltip: str = None):
+        super(ManualLabelButton, self).__init__()
+
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout)
+        label = QLabel(label)
+        layout.addWidget(label)
+        help_button = ManualButton(
+            link,
+            tooltip
+        )
+        layout.addWidget(help_button)
+        layout.addStretch(1)
