@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         os: ["windows-latest", "ubuntu-latest"]
-        python-version: ["3.10"]
+        python-version: ["3.11"]
 
     env:
       # mostly used as helpers for retrieving as env vars within inno setup
