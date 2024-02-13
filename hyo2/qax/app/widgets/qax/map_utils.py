@@ -373,22 +373,26 @@ class PolygonsModel(QAbstractListModel):
         new_polys = []
         if not (geojson['type'] == 'MultiPolygon'):
             return
-        poly_list_coords = geojson['coordinates']
-        for poly_coords in poly_list_coords:
-            poly_points = []
-            for coordinate in poly_coords:
-                poly_points.append({
-                    'latitude': coordinate[1],
-                    'longitude': coordinate[0],
-                })
+        # get the list of polygons from this multipolygon
+        # note each polygon will have multiple coord lists
+        # for holes
+        polygons_list = geojson['coordinates']
+        for poly_loop in polygons_list:
+            for poly_coords in poly_loop:
+                poly_points = []
+                for coordinate in poly_coords:
+                    poly_points.append({
+                        'latitude': coordinate[1],
+                        'longitude': coordinate[0],
+                    })
 
-            new_poly = PolygonItem(
-                poly_points,
-                color=color,
-                line_color=line_color,
-                line_width=line_width
-            )
-            new_polys.append(new_poly)
+                new_poly = PolygonItem(
+                    poly_points,
+                    color=color,
+                    line_color=line_color,
+                    line_width=line_width
+                )
+                new_polys.append(new_poly)
 
         self.beginInsertRows(
             QModelIndex(),
