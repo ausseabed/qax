@@ -93,8 +93,11 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
 
         vbox.addWidget(QHLine())
 
-        check_tools_label = QtWidgets.QLabel("Check Tools:")
-        vbox.addWidget(check_tools_label)
+        vbox.addWidget(ManualLabelButton(
+            manual_links.INTERFACE_CHECK_TOOL_SELECTION,
+            "Check Tools:",
+            "Show check tool selection help"
+        ))
 
         self.check_tools_layout = FlowLayout()
         vbox.addLayout(self.check_tools_layout)

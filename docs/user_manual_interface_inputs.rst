@@ -40,3 +40,14 @@ the :ref:`parameters` tab.
 Check Tools
 ------------
 
+The list of available check tools may change depending on which profile
+is selected. Each check tool implements one or more checks, for example the
+MBES Grid Checks tool implements the density, resolution, and total vertical
+uncertainty check. Checks from each check will only be run if ticked in the
+check tools list (shown below).
+
+.. figure:: _static/check_tool_selection.png
+    :align: center
+    :alt: check tools list
+    :figclass: align-center
+
