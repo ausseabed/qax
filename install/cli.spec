@@ -45,11 +45,41 @@ datas.append((platformthemes_libs, "plugins\\platformthemes"))
 datas.append((geoservices_libs, "geoservices"))
 datas.append((r'..\docs\_build\html', "docs\_build\html"))
 
+hiddenimports = [
+    'PySide2.QtPrintSupport',
+    'PySide2.QtWebChannel',
+    'PySide2.QtWebEngineCore',
+    'PySide2.QtQuick',
+    'pyproj',
+    'hyo2.mate',
+    'hyo2.qax',
+    'hyo2.mate.qax.plugin',
+    'hyo2.qax.plugins.test',
+    'hyo2.qax.plugins.placeholder',
+    'ausseabed.mbesgc',
+    'ausseabed.mbesgc.qax.plugin',
+    'ausseabed.mbespc',
+    'ausseabed.mbespc.qax.plugin',
+    'ausseabed.findergc',
+    'ausseabed.findergc.qax.plugin',
+    'win32'
+]
+
+# hack to workaround missing rasterio imports
+# https://stackoverflow.com/a/69376916
+import pkgutil
+import rasterio
+rasterio_packages = list()
+for package in pkgutil.iter_modules(rasterio.__path__, prefix="rasterio."):
+    rasterio_packages.append(package.name)
+hiddenimports.extend(rasterio_packages)
+
+
 a = Analysis(['cli.py'],
              pathex=[qax_root, bin_dir],
              binaries=[],
              datas=datas,
-             hiddenimports=['PySide2.QtPrintSupport','PySide2.QtWebChannel','PySide2.QtWebEngineCore','PySide2.QtQuick', 'pyproj', 'hyo2.mate','hyo2.qax','hyo2.mate.qax.plugin', 'hyo2.qax.plugins.test', 'hyo2.qax.plugins.placeholder', 'ausseabed.mbesgc', 'ausseabed.mbesgc.qax.plugin', 'ausseabed.mbespc', 'ausseabed.mbespc.qax.plugin', 'ausseabed.findergc', 'ausseabed.findergc.qax.plugin', 'win32'],
+             hiddenimports=hiddenimports,
              hookspath=[hooks_dir],
              runtime_hooks=[],
              excludes=[],
