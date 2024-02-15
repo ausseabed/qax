@@ -1,19 +1,13 @@
 from ausseabed.qajson.model import QajsonRoot
 from ausseabed.qajson.utils import minimal_qajson
-from hyo2.abc.app.dialogs.exception.exception_dialog import ExceptionDialog
-from hyo2.abc.app.tabs.info.info_tab import InfoTab
-from hyo2.abc.lib.helper import Helper
+from hyo2.qax.app.widgets.exception_dialog import ExceptionDialog
 from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtGui import QIcon, QKeySequence
+from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QAction, QApplication
 from pathlib import Path
 from typing import Optional, NoReturn, List
-from urllib.error import URLError
-from urllib.request import urlopen
 import logging
 import os
-import socket
-import ssl
 import sys
 import traceback
 
@@ -39,9 +33,6 @@ class MainWin(QtWidgets.QMainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
 
-        logger.info("current configuration:\n%s" %
-                    Helper(lib_info=lib_info).package_info())
-
         # set the application name
         self.name = app_info.app_name
         self.version = app_info.app_version
@@ -60,18 +51,6 @@ class MainWin(QtWidgets.QMainWindow):
         # set icons
         icon_info = QtCore.QFileInfo(app_info.app_icon_path)
         self.setWindowIcon(QtGui.QIcon(icon_info.absoluteFilePath()))
-        if Helper.is_windows():
-
-            try:
-                # This is needed to display the app icon on the taskbar on
-                # Windows 7
-                import ctypes
-                app_id = '%s v.%s' % (self.name, self.version)
-                ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
-                    app_id)
-
-            except AttributeError as e:
-                logger.debug("Unable to change app icon: %s" % e)
 
         self.qax_widget = QAXWidget(main_win=self)
         self.qax_widget.setDocumentMode(True)
@@ -200,21 +179,12 @@ class MainWin(QtWidgets.QMainWindow):
     def show_exception_dialog(self, params):
         _app_info, _lib_info, ex_type, ex_value, tb = params
 
-        dlg = ExceptionDialog(
-            app_info=_app_info,
-            lib_info=_lib_info,
-            ex_type=ex_type,
-            ex_value=ex_value,
-            tb=tb
-        )
+        dlg = ExceptionDialog(ex_type, ex_value, tb)
         ret = dlg.exec_()
         if ret == QtWidgets.QDialog.Rejected:
-            if not dlg.user_triggered:
-                self.close()
+            self.close()
         else:
             logger.warning("ignored exception")
-
-    # Quitting #
 
     def do_you_really_want(self, title="Quit", text="quit"):
         msg_box = QtWidgets.QMessageBox(self)

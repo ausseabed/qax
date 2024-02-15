@@ -92,7 +92,6 @@ def collect_folder_data(folder: str, visit_sub_folders=True, include_py_files=Fa
 
 
 qc_data = collect_pkg_data('hyo2.qc')
-abc_data = collect_pkg_data('hyo2.abc')
 grids_data = collect_pkg_data('hyo2.grids')
 rori_data = collect_pkg_data('hyo2.rori')
 unc_data = collect_pkg_data('hyo2.unccalc')
@@ -128,7 +127,6 @@ coll = COLLECT(exe,
                a.zipfiles,
                a.datas,
                qc_data,
-               abc_data,
                grids_data,
                rori_data,
                unc_data,

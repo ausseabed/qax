@@ -1,7 +1,4 @@
 import logging
-from typing import Optional
-from hyo2.abc.lib.progress.abstract_progress import AbstractProgress
-from hyo2.abc.lib.progress.cli_progress import CliProgress
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +7,6 @@ class QAXParams:
 
     def __init__(self):
 
-        self._progress = CliProgress()
         self._profile = str()
 
         self._flier_finder = False
@@ -32,14 +28,6 @@ class QAXParams:
     @profile.setter
     def profile(self, value: str) -> None:
         self._profile = value
-
-    @property
-    def progress(self) -> Optional[AbstractProgress]:
-        return self._progress
-
-    @progress.setter
-    def progress(self, value: AbstractProgress) -> None:
-        self._progress = value
 
     @property
     def flier_finder(self) -> bool:
@@ -123,7 +111,6 @@ class QAXParams:
 
     def __repr__(self):
         msg = "  <%s>\n" % self.__class__.__name__
-        msg += "    <progress: %s>\n" % bool(self.progress)
         msg += "    <profile: %s>\n" % self._profile
         msg += "    <flier finder: %s>\n" % self._flier_finder
         msg += "    <holiday finder: %s>\n" % self._holiday_finder

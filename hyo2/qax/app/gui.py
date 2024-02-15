@@ -6,8 +6,7 @@ from PySide2 import QtCore, QtWidgets
 
 import logging
 
-from hyo2.abc.app.app_style import AppStyle
-from hyo2.abc.lib.logging import set_logging
+from hyo2.qax.lib.logging import set_logging
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.mainwin import MainWin
 from hyo2.qax.lib.config import QaxConfig
@@ -17,7 +16,6 @@ logger = logging.getLogger(__name__)
 set_logging(
     ns_list=["hyo2.qax"],
     default_logging=logging.ERROR,
-    hyo2_logging=logging.ERROR,
     lib_logging=logging.ERROR
 )
 
@@ -54,7 +52,6 @@ def gui(dev_mode=False):
 
     # stop auto scaling on windows - part 2
     # app.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
-    # app.setStyleSheet(AppStyle.load_stylesheet())
 
     cfg_dir = GuiSettings.config_default()
     logger.info("Using config {}".format(cfg_dir))

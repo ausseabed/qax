@@ -8,7 +8,7 @@ standalone installation package (msi) for QAX. There are three steps;
 
 
 ## Step 1: Conda environment
-Not particularly well covered. Suggest starting with miniconda (on Windows) and installing necessary dependencies (numpy, gdal, hyo2.abc, hyo2.mate) and  QAX itself. *pyinstaller will also need to be installed in this environment.*
+Not particularly well covered. Suggest starting with miniconda (on Windows) and installing necessary dependencies (numpy, gdal, hyo2.mate) and  QAX itself. *pyinstaller will also need to be installed in this environment.*
 
 Move on to step 2 when qax runs in this environment.
 

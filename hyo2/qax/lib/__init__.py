@@ -1,10 +1,18 @@
 import os
-from hyo2.abc.lib.lib_info import LibInfo
 from hyo2.qax import name
 from hyo2.qax import __version__
 
+""" Simple object that allows assignment of any attributes
+"""
+class InfoObject(object):
+    def __setitem__(self, key, value):
+        setattr(self, key, value)
 
-lib_info = LibInfo()
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+lib_info = InfoObject()
 
 lib_info.lib_name = name
 lib_info.lib_version = __version__
@@ -22,10 +30,6 @@ lib_info.lib_support_email = "qax@hydroffice.org"
 lib_info.lib_latest_url = "https://www.hydroffice.org/latest/qax.txt"
 
 lib_info.lib_dep_dict = {
-    "hyo2.abc": "hyo2.abc",
-    "hyo2.s57": "hyo2.s57",
-    "hyo2.grids": "hyo2.grids",
-    "hyo2.qc": "hyo2.qc",
     "gdal": "osgeo",
     "numpy": "numpy",
     "matplotlib": "matplotlib",

@@ -1,4 +1,4 @@
-from hyo2.abc.lib.logging import set_logging
+from hyo2.qax.lib.logging import set_logging
 from hyo2.qax.app.gui import gui
 
 

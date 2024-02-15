@@ -38,7 +38,7 @@ There are 3 steps
 
 Create conda environment for QAX
 ******************************************************
-Start by installing `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ (on Windows) and and then establishing an environment to install necessary dependencies (eg NumPy, GDAL, hyo2.abc, hyo2.mate) via the `conda-environment.yaml` file, followed by  QAX itself.
+Start by installing `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ (on Windows) and and then establishing an environment to install necessary dependencies (eg NumPy, GDAL, hyo2.mate) via the `conda-environment.yaml` file, followed by  QAX itself.
 The following command sequence is suggested: ::
 
     conda create -y -n qax python=3.11

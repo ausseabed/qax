@@ -12,8 +12,6 @@ from PySide2.QtWidgets import QApplication, QDialog, QLineEdit, \
 from PySide2.QtGui import QFont
 import multiprocessing as mp
 
-from hyo2.abc.lib.helper import Helper
-
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app import gui_settings_const
 

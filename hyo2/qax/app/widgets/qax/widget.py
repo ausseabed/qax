@@ -6,13 +6,11 @@ import logging
 import os
 
 from hyo2.qax.app import qta
-from hyo2.abc.app.qt_progress import QtProgress
 from hyo2.qax.app.widgets.qax.main_tab import MainTab
 from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
 from hyo2.qax.app.widgets.qax.plugins_tab import PluginsTab
 from hyo2.qax.app.widgets.qax.result_tab import ResultTab
 from hyo2.qax.app.widgets.qax.run_tab import RunTab, QtCheckExecutorThread
-from hyo2.qax.app.widgets.widget import AbstractWidget
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecification
 from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin
 from hyo2.qax.lib.project import QAXProject
@@ -34,7 +32,6 @@ class QAXWidget(QtWidgets.QTabWidget):
     def __init__(self, main_win):
         QtWidgets.QTabWidget.__init__(self)
         self.prj = QAXProject()
-        self.prj.params.progress = QtProgress(self)
 
         self.profile = None  # QaxConfigProfile
 

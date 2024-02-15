@@ -1,21 +1,13 @@
 from ausseabed.qajson.model import QajsonRoot, QajsonCheck
 from ausseabed.qajson.parser import QajsonParser
 from ausseabed.qajson.utils import qajson_valid
-from collections import defaultdict
-from hyo2.abc.lib.helper import Helper
-from hyo2.qax.lib import lib_info
-from jsonschema import validate, ValidationError, SchemaError, Draft7Validator
 from pathlib import Path
 from PySide2 import QtCore
 from typing import Optional, NoReturn, List
 import json
 import logging
-import os
-import time
 import traceback
 
-from hyo2.qax.lib.inputs import QAXInputs
-from hyo2.qax.lib.params import QAXParams
 from hyo2.qax.lib.config import QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxPlugins
 from hyo2.qax.lib.qajson_util import QajsonExcelExporter
@@ -129,23 +121,11 @@ class QAXProject(QtCore.QObject):
     qa_json_changed = QtCore.Signal(QajsonRoot)
     qa_json_path_changed = QtCore.Signal(Path)
 
-    @classmethod
-    def default_output_folder(cls):
-        output_folder = Helper(lib_info=lib_info).package_folder()
-        # create it if it does not exist
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
-        return output_folder
-
     def __init__(self):
         super(QAXProject, self).__init__()
 
         self._qa_json = None  # QajsonRoot
         self._qa_json_path = None
-        self._output_folder = QAXProject.default_output_folder()
-
-        self._p = QAXParams()
-        self._i = QAXInputs()
 
         self._profile = None
 
@@ -168,14 +148,6 @@ class QAXProject(QtCore.QObject):
         self.qa_json_path_changed.emit(self._qa_json_path)
 
     @property
-    def output_folder(self) -> Optional[Path]:
-        return self._output_folder
-
-    @output_folder.setter
-    def output_folder(self, value: Optional[Path]) -> NoReturn:
-        self._output_folder = value
-
-    @property
     def profile(self) -> QaxConfigProfile:
         return self._profile
 
@@ -183,19 +155,9 @@ class QAXProject(QtCore.QObject):
     def profile(self, value: QaxConfigProfile) -> NoReturn:
         self._profile = value
 
-    def open_output_folder(self) -> None:
-        if self.output_folder:
-            Helper.explore_folder(str(self.output_folder))
-        else:
-            logger.warning('unable to define the output folder to open')
-
     def get_qa_json_path(self) -> Path:
         if self.qa_json_path is not None:
             return self.qa_json_path
-        if self.output_folder is not None:
-            return self.output_folder.joinpath('qa.json')
-        if QAXProject.default_output_folder() is not None:
-            return QAXProject.default_output_folder().joinpath('qa.json')
         raise RuntimeError("could not construct qa json path")
 
     def save_qa_json(self) -> NoReturn:
@@ -236,25 +198,6 @@ class QAXProject(QtCore.QObject):
         example).
         '''
         return qajson_valid(self.qa_json)
-
-    @property
-    def params(self) -> QAXParams:
-        return self._p
-
-    @params.setter
-    def params(self, value: QAXParams) -> None:
-        self._p = value
-
-    @property
-    def inputs(self) -> QAXInputs:
-        return self._i
-
-    @inputs.setter
-    def inputs(self, value: QAXInputs) -> None:
-        self._i = value
-
-    def clear_inputs(self):
-        self._i = QAXInputs()
 
     def execute_all(self, qa_group: str = "survey_products"):
         checks = self.inputs.qa_json.js['qa'][qa_group]['checks']

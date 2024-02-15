@@ -1,5 +1,4 @@
 from ausseabed.qajson.model import QajsonRoot
-from hyo2.abc.lib.helper import Helper
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QSizePolicy

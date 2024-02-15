@@ -1,10 +1,10 @@
 import os
-from hyo2.abc.app.app_info import AppInfo
 from hyo2.qax import name
 from hyo2.qax import __version__
+from hyo2.qax.lib import InfoObject
 
 
-app_info = AppInfo()
+app_info = InfoObject()
 
 app_info.app_name = name
 app_info.app_version = __version__
