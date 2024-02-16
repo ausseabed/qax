@@ -14,9 +14,9 @@ from hyo2.qax.lib.plugin import QaxPlugins
 
 logger = logging.getLogger(__name__)
 set_logging(
-    ns_list=["hyo2.qax"],
+    ns_list=["hyo2.qax", "ausseabed"],
     default_logging=logging.ERROR,
-    lib_logging=logging.ERROR
+    lib_logging=logging.INFO
 )
 
 
