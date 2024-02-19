@@ -4,7 +4,8 @@ from typing import Optional
 def set_logging(
         ns_list: Optional[list] = None,
         default_logging: int = logging.WARNING,
-        lib_logging: int = logging.DEBUG
+        lib_logging: int = logging.DEBUG,
+        qt_logging: int = logging.INFO
     ):
 
     logging.basicConfig(
@@ -22,3 +23,5 @@ def set_logging(
 
     for ns in ns_list:
         logging.getLogger(ns).setLevel(lib_logging)
+    
+    logging.getLogger("qt").setLevel(qt_logging)
