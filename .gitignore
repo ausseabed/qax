@@ -7,6 +7,10 @@ settings.ini
 *.sh~
 *.*~
 .DS_Store
+Thumbs.db
+
+# VSCode
+.vscode
 
 # Byte-compiled / optimized
 __pycache__/
