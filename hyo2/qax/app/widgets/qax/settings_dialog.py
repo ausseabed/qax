@@ -5,10 +5,12 @@ from PySide2.QtWidgets import QApplication, QDialog, QLineEdit, \
 from PySide2.QtGui import QFont, QIntValidator
 from PySide2 import QtCore
 from typing import Any
+import logging
 
 from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app import gui_settings_const
+from hyo2.qax.lib.logging import set_logging
 
 GRIDPROCESSING_TILE_SIZE_MIN = 2000
 GRIDPROCESSING_TILE_SIZE_MAX = 200000
@@ -31,6 +33,7 @@ class SettingsDialog(QDialog):
         self.setLayout(self.layout)
 
         self._add_gridprocessing()
+        self._add_logging()
 
         self.layout.addStretch()
 
@@ -70,6 +73,23 @@ class SettingsDialog(QDialog):
             gui_settings_const.gridprocessing_tile_y
         )
         self.processingtile_y.setText(str(gp_t_y))
+
+
+        log_qax_val = GuiSettings.settings().value(gui_settings_const.logging_qax)
+        log_qt_val = GuiSettings.settings().value(gui_settings_const.logging_qt)
+        log_other_val = GuiSettings.settings().value(gui_settings_const.logging_other)
+
+        log_qax_val = gui_settings_const.logging_qax_default if log_qax_val is None else log_qax_val
+        log_qt_val = gui_settings_const.logging_qt_default if log_qt_val is None else log_qt_val
+        log_other_val = gui_settings_const.logging_other_default if log_other_val is None else log_other_val
+
+        log_qax_index = [y[0] for y in gui_settings_const.LOG_LEVELS].index(log_qax_val)
+        log_qt_index = [y[0] for y in gui_settings_const.LOG_LEVELS].index(log_qt_val)
+        log_other_index = [y[0] for y in gui_settings_const.LOG_LEVELS].index(log_other_val)
+
+        self.cb_qax_logging.setCurrentIndex(log_qax_index)
+        self.cb_qt_logging.setCurrentIndex(log_qt_index)
+        self.cb_other_logging.setCurrentIndex(log_other_index)
 
     def _add_gridprocessing(self) -> None:
         # Grid Processing config options
@@ -153,6 +173,106 @@ class SettingsDialog(QDialog):
         GuiSettings.settings().setValue(
             gui_settings_const.gridprocessing_tile_y,
             self.__sanitise_tile_size(y)
+        )
+
+    def __add_log_levels(self, cb: QComboBox) -> None:
+        for (name, level) in gui_settings_const.LOG_LEVELS:
+            cb.addItem(name, level)
+
+    def _add_logging(self) -> None:
+        # Grid Processing config options
+        logging_groupbox = QGroupBox("Logging")
+        logging_groupbox.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Preferred)
+        logging_layout = QVBoxLayout()
+        logging_layout.setSpacing(4)
+        logging_groupbox.setLayout(logging_layout)
+        self.layout.addWidget(logging_groupbox)
+
+        label_1 = QLabel(
+            "The following settings modify the level of detail that is output to the "
+            "QAX console window and the log window on the run tab. Setting log levels "
+            "to the most severe category will reduce the volume of log messages."
+        )
+        label_1.setWordWrap(True)
+        label_1.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Minimum)
+        logging_layout.addWidget(label_1)
+        label_1.setStyleSheet("background: none")
+        label_2 = QLabel(
+            "Setting the QAX Logging level to INFO may produce some information relative "
+            "to the checks being performed. QT and Other logging options will likely only "
+            "produce information required to support development and debugging."
+        )
+        label_2.setWordWrap(True)
+        label_2.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Minimum)
+        logging_layout.addWidget(label_2)
+        label_2.setStyleSheet("background: none")
+
+        label_width = 80
+        cb_width = 80
+        layout_qax_logging = QHBoxLayout()
+        logging_layout.addLayout(layout_qax_logging)
+        l = QLabel("QAX logging:")
+        l.setFixedWidth(label_width)
+        layout_qax_logging.addWidget(l)
+        self.cb_qax_logging = QComboBox()
+        self.__add_log_levels(self.cb_qax_logging)
+        self.cb_qax_logging.currentIndexChanged.connect(self._on_logging_changed)
+        self.cb_qax_logging.setFixedWidth(cb_width)
+        layout_qax_logging.addWidget(self.cb_qax_logging)
+        layout_qax_logging.addStretch()
+
+        layout_qt_logging = QHBoxLayout()
+        logging_layout.addLayout(layout_qt_logging)
+        l = QLabel("QT logging:")
+        l.setFixedWidth(label_width)
+        layout_qt_logging.addWidget(l)
+        self.cb_qt_logging = QComboBox()
+        self.__add_log_levels(self.cb_qt_logging)
+        self.cb_qt_logging.currentIndexChanged.connect(self._on_logging_changed)
+        self.cb_qt_logging.setFixedWidth(cb_width)
+        layout_qt_logging.addWidget(self.cb_qt_logging)
+        layout_qt_logging.addStretch()
+
+        layout_other_logging = QHBoxLayout()
+        logging_layout.addLayout(layout_other_logging)
+        l = QLabel("Other logging:")
+        l.setFixedWidth(label_width)
+        layout_other_logging.addWidget(l)
+        self.cb_other_logging = QComboBox()
+        self.__add_log_levels(self.cb_other_logging)
+        self.cb_other_logging.currentIndexChanged.connect(self._on_logging_changed)
+        self.cb_other_logging.setFixedWidth(cb_width)
+        layout_other_logging.addWidget(self.cb_other_logging)
+        layout_other_logging.addStretch()
+
+    def _on_logging_changed(self):
+        GuiSettings.settings().setValue(
+            gui_settings_const.logging_qax,
+            self.cb_qax_logging.currentText()
+        )
+        GuiSettings.settings().setValue(
+            gui_settings_const.logging_qt,
+            self.cb_qt_logging.currentText()
+        )
+        GuiSettings.settings().setValue(
+            gui_settings_const.logging_other,
+            self.cb_other_logging.currentText()
+        )
+
+        log_qax_int = [item[1] for item in gui_settings_const.LOG_LEVELS if item[0] == self.cb_qax_logging.currentText()][0]
+        log_qt_int = [item[1] for item in gui_settings_const.LOG_LEVELS if item[0] == self.cb_qt_logging.currentText()][0]
+        log_other_int = [item[1] for item in gui_settings_const.LOG_LEVELS if item[0] == self.cb_other_logging.currentText()][0]
+
+        set_logging(
+            default_logging=log_other_int,
+            qax_logging=log_qax_int,
+            qt_logging=log_qt_int
         )
 
     def close_dialog(self):

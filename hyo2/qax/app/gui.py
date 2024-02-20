@@ -6,21 +6,15 @@ from PySide2 import QtCore, QtWidgets
 
 import logging
 
-from hyo2.qax.lib.logging import set_logging
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.mainwin import MainWin
 from hyo2.qax.lib.config import QaxConfig
 from hyo2.qax.lib.plugin import QaxPlugins
+from hyo2.qax.lib.logging import setup_logging
+
 
 logger = logging.getLogger(__name__)
-qt_logger = logging.getLogger("qt")
-
-set_logging(
-    ns_list=["hyo2.qax", "ausseabed"],
-    default_logging=logging.ERROR,
-    lib_logging=logging.INFO,
-    qt_logging=logging.ERROR
-)
+qt_logger = logging.getLogger('qt')
 
 def qt_custom_handler(
         error_type: QtCore.QtMsgType,
@@ -39,8 +33,8 @@ def qt_custom_handler(
     for line in traceback.format_stack():
         qt_logger.debug(f"- {line.strip()}")
 
-
 QtCore.qInstallMessageHandler(qt_custom_handler)
+
 
 # There's a Qt issue that causes seg faults when app is defined within a
 # function, so do it here.
@@ -58,6 +52,8 @@ def gui(dev_mode=False):
 
     # stop auto scaling on windows - part 2
     # app.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
+
+    setup_logging()
 
     cfg_dir = GuiSettings.config_default()
     logger.info("Using config {}".format(cfg_dir))

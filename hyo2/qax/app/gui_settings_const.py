@@ -1,3 +1,5 @@
+import logging
+
 """
 These constants are used to persist values within the gui_settings config
 """
@@ -14,3 +16,19 @@ spatial_outputs_folder = 'spatial_outputs'
 ## Grid processing
 gridprocessing_tile_x = 'gridprocessing_tile_x'
 gridprocessing_tile_y = 'gridprocessing_tile_y'
+
+## Log settings
+logging_qax = 'logging_qax'
+logging_qt = 'logging_qt'
+logging_other = 'logging_other'
+logging_qax_default = 'INFO'
+logging_qt_default = 'ERROR'
+logging_other_default = 'WARN'
+
+LOG_LEVELS = [
+    ("DEBUG", logging.DEBUG),
+    ("INFO", logging.INFO),
+    ("WARN", logging.WARN),
+    ("ERROR", logging.ERROR),
+    ("CRITICAL", logging.CRITICAL),
+]
