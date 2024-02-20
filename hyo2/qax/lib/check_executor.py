@@ -5,6 +5,7 @@ import multiprocessing as mp
 
 from ausseabed.qajson.model import QajsonRoot
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxPlugins
+from hyo2.qax.lib.logging import setup_logging
 
 logger = logging.getLogger(__name__)
 
@@ -198,13 +199,10 @@ class MultiprocessCheckExecutor(mp.Process, CheckExecutor):
 
     def _configure_log(self):
         h = logging.handlers.QueueHandler(self.queue)
+        setup_logging()
+
         root = logging.getLogger()
         root.addHandler(h)
-        root.setLevel(logging.WARNING)
-
-        qax_namespaces = ['ausseabed']
-        for ns in qax_namespaces:
-            logging.getLogger(ns).setLevel(logging.INFO)
 
     def run(self):
         self._configure_log()
