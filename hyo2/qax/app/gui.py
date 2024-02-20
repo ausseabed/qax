@@ -55,6 +55,8 @@ def gui(dev_mode=False):
 
     setup_logging()
 
+    logger.info("User settings file {}".format(GuiSettings.settings_file()))
+
     cfg_dir = GuiSettings.config_default()
     logger.info("Using config {}".format(cfg_dir))
 
