@@ -6,15 +6,51 @@ MBESGC
 .. index::
     single: MBESGC
 
+MBESGC stands for Multibeam Echo Sounder Grid Checks. These grid checks include the following functions:
+
+* Density grid checks
+* Total Vertical Uncertainty grid check
+* Resolution check
+
 Inputs
 -----------------------------------------
 Processed multibeam grid files can be used as input to the MBESGC plugin in QAX
 File type supported by the current version:
 
-#. Mutiband GeoTIFF (.tiff, .tif)
+**Single band GeoTIFF (.tiff, .tif)**
+
+QAX will accept several single GeoTIFF files that make up a single dataset where
+each file includes a specific band as listed below.
+
+QAX uses two methods to determine what file provides which band. First it will read
+the band name from the GeoTIFF metadata and match against the below list. If there
+is no band name in the metadata it will look for the inclusion of the band name 
+in any part of the filename.
 
 +-------------------+
-|**Bands Required** |
+|**Bands**          |
++-------------------+
+| Depth             |
++-------------------+
+| Density           |
++-------------------+
+| Uncertainty       |
++-------------------+
+
+
+**Multiband GeoTIFF (.tiff, .tif)**
+
+Multiband GeoTIFF can store several gridded data layers within a single file. Not
+all the following bands are required, however some checks may be aborted if the
+necessary layers are not present. For example the density check will be aborted if
+no density layer is included in the multiband GeoTIFF.
+
+QAX reads the following band names from the metadata included in the GeoTIFF file.
+You may need to ensure the tool that has exported the GeoTIFF include these band
+names.
+
++-------------------+
+|**Bands**          |
 +-------------------+
 | Depth             |
 +-------------------+
@@ -24,28 +60,9 @@ File type supported by the current version:
 +-------------------+
 
     .. note::
-        The bands required in order to perform the check are Depth, Density and Uncertainty. \
-        These need to be named as above and need to be contained within \
-        the one file.
+        The band band names must be included in the tif file metadata to be correctly \
+        identified by QAX.
 
-#. Bathymetric Attributed Grid (.bag)
-
-+-------------------+
-|**Bands Required** |
-+-------------------+
-| Depth             |
-+-------------------+
-| Density           |
-+-------------------+
-| Uncertainty       |
-+-------------------+
-
-    .. note::
-        The bands required in order to perform the check are Depth, Density and Uncertainty. \
-        Due to current bag file specification limitations the following is required \
-        Two bag files are needed.  One must contain Depth as the primary layer while \
-        the other must contain Density as the primary layer.  Because of this \
-        it is recommended to use Geotiff files until these limitations are rectified. 
 
 Checks
 -----------------------------------------
@@ -54,18 +71,19 @@ Checks
 Density grid check
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Use the mbesgridcheck library to provide information to the user about if the \
-survey grid input adheres to specific requirement
-
-.. autoclass:: ausseabed.mbesgc.lib.mbesgridcheck.DensityCheck
+This function conducts a check of the number of soundings attributed to individual 
+nodes within a surface and allows the user to set and test for a minimum threshold 
+of soundings per node at a given aggregate for the surface.
 
 There are two parameters that can be changed to modify the Density Grid check
+
+.. _mbesgc_density_params:
 
 ================================================  ====================================
 Parameter                                         Description
 ================================================  ====================================
-Minimum Soundings per node (mspn)                 Value of density node threshold
-Minimum Soundings per node percentage (mspp)      Percentage of nodes required to pass
+Minimum Soundings per node (mspn)                 The minimum number of soundings required per node. If the minimum soundings for a node is not met, the node will register as a fail. The default for this parameter is 5 soundings per node, or what is specified by the selected :any:`standard <standard>`.
+Minimum Soundings per node percentage (mspp)      The aggregate number of nodes that are required to pass for the surface to be deemed as a pass overall - expressed as a percentage. The default for this parameter is 95%.
 ================================================  ====================================
 
 Using an example of how to set these parameters based on an IHO Order 1a survey \
@@ -85,25 +103,35 @@ per node value with 100% of nodes required to have >9 soundings in order to pass
 Total Vertical Uncertainty grid check
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Use the mbesgridcheck library to provide information to the user about if the \
-survey grid input adheres to specific requirement
+This function calculates whether maximum allowable Total Vertical Uncertainty (TVU)
+requirements have been exceeded across nodes within the supplied surface.
 
-.. autoclass:: ausseabed.mbesgc.lib.mbesgridcheck.TvuCheck
-
-TVU check calculates the error limits using the formula
+The maximum allowable TVU per node is calculated using the following equation from
+IHO S44:
 
 .. math:: TVU Error Limit = sqrt[a^2+(b*d)^2]
 
-Where
+Where:
+**a** represents that portion of the uncertainty that oes not vary with the depth
+**b** is a coefficient which represents that portion of the uncertainty that varies with the depth
+**d** is the depth 
+
+The relationship between the parameters in the Total Vertical Uncertainty Check
+calculation and the IHO S44 equation above is as follows:
+
+.. _mbesgc_tvu_params:
 
 =========================================  ====================================
 Parameter                                  Description
 =========================================  ====================================
 Constant Depth Error (a)                   Sum of all constant errors in meters
-Factor of Depth Dependant Errors (b)       multiplied by depth layer and is the \
-                                           sum of all depth dependant errors
-Depth (d)                                  Obtained from input Depth layer
+Factor of Depth Dependant Errors (b)       Multiplied by depth layer and is the sum of all depth dependant errors.
+Acceptable Area Percentage                 The threshold for achieving a 'pass' for number of nodes which do not exceed the maximum allowable TVU - expressed as a percentage.
 =========================================  ====================================
+
+.. note::
+        Depth component of equation is obtained from the depth layer of the input surface.
+
 
 Using an example of how to set these parameters based on an IHO Order 1a survey \
 which requires a=0.5m and b=0.013
@@ -119,32 +147,37 @@ The resulting calculated values would then be compared to he Uncertainty layer \
 from your grid and if all Uncertainty nodes are less than the TVU error limit \
 the check will pass
 
-Resolution of grid check
+Resolution grid check
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Use the mbesgridcheck library to provide information to the user about if the \
-survey grid input adheres to specific requirement
+This function will inform whether a supplied surface has been produced at the
+required resolution (spacing between surface nodes) with respect to the observed
+depths within the surface.
 
-.. autoclass:: ausseabed.mbesgc.lib.mbesgridcheck.ResolutionCheck
+There are two main categories for IHO S44 minimum feature detection requirements -
+a fixed minimum feature detection size in depths less than 40m; and a feature
+size that scales according to the observed depth for depths greater than 40m. 
+This function uses linear equations to address these standards and can altered
+to address other thresholds as required.
 
-Resolution check calculates the required resolution of the input grid surface \
-where a number of parameters are used to create linear equations for both above \
-and below a particular threshold depth
+The linear equations are:
 
 .. math:: Resolution requirement for < threshold depth
 .. math:: DSM * (ADM * Depth + ADC)
 .. math:: Resolution requirement for > threshold depth
 .. math:: DSM * (BDM * Depth + BDC)
 
+.. _mbesgc_resolution_params:
+
 ==========================================  ======================================
 Parameter                                   Description
 ==========================================  ======================================
-Feature Detection Size Multiplier (DSM)     Multiplier for feature detection size
-Threshold Depth                             Depth threshold for linear equations
-Above Threshold FDS Depth Multiplier (ADM)  Above threshold depth depth multiplier                                   
-Above Threshold FDS Depth Constant (ADC)    Above threshold depth depth constant
-Below Threshold FDS Depth Multiplier (BDM)  Below threshold depth depth multiplier
-Below Threshold FDS Depth Constant (BDC)    Below threshold depth depth constant                       
+Feature Detection Size Multiplier (DSM)     Feature Detection Size Multiplier. This allows for the user to determine the resolution of the surface with respect to the minimum feature detection size - default is 0.5 of the minimum feature detection size.
+Threshold Depth                             Depth threshold for linear equations - default is 40 metres to reflect IHO S44 standard.
+Above Threshold FDS Depth Multiplier (ADM)  Above Threshold FDS Depth Multiplier. This component is the part of the equation which will scale the minimum feature detection size for depths less than the threshold depth - default is 0 as this is typically the requirement in depths less than the threshold depth.
+Above Threshold FDS Depth Constant (ADC)    Above Threshold FDS Depth Constant. This component describes the minimum feature detection size in depths less than the Threshold Depth, this will be scaled by the ADM component.
+Below Threshold FDS Depth Multiplier (BDM)  Below Threshold FDS Depth Multiplier. This component is the part of the equation which will scale the minimum feature detection size for depths greater than the threshold Depth - default is 0.05 as this is typically the requirement in depths greater than the threshold depth for IHO S44.
+Below Threshold FDS Depth Constant (BDC)    Below Threshold FDS Depth Constant. This component describes the minimum feature detection size in depths greater than the Threshold Depth, this will be scaled by the BDM component.
 ==========================================  ======================================
 
 Using an example of how to get these parameters to work for an IHO Order 1a survey 
@@ -165,8 +198,6 @@ The outputs vary depending on the grid check that is run
 
 Density grid check
 ^^^^^^^^^^^^^^^^^^^^^^
-
-.. automethod:: ausseabed.mbesgc.lib.mbesgridcheck.DensityCheck.get_outputs
 
 QAJSON output object that contains:
 
@@ -207,8 +238,6 @@ QAJSON output object that contains:
 Total Vertical Uncertainty grid check
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automethod:: ausseabed.mbesgc.lib.mbesgridcheck.TvuCheck.get_outputs
-
 QAJSON output object that contains:
 
 +------------------+--------------------------+
@@ -245,8 +274,6 @@ QAJSON output object that contains:
 
 Resolution of grid check
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automethod:: ausseabed.mbesgc.lib.mbesgridcheck.ResolutionCheck.get_outputs
 
 QAJSON output object that contains:
 

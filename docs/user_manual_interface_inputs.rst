@@ -23,6 +23,8 @@ bathymeyry data (soundings) and gridded data. The HIPP profile only includes
 the grid based check tools as performing QA checks on raw data is not a priority
 for this user group.
 
+.. _standard:
+
 Standard
 ---------
 
