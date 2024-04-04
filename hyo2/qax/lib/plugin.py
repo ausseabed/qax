@@ -167,7 +167,8 @@ class QaxCheckReference():
             description: str = None,
             supported_file_types: List[QaxFileType] = [],
             default_input_params: List[QajsonParam] = [],
-            version: str = None
+            version: str = None,
+            parameter_help_link: str = None
     ):
         """
         Constructor
@@ -192,6 +193,12 @@ class QaxCheckReference():
         self.supported_file_types = supported_file_types
         self.default_input_params = default_input_params
         self.version = version
+
+        # if this is provided then an info button will be added to the QAX
+        # user interface just above the parameters input list for each check
+        # must be a string that points to a location that exists in the QAX
+        # rst docs (eg; "user_manual_interface_inputs.html#standard")
+        self.parameter_help_link = parameter_help_link
 
     def supports_file(self, file_path: Path, file_group: str) -> bool:
         """ Returns True if the file_path file is supported by this check tool.

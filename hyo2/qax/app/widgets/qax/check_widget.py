@@ -6,6 +6,7 @@ from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.lines import QHLine
 from hyo2.qax.app.widgets.qax.check_param_widget import CheckParamWidget, \
     get_param_widget
+from hyo2.qax.app.widgets.qax.manual import ManualButton
 from hyo2.qax.lib.plugin import QaxCheckReference
 from hyo2.qax.lib.config import QaxConfigSpecification
 
@@ -52,11 +53,22 @@ class CheckWidget(QtWidgets.QWidget):
             vbox.addLayout(hbox)
 
             params_layout = QtWidgets.QVBoxLayout()
+            params_label_layout = QtWidgets.QHBoxLayout()
             params_label = QtWidgets.QLabel("Parameters")
-            params_layout.addWidget(params_label)
             params_label.setStyleSheet(
                 "QLabel { font-weight: bold; "
-                "padding: 0px 0px 0px 0px;}")
+                "padding: 0px 0px 0px 0px;}"
+            )
+            params_label_layout.addWidget(params_label)
+            if check_reference.parameter_help_link is not None:
+                params_help = ManualButton(
+                    check_reference.parameter_help_link,
+                    f"Show {check_reference.name} parameters help"
+                )
+                params_label_layout.addWidget(params_help)
+            params_label_layout.addStretch(1)
+            params_layout.addLayout(params_label_layout)
+
             hbox.addLayout(params_layout)
             for check_param in self.check_reference.default_input_params:
                 widget_param = get_param_widget(check_param)
