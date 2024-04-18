@@ -10,7 +10,7 @@ from hyo2.qax.app.widgets.qax.profile_groupbox import ProfileGroupBox
 from hyo2.qax.app.widgets.qax.filegroup_groupbox \
     import FileGroupGroupBox
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecification
-from hyo2.qax.lib.plugin import QaxPlugins, QaxFileGroup, QaxCheckToolPlugin
+from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin
 from hyo2.qax.lib.plugin_service import PluginService
 
 
