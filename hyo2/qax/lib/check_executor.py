@@ -93,6 +93,7 @@ class CheckExecutor():
                 self.stopped = True
                 logger.error(f"Failed to run check {check_tool.description}")
                 logger.error(ex, exc_info=True)
+                self._progress_callback(None, 0.0)
                 self._checks_complete()
                 return
 
