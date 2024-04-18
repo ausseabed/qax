@@ -40,3 +40,11 @@ class PluginService:
         
         return 'Unknown'
 
+    def get_file_details(self, filename: str) -> str:
+        for plugin in self.plugins:
+            for file_group in plugin.get_file_groups():
+                for check_ref in plugin.checks():
+                    if check_ref.supports_file(Path(filename), file_group.name):
+                        return plugin.get_file_details(filename)
+
+        return ""

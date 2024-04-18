@@ -451,6 +451,15 @@ class QaxCheckToolPlugin():
         """
         raise NotImplementedError("Plugins must implement get_summary_value function")
 
+    def get_file_details(self, filename: str) -> str:
+        """ Gets a description of the file based on how the plugin would describe the
+        file. This is presented to the user in the "details" column of the file inputs
+        tab within teh QAX user interface.
+        If not overriden by the check plugin it simply returns an empty string
+        """
+        return ""
+
+
 class QaxProfilePlugins():
     """ Manages a list of plugins that are specific to single profile
     """

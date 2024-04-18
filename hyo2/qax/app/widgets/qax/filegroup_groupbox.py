@@ -2,15 +2,14 @@ import logging
 import os
 
 from typing import Optional
-from PySide2 import QtCore, QtGui
+from PySide2 import QtCore
 from PySide2.QtWidgets import \
     QSizePolicy, QComboBox, QTableWidget, QGroupBox, QVBoxLayout, \
     QHBoxLayout, QTableWidgetItem, QPushButton, QFileDialog, QHeaderView, \
-    QDialog, QDialogButtonBox, QLabel, QLineEdit, QAbstractItemView
+    QDialog, QDialogButtonBox, QLabel, QLineEdit, QAbstractItemView, QFrame
 
 from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
-from hyo2.qax.lib.plugin import QaxFileGroup
 from hyo2.qax.lib.plugin_service import PluginService
 
 from ausseabed.qajson.model import QajsonRoot, QajsonFile, QajsonDataLevel
@@ -20,11 +19,18 @@ logger = logging.getLogger(__name__)
 
 class GroupRow:
 
-    def __init__(self, filename: str, dataset: str, file_type: str) -> None:
+    def __init__(
+            self,
+            filename: str,
+            dataset: str,
+            file_type: str,
+            file_details:str
+        ) -> None:
         self.filename = filename
         self._dataset = dataset
         self._user_set_dataset = False
         self._file_type = file_type
+        self._file_details = file_details
         self._user_set_file_type = False
 
     @property
@@ -49,8 +55,15 @@ class GroupRow:
         self._user_set_file_type = True
         self._file_type = val
 
+    @property
+    def file_details(self) -> str:
+        return self._file_details
+
     def __str__(self) -> str:
-        return f"{self.filename_short} {self.dataset} {self.file_type}"
+        return (
+            f"{self.filename_short} {self.dataset} "
+            f"{self.file_type} {self.file_details}"
+        )
 
 
 class NewDatasetDialog(QDialog):
@@ -114,12 +127,13 @@ class FileGroupGroupBox(QGroupBox):
         self.table = QTableWidget()
         # hide the table row numbers
         self.table.verticalHeader().setVisible(False)
-        self.table.setColumnCount(4)
-        self.table.setHorizontalHeaderLabels(["Filename", "Dataset", "Type", ""])
+        self.table.setColumnCount(5)
+        self.table.setHorizontalHeaderLabels(["Filename", "Dataset", "Type", "Details" , ""])
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
         self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)
         # don't highlight the column headers when one of them is clicked (for sorting)
         self.table.horizontalHeader().setHighlightSections(False)
         # there's no need to select any rows in this table
@@ -185,9 +199,17 @@ class FileGroupGroupBox(QGroupBox):
 
         self.table.setRowCount(len(self.rows))
         for i, row in enumerate(self.rows):
-            item_filename = QTableWidgetItem(row.filename_short)
+            item_filename = QLabel(row.filename_short)
             item_filename.setToolTip(row.filename)
-            self.table.setItem(i, 0, item_filename)
+            item_filename_widget = QFrame()
+            item_filename_widget.setSizePolicy(
+                QSizePolicy.Expanding, QSizePolicy.Minimum)
+            item_filename_widget.setLayout(QHBoxLayout())
+            item_filename_widget.layout().addWidget(item_filename)
+            item_filename_widget.layout().addStretch()
+            item_filename_widget.layout().setAlignment(QtCore.Qt.AlignTop)
+            item_filename_widget.layout().setContentsMargins(4, 2, 0, 0)
+            self.table.setCellWidget(i, 0, item_filename_widget)
 
             item_dataset = QComboBox()
             item_dataset.setSizePolicy(
@@ -199,14 +221,21 @@ class FileGroupGroupBox(QGroupBox):
             item_dataset.currentIndexChanged.connect(
                 lambda x, row=row: self._dataset_changed(x, row)
             )
-            self.table.setCellWidget(i, 1, item_dataset)
+            item_dataset_widget = QFrame()
+            item_dataset_widget.setSizePolicy(
+                QSizePolicy.Expanding, QSizePolicy.Minimum)
+            item_dataset_widget.setLayout(QHBoxLayout())
+            item_dataset_widget.layout().addWidget(item_dataset)
+            item_dataset_widget.layout().addStretch()
+            item_dataset_widget.layout().setAlignment(QtCore.Qt.AlignTop)
+            item_dataset_widget.layout().setContentsMargins(0, 0, 0, 0)
+            self.table.setCellWidget(i, 1, item_dataset_widget)
 
             item_type = QComboBox()
             item_type.setSizePolicy(
-                QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+                QSizePolicy.Expanding, QSizePolicy.Minimum)
             for t in self.available_types:
                 item_type.addItem(t)
-
             try:
                 row_type_index = self.available_types.index(row.file_type)
             except ValueError as ex:
@@ -216,15 +245,40 @@ class FileGroupGroupBox(QGroupBox):
             item_type.currentIndexChanged.connect(
                 lambda x, row=row: self._file_type_changed(x, row)
             )
-            self.table.setCellWidget(i, 2, item_type)
+            item_type_widget = QFrame()
+            item_type_widget.setSizePolicy(
+                QSizePolicy.Expanding, QSizePolicy.Minimum)
+            item_type_widget.setLayout(QHBoxLayout())
+            item_type_widget.layout().addWidget(item_type)
+            item_type_widget.layout().addStretch()
+            item_type_widget.layout().setAlignment(QtCore.Qt.AlignTop)
+            item_type_widget.layout().setContentsMargins(0, 0, 0, 0)
+            self.table.setCellWidget(i, 2, item_type_widget)
+
+            item_file_details = QTableWidgetItem(row.file_details)
+            self.table.setItem(i, 3, item_file_details)
 
             item_remove_button = QPushButton()
+            item_remove_button.setSizePolicy(
+                QSizePolicy.Minimum, QSizePolicy.Minimum)
             item_remove_button.setText("")
             item_remove_button.setIcon(self.cross_icon)
             item_remove_button.clicked.connect(
                 lambda x=1, row=row: self._remove_file(x, row)
             )
-            self.table.setCellWidget(i, 3, item_remove_button)
+            item_remove_button_widget = QFrame()
+            item_remove_button_widget.setSizePolicy(
+                QSizePolicy.Expanding, QSizePolicy.Expanding)
+            item_remove_button_widget.setLayout(QVBoxLayout())
+            item_remove_button_widget.layout().addWidget(item_remove_button)
+            item_remove_button_widget.layout().addStretch()
+            item_remove_button_widget.layout().setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+            item_remove_button_widget.layout().setContentsMargins(0, 0, 0, 0)
+            self.table.setCellWidget(i, 4, item_remove_button_widget)
+
+            self.table.verticalHeader().setSectionResizeMode(
+                i, QHeaderView.ResizeMode.ResizeToContents
+            )
 
         # we need to call this explicitly presumably because the table
         # doesn't correctly pick up that the qcombobox within this cell
@@ -243,10 +297,12 @@ class FileGroupGroupBox(QGroupBox):
     def __add_new_files(self, filenames: list[str]) -> None:
         for filename in filenames:
             ft = self.plugin_service.identify_file_group(filename)
+            fd = self.plugin_service.get_file_details(filename)
             gr = GroupRow(
                 filename=filename,
                 dataset='default',
-                file_type=ft
+                file_type=ft,
+                file_details=fd
             )
             self.rows.append(gr)
 
@@ -418,11 +474,14 @@ class FileGroupGroupBox(QGroupBox):
             for f in g:
                 if f.file_type not in self.available_types:
                     self.available_types.append(f.file_type)
-                self.rows.append(GroupRow(
-                    filename=f.path,
-                    dataset=ds_name,
-                    file_type=f.file_type
-                ))
+                self.rows.append(
+                    GroupRow(
+                        filename=f.path,
+                        dataset=ds_name,
+                        file_type=f.file_type,
+                        file_details=self.plugin_service.get_file_details(f.path)
+                    )
+                )
 
         # recreate the table with this data derived from the QAJSON
         self.__update_table()
