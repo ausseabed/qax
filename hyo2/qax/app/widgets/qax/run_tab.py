@@ -139,8 +139,23 @@ class RunTab(QtWidgets.QWidget):
         self.qajson_spatial_checkbox = QCheckBox(
             "Include summary spatial output in QAJSON. "
             "Supports QAX visualisation.")
-        self.qajson_spatial_checkbox.setCheckState(
-            QtCore.Qt.CheckState.Checked)
+
+        qajson_spatial_outputs = GuiSettings.settings().value(
+            gui_settings_const.spatial_outputs_qajson,
+            True,
+            bool
+        )
+        checkstate = QtCore.Qt.CheckState.Checked if qajson_spatial_outputs else QtCore.Qt.CheckState.Unchecked
+        self.qajson_spatial_checkbox.setCheckState(checkstate)
+        def set_check_setting():
+            val = self.qajson_spatial_checkbox.isChecked()
+            GuiSettings.settings().setValue(
+                gui_settings_const.spatial_outputs_qajson,
+                val
+            )
+        self.qajson_spatial_checkbox.stateChanged.connect(
+            set_check_setting
+        )
         co_layout.addWidget(self.qajson_spatial_checkbox)
 
         export_layout = QVBoxLayout()
@@ -148,6 +163,13 @@ class RunTab(QtWidgets.QWidget):
         self.export_spatial_checkbox = QCheckBox(
             "Export detailed spatial outputs to file. "
             "Supports visualisation in other geospatial applications.")
+        detailed_spatial_outputs = GuiSettings.settings().value(
+            gui_settings_const.spatial_outputs_detailed,
+            False,
+            bool
+        )
+        checkstate = QtCore.Qt.CheckState.Checked if detailed_spatial_outputs else QtCore.Qt.CheckState.Unchecked
+        self.export_spatial_checkbox.setCheckState(checkstate)
         self.export_spatial_checkbox.stateChanged.connect(
             self._on_export_spatial_changed)
         export_layout.addWidget(self.export_spatial_checkbox)
@@ -160,7 +182,7 @@ class RunTab(QtWidgets.QWidget):
         output_folder_layout.addWidget(self.output_folder_label)
         self.output_folder_input = QLineEdit()
         self.output_folder_input.setText(
-            GuiSettings.settings().value("spatial_outputs"))
+            GuiSettings.settings().value(gui_settings_const.spatial_outputs_folder))
         self.output_folder_input.setMinimumWidth(300)
         self.output_folder_input.setSizePolicy(
             QSizePolicy.Expanding,
@@ -199,6 +221,12 @@ class RunTab(QtWidgets.QWidget):
         self.output_folder_label.setEnabled(is_export)
         self.output_folder_input.setEnabled(is_export)
         self.open_output_folder_button.setEnabled(is_export)
+
+        val = self.export_spatial_checkbox.isChecked()
+        GuiSettings.settings().setValue(
+            gui_settings_const.spatial_outputs_detailed,
+            val
+        )
 
     def _add_process(self):
         process_groupbox = QGroupBox("Process")

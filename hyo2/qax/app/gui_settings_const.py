@@ -9,6 +9,9 @@ These constants are used to persist values within the gui_settings config
 input_folder_settings = 'grid_transformer_input_folder'
 output_folder_settings = 'grid_transformer_output_folder'
 
+# checkbox values
+spatial_outputs_qajson = 'spatial_outputs_qajson'
+spatial_outputs_detailed = 'spatial_outputs_detailed'
 # folder detailed spatial outputs are saved to (specified on Run tab)
 spatial_outputs_folder = 'spatial_outputs'
 
