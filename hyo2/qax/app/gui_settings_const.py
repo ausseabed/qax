@@ -39,3 +39,4 @@ LOG_LEVELS = [
 ## result tab settings
 # vertical splitter location
 result_scoreboard_splitter_v_loc = 'result_scoreboard_splitter_v_loc'
+result_selected_tab = 'result_selected_tab'

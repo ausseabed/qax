@@ -100,13 +100,19 @@ class ResultTab(QtWidgets.QWidget):
         hbox_view_and_datalevel.addWidget(gb)
         self.vbox.addLayout(hbox_view_and_datalevel)
 
+        self.cur_view = GuiSettings.settings().value(
+            gui_settings_const.result_selected_tab,
+            defaultValue='Score Board',
+            type=str
+        )
+
         self.set_view = QtWidgets.QButtonGroup()
         self.set_view.setExclusive(True)
         for idx, view_name in enumerate(self.view_names):
             # viewRadioButton = QtWidgets.QRadioButton(view_name)
             viewRadioButton = QtWidgets.QPushButton(view_name)
             viewRadioButton.setCheckable(True)
-            if idx == 0:
+            if view_name == self.cur_view:
                 viewRadioButton.setChecked(True)
             viewRadioButton.setSizePolicy(
                 QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -388,6 +394,11 @@ class ResultTab(QtWidgets.QWidget):
             self.score_board_widget.setHidden(True)
             self.summary_widget.setVisible(True)
             self.set_data_level.setDisabled(True)
+
+        GuiSettings.settings().setValue(
+            gui_settings_const.result_selected_tab,
+            self.cur_view
+        )
 
     def _set_datalevel_with_data(self):
         ''' Sets the UI to a data level that contains data. If a user has only run
