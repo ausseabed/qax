@@ -35,3 +35,7 @@ LOG_LEVELS = [
     ("ERROR", logging.ERROR),
     ("CRITICAL", logging.CRITICAL),
 ]
+
+## result tab settings
+# vertical splitter location
+result_scoreboard_splitter_v_loc = 'result_scoreboard_splitter_v_loc'

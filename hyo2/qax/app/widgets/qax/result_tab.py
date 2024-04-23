@@ -10,6 +10,7 @@ from hyo2.qax.app import qta
 from hyo2.qax.app.widgets.qax.scoreboard_details import ScoreboardDetailsWidget
 from hyo2.qax.app.widgets.qax.summary_details import SummaryDetailsWidget
 from hyo2.qax.app.gui_settings import GuiSettings
+from hyo2.qax.app import gui_settings_const
 from hyo2.qax.lib.project import QAXProject
 from hyo2.qax.app.widgets.qax.scoreboard_check_model import ScoreBoardCheckModel
 from hyo2.qax.app.widgets.qax.summary_model import SummaryModel
@@ -263,12 +264,13 @@ class ResultTab(QtWidgets.QWidget):
         sb_vbox.setContentsMargins(0, 0, 0, 0)
         self.score_board_widget.setLayout(sb_vbox)
 
-        splitter = QtWidgets.QSplitter()
-        splitter.setOrientation(QtCore.Qt.Vertical)
-        sb_vbox.addWidget(splitter)
+        self.splitter = QtWidgets.QSplitter()
+        self.splitter.setOrientation(QtCore.Qt.Vertical)
+        sb_vbox.addWidget(self.splitter)
 
         self.score_board_group = QtWidgets.QGroupBox("Score Board")
-        splitter.addWidget(self.score_board_group)
+        self.splitter.addWidget(self.score_board_group)
+        self.splitter.splitterMoved.connect(self.__splitterMoved)
 
         vbox = QtWidgets.QVBoxLayout()
         self.score_board_group.setLayout(vbox)
@@ -307,7 +309,14 @@ class ResultTab(QtWidgets.QWidget):
 
         self.scoreboard_details = ScoreboardDetailsWidget(parent=self)
         self.scoreboard_details.setVisible(False)
-        splitter.addWidget(self.scoreboard_details)
+        self.splitter.addWidget(self.scoreboard_details)
+
+    def __splitterMoved(self, pos: int, index: int) -> None:
+        sizes = [str(v) for v in self.splitter.sizes()]
+        GuiSettings.settings().setValue(
+            gui_settings_const.result_scoreboard_splitter_v_loc,
+            " ".join(sizes)
+        )
 
     def _update_score_board_view(self):
         data_level = getattr(self.prj.qa_json.qa, self.qa_group)
@@ -317,6 +326,12 @@ class ResultTab(QtWidgets.QWidget):
 
         self.scoreboard_table_model.setChecks(checks)
         self.score_board.resizeRowsToContents()
+
+        if GuiSettings.settings().contains(gui_settings_const.result_scoreboard_splitter_v_loc):
+            loc = GuiSettings.settings().value(gui_settings_const.result_scoreboard_splitter_v_loc, type=str)
+            # don't allow any size less than 100 (arbritrary), otherwise that panel will be hidden
+            loc = [max(int(st), 100) for st in loc.split()]
+            self.splitter.setSizes(loc)
 
     def _on_clicked_scoreboard(self, selected_index):
         # use the selected_index is the row number (column too) selected by the
