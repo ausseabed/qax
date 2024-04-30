@@ -39,7 +39,7 @@ class PluginsTab(QtWidgets.QWidget):
 
         self.profile = None  # QaxConfigProfile
         # includes only the PluginTab instances, one per plugin
-        self.plugin_tabs = []
+        self.plugin_tabs: list[PluginTab] = []
 
     def set_profile(self, profile: QaxConfigProfile):
         self.profile = profile

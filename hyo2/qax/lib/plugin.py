@@ -517,8 +517,7 @@ class QaxPlugins():
         return QaxPlugins._instance
 
     def __init__(self):
-        # list of `QaxCheckToolPlugin`
-        self.plugins = []
+        self.plugins: list[QaxCheckToolPlugin] = []
 
     def _load_plugin(
             self,
