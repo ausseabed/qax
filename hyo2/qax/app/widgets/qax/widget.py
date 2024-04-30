@@ -1,7 +1,7 @@
 from ausseabed.qajson.model import QajsonRoot
 from pathlib import Path
 from PySide2 import QtGui, QtCore, QtWidgets
-from typing import Optional, NoReturn, List
+from typing import NoReturn
 import logging
 import os
 
@@ -16,8 +16,7 @@ from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin
 from hyo2.qax.lib.project import QAXProject
 
 from ausseabed.qajson.parser import QajsonParser
-from ausseabed.qajson.model import QajsonRoot, QajsonQa, QajsonDataLevel, \
-    QajsonParam, QajsonCheck, QajsonInfo, QajsonGroup, QajsonFile
+from ausseabed.qajson.model import QajsonRoot, QajsonQa
 
 logger = logging.getLogger(__name__)
 
@@ -140,48 +139,38 @@ class QAXWidget(QtWidgets.QTabWidget):
             # so we need to convert this
             paths_and_types = [(Path(f.path), f.file_type) for f in file_group_list]
 
-            for config_check_tool in self.tab_inputs.selected_check_tools:
-                plugin_check_tool = QaxPlugins.instance().get_plugin(
-                    self.profile.name,
-                    config_check_tool.plugin_class
-                )
+            for check in self.tab_inputs.selected_checks:
+                if check.supports_files(paths_and_types):
+                    data_level = root.qa.get_or_add_data_level(check.data_level)
+                    plugin_check_tool = QaxPlugins.instance().get_plugin_for_check(check.id)
+                    qajson_check = plugin_check_tool.add_check(data_level, check)
+                    qajson_inputs = qajson_check.get_or_add_inputs()
+                    qajson_inputs.files.extend(file_group_list)
 
-                for check in plugin_check_tool.checks():
-                    if check.supports_files(paths_and_types):
-                        data_level = root.qa.get_or_add_data_level(check.data_level)
-                        qajson_check = plugin_check_tool.add_check(data_level, check)
-                        qajson_inputs = qajson_check.get_or_add_inputs()
-                        qajson_inputs.files.extend(file_group_list)
-
-        # now update the qajson object with the check tool details
-        # Here we apply the one set of input parameters enetered by the user on
-        # the plugin params tab and include them in the definitions for all the
-        # checks we created in the above loop.
-        for config_check_tool in self.tab_inputs.selected_check_tools:
-            plugin_check_tool = QaxPlugins.instance().get_plugin(
-                self.profile.name, config_check_tool.plugin_class)
-            if plugin_check_tool is None:
-                # then the qajson includes a check tool that isn't available within
-                # the current profile
-                continue
-
+        for check in self.tab_inputs.selected_checks:
+            plugin_check_tool = QaxPlugins.instance().get_plugin_for_check(check.id)
             # get the plugin tab for the current check tool
             plugin_tab = next(
                 (
                     ptab
                     for ptab in self.tab_plugins.plugin_tabs
-                    if ptab.plugin == plugin_check_tool
+                    if type(ptab.plugin) == type(plugin_check_tool)
                 ),
                 None
             )
-            if plugin_tab is None:
-                raise RuntimeError(
-                    "No plugin tab found for {}".format(
-                        config_check_tool.name))
+
             check_param_details = plugin_tab.get_check_ids_and_params()
-            for (check_id, params) in check_param_details:
-                plugin_check_tool.update_qa_json_input_params(
-                    root, check_id, params)
+            params = next(
+                (
+                    ps
+                    for check_id, ps in check_param_details
+                    if check_id == check.id
+                ),
+                None
+            )
+            plugin_check_tool.update_qa_json_input_params(
+                root, check.id, params
+            )
 
         return root
 
@@ -190,11 +179,12 @@ class QAXWidget(QtWidgets.QTabWidget):
         logger.debug('executing checks ...')
         qa_json = self._build_qa_json()
 
-        # only the selected ones
         check_tool_plugin_class_names = [
-            config_check_tool.plugin_class
-            for config_check_tool in self.tab_inputs.selected_check_tools
+            QaxPlugins.instance().get_plugin_for_check(selected_check.id).plugin_class
+            for selected_check in self.tab_inputs.selected_checks
         ]
+        # remove duplicate class names
+        check_tool_plugin_class_names = list(set(check_tool_plugin_class_names))
 
         executor = QtCheckExecutorThread(
             qa_json,

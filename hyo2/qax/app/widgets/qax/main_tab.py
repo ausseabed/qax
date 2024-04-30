@@ -2,7 +2,7 @@ from ausseabed.qajson.model import QajsonRoot
 from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QSizePolicy
-from typing import Optional, NoReturn, List
+from typing import NoReturn
 import logging
 import os
 
@@ -10,7 +10,7 @@ from hyo2.qax.app.widgets.qax.profile_groupbox import ProfileGroupBox
 from hyo2.qax.app.widgets.qax.filegroup_groupbox \
     import FileGroupGroupBox
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecification
-from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin
+from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin, QaxCheckReference
 from hyo2.qax.lib.plugin_service import PluginService
 
 
@@ -32,7 +32,7 @@ class MainTab(QtWidgets.QWidget):
         self.prj = prj
         self.parent_win = parent_win
 
-        self.selected_check_tools = []
+        self.selected_checks: list[QaxCheckReference] = []
 
         # ui
         self.vbox = QtWidgets.QVBoxLayout()
@@ -45,8 +45,8 @@ class MainTab(QtWidgets.QWidget):
             self._on_profile_selected)
         self.profile_selection.specification_selected.connect(
             self._on_specification_selected)
-        self.profile_selection.check_tool_selection_change.connect(
-            self._on_check_tools_selected)
+        self.profile_selection.check_selection_change.connect(
+            self._on_checks_selected)
         self.vbox.addWidget(self.profile_selection)
 
         self.file_group_selection = FileGroupGroupBox(self, self.prj)
@@ -54,8 +54,8 @@ class MainTab(QtWidgets.QWidget):
             QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.vbox.addWidget(self.file_group_selection)
 
-        self._on_check_tools_selected(
-            self.profile_selection.selected_check_tools())
+        self._on_checks_selected(
+            self.profile_selection.selected_checks())
         self.file_group_selection.filenames_added.connect(
             self._on_file_group_files_changed)
         self.file_group_selection.filenames_removed.connect(
@@ -78,15 +78,18 @@ class MainTab(QtWidgets.QWidget):
         # propogate event up
         self.specification_selected.emit(specification)
 
-    def _on_check_tools_selected(self, check_tools):
-        self.selected_check_tools = check_tools
+    def _on_checks_selected(self, checks: list[QaxCheckReference]):
+        self.selected_checks = checks
 
-        plugins: list[QaxCheckToolPlugin] = []
-        for check_tool in check_tools:
-            check_tool_plugin = QaxPlugins.instance().get_plugin(
-                self.prj.profile.name, check_tool.plugin_class)
+        plugins: set[QaxCheckToolPlugin] = set()
+        for check in checks:
 
-            plugins.append(check_tool_plugin)
+            check_tool_plugin = QaxPlugins.instance().get_plugin_for_check(
+                check.id
+            )
+            plugins.add(check_tool_plugin)
+
+        plugins = list(plugins)
         self.file_group_selection.set_plugin_service(PluginService(plugins))
 
         self.check_inputs_changed.emit()
