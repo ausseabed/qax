@@ -27,8 +27,6 @@ class QaxConfigCheckTool:
     def from_dict(cls, data: Dict) -> 'QaxConfigCheckTool':
         name = data['name'] if ('name' in data) else None
         plugin_class = data['pluginClass'] if ('pluginClass' in data) else None
-        checked = data['checked'] if ('checked' in data) else False
-        enabled = data['enabled'] if ('enabled' in data) else True
         description = data['description'] if 'description' in data else None
         icon = data['icon'] if 'icon' in data else None
 
@@ -36,8 +34,6 @@ class QaxConfigCheckTool:
             name=name,
             description=description,
             plugin_class=plugin_class,
-            enabled=enabled,
-            checked=checked,
             icon=icon
         )
         return check_tool
@@ -45,17 +41,10 @@ class QaxConfigCheckTool:
     def __init__(
             self, name: str, description: str,
             plugin_class: str = None,
-            enabled: bool = True, checked: bool = False,
             icon: str = None):
         self.name = name
         self.description = description
         self.plugin_class = plugin_class
-        # `enabled` indicates if the selection of this check tool can be
-        # altered by QAX users
-        self.enabled = enabled
-        # `checked` sets the default as to whether the check should be executed
-        # the checks are run.
-        self.checked = checked
         self.icon = icon
 
     def __repr__(self):
@@ -64,8 +53,6 @@ class QaxConfigCheckTool:
         msg += "name: {}".format(self.name)
         msg += "description: {}".format(self.description)
         msg += "plugin class: {}".format(self.plugin_class)
-        msg += "enabled: {}".format(self.enabled)
-        msg += "checked: {}".format(self.checked)
         return msg
 
 

@@ -13,9 +13,7 @@ class TestQaxConfig(unittest.TestCase):
         {
           "name": "Mate",
           "description": "QA checks for raw bathymetry data",
-          "pluginClass": "hyo2.qax.plugins.mate.MateQaxPlugin",
-          "enabled": False,
-          "checked": True
+          "pluginClass": "hyo2.qax.plugins.mate.MateQaxPlugin"
         },
         {
           "name": "Flier Finder",

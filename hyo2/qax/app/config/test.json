@@ -4,9 +4,7 @@
     {
       "name": "Point Cloud Checks",
       "pluginClass": "ausseabed.mbespc.qax.plugin.PointCloudChecksQaxPlugin",
-      "description": "Point cloud density check",
-      "enabled": true,
-      "checked": true
+      "description": "Point cloud density check"
     }
   ],
   "specifications": []

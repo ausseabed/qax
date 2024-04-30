@@ -5,17 +5,13 @@
       "name": "Mate",
       "description": "QA checks for raw bathymetry data",
       "pluginClass": "hyo2.mate.qax.plugin.MateQaxPlugin",
-      "icon": "mate.png",
-      "enabled": true,
-      "checked": true
+      "icon": "mate.png"
     },
     {
       "name": "QC Tools",
       "pluginClass": "hyo2.qax.plugins.placeholder.PlaceholderQaxPlugin",
       "description": "Coming soon",
-      "icon": "qc_tools.png",
-      "enabled": true,
-      "checked": false
+      "icon": "qc_tools.png"
     }
   ]
 }
