@@ -26,7 +26,7 @@ class PluginTab(QtWidgets.QWidget):
         # self.media = self.parent_win.media
         self.plugin = plugin
 
-        self.check_widgets = []
+        self.check_widgets: list[CheckWidget] = []
 
         self.vbox = QtWidgets.QVBoxLayout()
         self.setLayout(self.vbox)

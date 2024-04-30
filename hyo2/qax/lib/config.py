@@ -1,20 +1,16 @@
-from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List
-import copy
+from typing import Dict
 import json
-import os
-import re
-import time
 
 """
 Module defines classes for QAX JSON config file. Hierarchy is as follows;
 
 QaxConfig
-  QaxConfigProfile
-    QaxConfigCheckTool
-  QaxConfigSpecification
-    QaxConfigParameter
+    QaxConfigProfile
+        QaxConfigCheckTool
+    QaxConfigSpecification
+        QaxConfigCheck
+            QaxConfigParameter
 """
 
 
@@ -66,17 +62,7 @@ class QaxConfigParameter:
         parameterName = data['name']
         parameterValue = data['value']
 
-        checkId = None
-        if 'checkId' in data:
-            checkId = data['checkId']
-
-        checkName = None
-        if 'checkName' in data:
-            checkName = data['checkName']
-
         p = cls(
-            checkId=checkId,
-            checkName=checkName,
             parameterName=parameterName,
             parameterValue=parameterValue
         )
@@ -84,8 +70,6 @@ class QaxConfigParameter:
 
     def __init__(
             self,
-            checkId: str = None,
-            checkName: str = None,
             parameterName: str = None,
             parameterValue: object = None
         ) -> None:
@@ -94,19 +78,56 @@ class QaxConfigParameter:
         either the checkId (a UUID str) or checkName.
 
         Parameters:
-        checkId (str): UUID string that matches on of the check UUIDs (as defined
-            in check implementation)
         parameterName (str): Name of parameter (as defined in check implementation)
         parameterValue (object): The value that will be used as the default for this
             parameter when this specification is selected.
         """
-        self.checkId = checkId
-        self.checkName = checkName
         self.name = parameterName
         self.value = parameterValue
 
+
+class QaxConfigCheck:
+
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'QaxConfigCheck':
+        """
+        Function to support parsing config file
+        """
+
+        checkId = None
+        if 'checkId' in data:
+            checkId = data['checkId']
+
+        checkName = None
+        if 'checkName' in data:
+            checkName = data['checkName']
+
+        parameters = []
+        if 'parameters' in data:
+            parameters_dict = data['parameters']
+            parameters = [QaxConfigParameter.from_dict(pd) for pd in parameters_dict]
+
+        c = cls(
+            checkId=checkId,
+            checkName=checkName,
+            parameters=parameters
+        )
+        return c
+
+    def __init__(
+            self,
+            checkId: str = None,
+            checkName: str = None,
+            parameters: list[QaxConfigParameter] = []
+        ) -> None:
+
+        self.checkId = checkId
+        self.checkName = checkName
+        self.parameters = parameters
+
         if self.checkId is None and self.checkName is None:
             raise RuntimeError("checkId and checkName cannot both be None")
+
 
 
 class QaxConfigSpecification:
@@ -124,15 +145,15 @@ class QaxConfigSpecification:
         if 'description' in data:
             description = data['description']
 
-        parameters = []
-        if 'parameters' in data:
-            parameters_dict = data['parameters']
-            parameters = [QaxConfigParameter.from_dict(pd) for pd in parameters_dict]
+        checks = []
+        if 'checks' in data:
+            checks_dict = data['checks']
+            checks = [QaxConfigCheck.from_dict(pd) for pd in checks_dict]
 
         p = cls(
             name=name,
             description=description,
-            parameters=parameters
+            checks=checks
         )
         return p
 
@@ -140,7 +161,7 @@ class QaxConfigSpecification:
             self,
             name: str,
             description: str = None,
-            parameters: List[QaxConfigParameter] = []
+            checks: list[QaxConfigCheck] = []
         ) -> None:
         """
         Parameters:
@@ -152,8 +173,13 @@ class QaxConfigSpecification:
         """
         self.name = name
         self.description = description
-        self.parameters = parameters
+        self.checks = checks
 
+    def get_config_check(self, check_id: str) -> QaxConfigCheck:
+        for c in self.checks:
+            if c.checkId == check_id:
+                return c
+        return None
 
 class QaxConfigProfile:
     """
@@ -194,8 +220,8 @@ class QaxConfigProfile:
             self,
             name: str,
             description: str,
-            check_tools: List[QaxConfigCheckTool],
-            specifications: List[QaxConfigSpecification]):
+            check_tools: list[QaxConfigCheckTool],
+            specifications: list[QaxConfigSpecification]):
         self.name = name
         self.check_tools = check_tools
         self.description = description
@@ -238,9 +264,9 @@ class QaxConfig:
         else:
             self.path = path
 
-        self.profiles: List[QaxConfigProfile] = []
+        self.profiles: list[QaxConfigProfile] = []
 
-    def __get_config_files(self) -> List[Path]:
+    def __get_config_files(self) -> list[Path]:
         config_files = []
         for x in self.path.iterdir():
             if x.is_file() and x.suffix == '.json':

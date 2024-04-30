@@ -115,10 +115,11 @@ class CheckWidget(QtWidgets.QWidget):
                     widget_param.value = check_param.value
 
     def set_specification(self, specification: QaxConfigSpecification):
+        check_spec = specification.get_config_check(self.check_reference.id)
+        if check_spec is None:
+            # then there's no details for this check in the specification
+            return
         for param_widget in self.param_widgets:
-            for config_param in specification.parameters:
-                if (
-                        param_widget.param().name == config_param.name and
-                        self.check_reference.id == config_param.checkId
-                    ):
+            for config_param in check_spec.parameters:
+                if (param_widget.param().name == config_param.name):
                     param_widget.value = config_param.value

@@ -28,37 +28,52 @@ class TestQaxConfig(unittest.TestCase):
         {
           "name": "s1",
           "description": "International Hydrographic Organization (IHO) order 1a",
-          "parameters": [
+          "checks": [
             {
               "checkId": "cid1",
-              "name": "p1",
-              "value": 1
+              "parameters": [
+                {
+                  "name": "p1",
+                  "value": 1
+                }
+              ]
             },
             {
               "checkId": "cid2",
-              "name": "p2",
-              "value": 2
-            },
+              "parameters": [
+                {
+                  "name": "p2",
+                  "value": 2
+                }
+              ]
+            }
           ]
         },
         {
           "name": "s2",
-          "parameters": [
+          "checks": [
             {
               "checkId": "cid1",
-              "name": "p3",
-              "value": 3
+              "parameters": [
+                {
+                  "name": "p3",
+                  "value": 3
+                }
+              ]
             },
             {
               "checkId": "cid2",
-              "name": "p4",
-              "value": 4
-            },
-            {
-              "checkId": "cid2",
-              "name": "p5",
-              "value": 5
-            },
+              "parameters": [
+                {
+                  "name": "p4",
+                  "value": 4
+                },
+                {
+                  "name": "p5",
+                  "value": 5
+                },
+              ]
+            }
           ]
         }
       ]
@@ -75,7 +90,9 @@ class TestQaxConfig(unittest.TestCase):
             any(p.name == "Coverage check" for p in profile.check_tools))
 
         self.assertEqual(2, len(profile.specifications))
-        self.assertEqual(2, len(profile.specifications[0].parameters))
+        self.assertEqual(1, len(profile.specifications[0].checks[0].parameters))
         self.assertEqual('s1', profile.specifications[0].name)
-        self.assertEqual('p1', profile.specifications[0].parameters[0].name)
-        self.assertEqual(1, profile.specifications[0].parameters[0].value)
+        self.assertEqual('p1', profile.specifications[0].checks[0].parameters[0].name)
+        self.assertEqual(1, profile.specifications[0].checks[0].parameters[0].value)
+
+        self.assertEqual('p5', profile.specifications[1].checks[1].parameters[1].name)
