@@ -13,12 +13,6 @@
       "pluginClass": "ausseabed.findergc.qax.plugin.FinderGridChecksQaxPlugin",
       "description": "Flier Finder and Hole Finder checks",
       "icon": "findergc.png"
-    },
-    {
-      "name": "Mate",
-      "description": "QA checks for raw bathymetry data",
-      "pluginClass": "hyo2.mate.qax.plugin.MateQaxPlugin",
-      "icon": "mate.png"
     }
   ],
   "specifications": [
