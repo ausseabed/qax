@@ -180,7 +180,13 @@
             {
               "name": "Factor of Depth Dependent Errors",
               "value": 0.0075
-            },
+            }
+          ]
+        },
+        {
+          "checkName": "Resolution Check",
+          "checkId": "c73119ea-4f79-4001-86e3-11c4cbaaeb2d",
+          "parameters": [
             {
               "name": "Feature Detection Size Multiplier",
               "value": 0.5
