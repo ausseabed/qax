@@ -246,7 +246,19 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         if specification.description is not None:
             self.specification_description_label.setText(specification.description)
 
+        # each specification has a list of check that apply to it. This is where
+        # we update the selected (checked) checks
+        self.set_selected_checks(specification)
+
         self.specification_selected.emit(specification)
+
+    def set_selected_checks(self, specification: QaxConfigSpecification):
+        """ sets the checked checks to those included in the standard
+        """
+        for ccb in self.check_checkboxes:
+            standard_check = specification.get_config_check(ccb.check().id)
+            checkstate = QtCore.Qt.CheckState.Unchecked if standard_check is None else QtCore.Qt.CheckState.Checked
+            ccb.setCheckState(checkstate)
 
     def on_check_change(self):
         """ Event handler for user selection change of individual checks
