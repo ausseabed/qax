@@ -86,6 +86,8 @@ class PluginTab(QtWidgets.QWidget):
             if widget:
                 widget.deleteLater()
 
+        # track whether we've added any checks on this plugin tab
+        no_checks_added = True
         for check in self.plugin.checks():
             # we only add check widgets for the checks that have been selected
             selected_check = next((x for x in checks if x.id == check.id), None)
@@ -94,6 +96,11 @@ class PluginTab(QtWidgets.QWidget):
                 check_widget.check_changed.connect(self._on_check_changed)
                 self.layout_checks.addWidget(check_widget)
                 self.check_widgets.append(check_widget)
+                no_checks_added = False
+
+        if no_checks_added:
+            nothing_label = QtWidgets.QLabel("No checks have been selected for this plugin")
+            self.layout_checks.addWidget(nothing_label)
 
         self.layout_checks.addStretch(1)
 
