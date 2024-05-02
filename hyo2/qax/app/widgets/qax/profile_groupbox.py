@@ -233,7 +233,10 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         self.update_specifications(profile)
         self.update_check_tools(profile)
         self.profile_selected.emit(profile)
+        if len(profile.specifications) > 0:
+            self.set_selected_checks(profile.specifications[0])
         self.on_check_change()
+
 
     def on_set_specification(self, currentIndex):
         if currentIndex == -1:
