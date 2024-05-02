@@ -12,7 +12,7 @@ from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
 from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecification
-from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin
+from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin, QaxCheckReference
 
 
 logger = logging.getLogger(__name__)
@@ -48,6 +48,10 @@ class PluginsTab(QtWidgets.QWidget):
     def set_specification(self, specification: QaxConfigSpecification):
         for plugin_tab in self.plugin_tabs:
             plugin_tab.set_specification(specification)
+
+    def set_selected_checks(self, checks: list[QaxCheckReference]):
+        for plugin_tab in self.plugin_tabs:
+            plugin_tab.set_selected_checks(checks)
 
     def update_plugin_tabs(self):
         """ Updates what plugins are shown in the bottom tabs

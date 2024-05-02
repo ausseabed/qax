@@ -8,6 +8,7 @@ from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
 from hyo2.qax.lib.config import QaxConfigSpecification
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference
+from hyo2.qax.lib.project import QAXProject
 
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ class PluginTab(QtWidgets.QWidget):
 
     plugin_changed = QtCore.Signal(QaxCheckToolPlugin)
 
-    def __init__(self, parent_win, prj, plugin: QaxCheckToolPlugin):
+    def __init__(self, parent_win, prj: QAXProject, plugin: QaxCheckToolPlugin):
         QtWidgets.QWidget.__init__(self)
 
         # store a project reference
@@ -60,17 +61,11 @@ class PluginTab(QtWidgets.QWidget):
         self.widget_checks = QtWidgets.QWidget()
         self.layout_checks = QtWidgets.QVBoxLayout(self.widget_checks)
 
-        for check in self.plugin.checks():
-            check_widget = CheckWidget(check)
-            check_widget.check_changed.connect(self._on_check_changed)
-            self.layout_checks.addWidget(check_widget)
-            self.check_widgets.append(check_widget)
-
-        self.layout_checks.addStretch(1)
         self.scrollarea_checks.setWidget(self.widget_checks)
 
     def _on_check_changed(self, check_reference: QaxCheckReference):
         self.plugin_changed.emit(self.plugin)
+
 
     def get_check_ids_and_params(self):
         """ Returns a list of tuples. First element of each tuple is the check
@@ -81,6 +76,26 @@ class PluginTab(QtWidgets.QWidget):
             check_widget.get_check_id_and_params()
             for check_widget in self.check_widgets]
         return check_ids_and_params
+
+    def set_selected_checks(self, checks: list[QaxCheckReference]):
+        # clear out any existing check parameter widgets
+        self.check_widgets.clear()
+        while self.layout_checks.count():
+            item = self.layout_checks.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+
+        for check in self.plugin.checks():
+            # we only add check widgets for the checks that have been selected
+            selected_check = next((x for x in checks if x.id == check.id), None)
+            if selected_check is not None:
+                check_widget = CheckWidget(check)
+                check_widget.check_changed.connect(self._on_check_changed)
+                self.layout_checks.addWidget(check_widget)
+                self.check_widgets.append(check_widget)
+
+        self.layout_checks.addStretch(1)
 
     def update_ui(self, qajson: QajsonRoot) -> NoReturn:
         for check_widget in self.check_widgets:

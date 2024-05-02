@@ -12,7 +12,7 @@ from hyo2.qax.app.widgets.qax.plugins_tab import PluginsTab
 from hyo2.qax.app.widgets.qax.result_tab import ResultTab
 from hyo2.qax.app.widgets.qax.run_tab import RunTab, QtCheckExecutorThread
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecification
-from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin
+from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin, QaxCheckReference
 from hyo2.qax.lib.project import QAXProject
 
 from ausseabed.qajson.parser import QajsonParser
@@ -44,6 +44,8 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.tab_inputs.specification_selected.connect(self._on_specification_selected)
         self.tab_inputs.check_inputs_changed.connect(
             self._on_update_check_inputs)
+        self.tab_inputs.check_selection_change.connect(
+            self._on_check_selection_change)
         # noinspection PyArgumentList
         self.idx_inputs = self.tabs.insertTab(
             0, self.tab_inputs,
@@ -53,6 +55,7 @@ class QAXWidget(QtWidgets.QTabWidget):
 
         self.tab_plugins = PluginsTab(parent_win=self, prj=self.prj)
         self.tab_plugins.plugin_changed.connect(self._on_plugin_changed)
+        self.tab_plugins.set_selected_checks(self.tab_inputs.selected_checks)
         self.idx_plugins = self.tabs.insertTab(
             1, self.tab_plugins,
             qta.icon('ri.list-check-2'), "")
@@ -92,6 +95,7 @@ class QAXWidget(QtWidgets.QTabWidget):
     def _on_profile_selected(self, profile: QaxConfigProfile):
         self.profile = profile
         self.tab_plugins.set_profile(self.profile)
+        self.tab_plugins.set_selected_checks(self.tab_inputs.selected_checks)
 
     def _on_specification_selected(self, specification: QaxConfigSpecification):
         self.tab_plugins.set_specification(specification)
@@ -102,6 +106,11 @@ class QAXWidget(QtWidgets.QTabWidget):
 
     def _on_update_check_inputs(self):
         """ Read the feature files provided by the user"""
+        qa_json = self._build_qa_json()
+        self.prj.qa_json = qa_json
+
+    def _on_check_selection_change(self, checks: list[QaxCheckReference]):
+        self.tab_plugins.set_selected_checks(checks)
         qa_json = self._build_qa_json()
         self.prj.qa_json = qa_json
 

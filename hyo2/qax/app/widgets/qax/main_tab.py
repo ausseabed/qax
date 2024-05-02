@@ -12,6 +12,7 @@ from hyo2.qax.app.widgets.qax.filegroup_groupbox \
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecification
 from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin, QaxCheckReference
 from hyo2.qax.lib.plugin_service import PluginService
+from hyo2.qax.lib.project import QAXProject
 
 
 logger = logging.getLogger(__name__)
@@ -24,8 +25,10 @@ class MainTab(QtWidgets.QWidget):
     profile_selected = QtCore.Signal(QaxConfigProfile)
     specification_selected = QtCore.Signal(QaxConfigSpecification)
     check_inputs_changed = QtCore.Signal()
+    # Signal is of type List[QaxConfigCheckTool]
+    check_selection_change = QtCore.Signal(object)
 
-    def __init__(self, parent_win, prj):
+    def __init__(self, parent_win, prj: QAXProject):
         QtWidgets.QWidget.__init__(self)
 
         # store a project reference
@@ -92,7 +95,7 @@ class MainTab(QtWidgets.QWidget):
         plugins = list(plugins)
         self.file_group_selection.set_plugin_service(PluginService(plugins))
 
-        self.check_inputs_changed.emit()
+        self.check_selection_change.emit(checks)
 
     def _on_file_group_files_added(self, file_group):
         self.check_inputs_changed.emit()
