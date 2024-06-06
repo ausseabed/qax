@@ -12,7 +12,9 @@ def get_param_widget(param: QajsonParam, parent=None) -> 'CheckParamWidget':
     """
     # todo: implementation here will need to change to support more advanced
     # parameter types
-    if isinstance(param.value, str):
+    if param.options is not None:
+        return CheckParamOptionsWidget(param, parent)
+    elif isinstance(param.value, str):
         return CheckParamStringWidget(param, parent)
     elif isinstance(param.value, bool):
         return CheckParamBoolWidget(param, parent)
@@ -272,3 +274,52 @@ class CheckParamUnknownWidget(CheckParamWidget):
     @CheckParamWidget.value.setter
     def value(self, value):
         pass
+
+
+class CheckParamOptionsWidget(CheckParamWidget):
+    """ Supports parameters with string value types
+    """
+
+    def __init__(self, param: QajsonParam, parent=None):
+        super().__init__(param, parent=parent)
+
+        hbox = QtWidgets.QHBoxLayout()
+        hbox.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(hbox)
+
+        label_name = QtWidgets.QLabel("{}".format(self._param.name))
+        label_name.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        label_name.setMinimumWidth(self.label_min_width)
+        label_name.setStyleSheet(GuiSettings.stylesheet_check_param_name())
+        hbox.addWidget(label_name)
+
+        self.cb_value = QtWidgets.QComboBox()
+        self.cb_value.setSizePolicy(
+            QtWidgets.QSizePolicy.MinimumExpanding,
+            QtWidgets.QSizePolicy.Preferred
+        )
+        for option in param.options:
+            self.cb_value.addItem(str(option), option)
+
+        self.cb_value.setCurrentIndex(param.options.index(param.value))
+        self.cb_value.currentIndexChanged.connect(self._on_edited)
+        hbox.addWidget(self.cb_value)
+
+    def param(self) -> QajsonParam:
+        currentIndex = self.cb_value.currentIndex()
+        return QajsonParam(
+            name=self._param.name,
+            value=self.cb_value.itemData(currentIndex)
+        )
+
+    @CheckParamWidget.value.setter
+    def value(self, value):
+        new_index = self._param.options.index(value)
+        self.cb_value.setCurrentIndex(new_index)
+
+    def _set_validation_color(self, color):
+        self.cb_value.setStyleSheet(
+            f"QComboBox {{ background-color: {color}; }}"
+            f"QComboBox::drop-down {{ background-color: {color}; }}"
+            f"QComboBox QAbstractItemView {{ background-color: {color}; }}"
+        )
