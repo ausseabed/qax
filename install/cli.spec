@@ -62,6 +62,9 @@ hiddenimports = [
     'ausseabed.mbespc.qax.plugin',
     'ausseabed.findergc',
     'ausseabed.findergc.qax.plugin',
+    'ausseabed.ggoutlier',
+    'ausseabed.ggoutlier.qax.plugin',
+    'ggoutlier',
     'win32'
 ]
 
