@@ -2,10 +2,30 @@
   "name": "Test",
   "checkTools": [
     {
+      "name": "GGOutlier",
+      "pluginClass": "ausseabed.ggoutlier.qax.plugin.GgoutlierQaxPlugin",
+      "description": "GGOutlier checks"
+    },
+    {
       "name": "Point Cloud Checks",
       "pluginClass": "ausseabed.mbespc.qax.plugin.PointCloudChecksQaxPlugin",
       "description": "Point cloud density check"
     }
   ],
-  "specifications": []
+  "specifications": [
+    {
+      "name": "Test standard",
+      "description": "Default standard for test plugins",
+      "checks": [
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a"
+        },
+        {
+          "checkName": "Algorithm Independent Density Check",
+          "checkId": "1bdb56d7-a725-42b4-8c42-10dbe0c0dbda"
+        }
+      ]
+    }
+  ]
 }
