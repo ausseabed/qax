@@ -20,7 +20,6 @@ runs:
       run: |
         conda activate ~/miniconda/envs/${{ inputs.env-name }}
         pip install .
-        dir ~/miniconda/envs/qax/Lib/site-packages/
 
     - id: qax-version
       name: QAX Version
