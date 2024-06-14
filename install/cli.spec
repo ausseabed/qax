@@ -23,6 +23,7 @@ pyside2_libs = os.path.abspath(os.path.join(conda_prefix , 'Lib\\site-packages\\
 styles_libs = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\styles'))
 platformthemes_libs = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\platformthemes'))
 geoservices_libs = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\geoservices'))
+ggoutlier_pngs = os.path.abspath(os.path.join(conda_prefix , 'Lib\\site-packages\\*.png'))
 
 bin_dir = os.path.abspath(os.path.join(conda_prefix , 'Library\\bin'))
 hooks_dir = os.path.join(spec_root ,'hooks')
@@ -44,6 +45,7 @@ datas.append((styles_libs, "styles"))
 datas.append((platformthemes_libs, "plugins\\platformthemes"))
 datas.append((geoservices_libs, "geoservices"))
 datas.append((r'..\docs\_build\html', "docs\_build\html"))
+datas.append((ggoutlier_pngs ,"."))
 
 hiddenimports = [
     'PySide2.QtPrintSupport',
