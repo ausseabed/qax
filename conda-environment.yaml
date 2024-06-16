@@ -22,7 +22,7 @@ dependencies:
   - numexpr==2.9.0
   - conda-forge::pdal==2.6.3
   - conda-forge::python-pdal==3.3.0
-  - rasterio>=1.3.9
+  - rasterio==1.3.9
   - pip==24.0
   - pip:
     - -r requirements.txt
