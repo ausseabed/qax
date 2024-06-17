@@ -14,6 +14,11 @@
       "icon": "findergc.png"
     },
     {
+      "name": "GGOutlier",
+      "pluginClass": "ausseabed.ggoutlier.qax.plugin.GgoutlierQaxPlugin",
+      "description": "GGOutlier checks"
+    },
+    {
       "name": "Mate",
       "description": "QA checks for raw bathymetry data",
       "pluginClass": "hyo2.mate.qax.plugin.MateQaxPlugin",
@@ -82,6 +87,16 @@
               "value": 0.5
             }
           ]
+        },
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a",
+          "parameters": [
+            {
+              "name": "Standard",
+              "value": "exclusiveorder"
+            }
+          ]
         }
       ]
     },
@@ -144,6 +159,16 @@
             {
               "name": "Below Threshold FDS Depth Constant",
               "value": 1.0
+            }
+          ]
+        },
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a",
+          "parameters": [
+            {
+              "name": "Standard",
+              "value": "specialorder"
             }
           ]
         }
@@ -210,6 +235,16 @@
               "value": 0.0
             }
           ]
+        },
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a",
+          "parameters": [
+            {
+              "name": "Standard",
+              "value": "order1a"
+            }
+          ]
         }
       ]
     },
@@ -260,6 +295,16 @@
               "value": 0.0
             }
           ]
+        },
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a",
+          "parameters": [
+            {
+              "name": "Standard",
+              "value": "order1b"
+            }
+          ]
         }
       ]
     },
@@ -278,6 +323,16 @@
             {
               "name": "Factor of Depth Dependent Errors",
               "value": 0.023
+            }
+          ]
+        },
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a",
+          "parameters": [
+            {
+              "name": "Standard",
+              "value": "order2"
             }
           ]
         }

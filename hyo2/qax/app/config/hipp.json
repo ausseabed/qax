@@ -13,6 +13,11 @@
       "pluginClass": "ausseabed.findergc.qax.plugin.FinderGridChecksQaxPlugin",
       "description": "Flier Finder and Hole Finder checks",
       "icon": "findergc.png"
+    },
+    {
+      "name": "GGOutlier",
+      "pluginClass": "ausseabed.ggoutlier.qax.plugin.GgoutlierQaxPlugin",
+      "description": "GGOutlier checks"
     }
   ],
   "specifications": [
@@ -77,6 +82,16 @@
               "value": 0.5
             }
           ]
+        },
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a",
+          "parameters": [
+            {
+              "name": "Standard",
+              "value": "exclusiveorder"
+            }
+          ]
         }
       ]
     },
@@ -139,6 +154,16 @@
             {
               "name": "Below Threshold FDS Depth Constant",
               "value": 1.0
+            }
+          ]
+        },
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a",
+          "parameters": [
+            {
+              "name": "Standard",
+              "value": "specialorder"
             }
           ]
         }
@@ -210,6 +235,16 @@
         {
           "checkName": "Data Hole and Data Gap Check",
           "checkId": "d095f584-a4aa-4f92-b123-336e1e328289"
+        },
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a",
+          "parameters": [
+            {
+              "name": "Standard",
+              "value": "hipp1"
+            }
+          ]
         }
       ]
     },
@@ -274,6 +309,16 @@
               "value": 0.0
             }
           ]
+        },
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a",
+          "parameters": [
+            {
+              "name": "Standard",
+              "value": "order1a"
+            }
+          ]
         }
       ]
     },
@@ -322,6 +367,16 @@
             {
               "name": "Below Threshold FDS Depth Constant",
               "value": 0.0
+            }
+          ]
+        },
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a",
+          "parameters": [
+            {
+              "name": "Standard",
+              "value": "order1b"
             }
           ]
         }
@@ -392,6 +447,16 @@
         {
           "checkName": "Data Hole and Data Gap Check",
           "checkId": "d095f584-a4aa-4f92-b123-336e1e328289"
+        },
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a",
+          "parameters": [
+            {
+              "name": "Standard",
+              "value": "hipp2"
+            }
+          ]
         }
       ]
     },
@@ -410,6 +475,16 @@
             {
               "name": "Factor of Depth Dependent Errors",
               "value": 0.023
+            }
+          ]
+        },
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a",
+          "parameters": [
+            {
+              "name": "Standard",
+              "value": "order2"
             }
           ]
         }
@@ -466,6 +541,16 @@
         {
           "checkName": "Data Hole and Data Gap Check",
           "checkId": "d095f584-a4aa-4f92-b123-336e1e328289"
+        },
+        {
+          "checkName": "GGOutlier check",
+          "checkId": "ec2d2ebc-480e-44d8-a5c5-c9dec4f8428a",
+          "parameters": [
+            {
+              "name": "Standard",
+              "value": "hippassage"
+            }
+          ]
         }
       ]
     }
