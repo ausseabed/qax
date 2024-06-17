@@ -97,6 +97,16 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.tab_plugins.set_profile(self.profile)
         self.tab_plugins.set_selected_checks(self.tab_inputs.selected_checks)
 
+        # when a new profile is selected we automatically select the first
+        # standard. For some reason we can't update the plugins tab
+        # otherwise the changes to the default params for this new standard
+        # aren't updated in the UI. We need to wait till the next UI render
+        # pass. This is probably because the previous update clears all
+        # check param widgets and re-adds them.
+        def update_specs():
+            self.tab_plugins.set_specification(self.profile.specifications[0])
+        QtCore.QTimer.singleShot(0, update_specs)
+
     def _on_specification_selected(self, specification: QaxConfigSpecification):
         self.tab_plugins.set_specification(specification)
         qa_json = self._build_qa_json()
