@@ -25,6 +25,6 @@ git+https://github.com/ausseabed/mate.git
 git+https://github.com/ausseabed/mbes-grid-checks.git
 git+https://github.com/ausseabed/finder-grid-checks.git
 git+https://github.com/ausseabed/point-cloud-checks.git
-git+https://github.com/lachlanhurst/ggoutlier.git
+git+https://github.com/pktrigg/ggoutlier.git
 git+https://github.com/ausseabed/ggoutlier-qax-plugin.git
 git+https://github.com/ausseabed/kmall.git
