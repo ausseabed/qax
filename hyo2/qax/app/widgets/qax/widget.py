@@ -88,6 +88,10 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.tab_inputs.initialize()
         self.status_message.emit("Initialised", 1000)
 
+        def update_specs():
+            self._on_specification_selected(self.tab_inputs.profile_selection.selected_specification)
+        QtCore.QTimer.singleShot(0, update_specs)
+
     def _on_plugin_changed(self, plugin: QaxCheckToolPlugin):
         qa_json = self._build_qa_json()
         self.prj.qa_json = qa_json
