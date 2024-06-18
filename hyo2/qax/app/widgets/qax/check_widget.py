@@ -1,6 +1,6 @@
-from ausseabed.qajson.model import QajsonRoot, QajsonParam
+from ausseabed.qajson.model import QajsonRoot, QajsonParam, QajsonDataLevel
 from PySide2 import QtCore, QtGui, QtWidgets
-from typing import Optional, NoReturn, List
+from typing import Optional, NoReturn, List, Any
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.lines import QHLine
@@ -75,9 +75,25 @@ class CheckWidget(QtWidgets.QWidget):
                 widget_param.value_changed.connect(self._param_value_changed)
                 params_layout.addWidget(widget_param)
                 self.param_widgets.append(widget_param)
+                # print(f"__init__: {check_reference.name} {check_param.name} {check_param.value}")
             hbox.addSpacing(10)
 
         vbox.addWidget(QHLine())
+
+    def get_params_and_values(self) -> dict[str, Any]:
+        """ function used to generate a cache of this widgets state
+        """
+        p_and_v: dict[str, Any] = {}
+        for pw in self.param_widgets:
+            p_and_v[pw.param().name] = pw.value
+        return p_and_v
+
+    def set_params_and_values(self, p_and_v: dict[str, Any]) -> None:
+        """ function restores widget state to that of the previous cache (p_and_v)
+        """
+        for pw in self.param_widgets:
+            if pw.param().name in p_and_v:
+                pw.value = p_and_v[pw.param().name]
 
     def _param_value_changed(self, param: QajsonParam):
         self.check_changed.emit(self.check_reference)
@@ -96,7 +112,7 @@ class CheckWidget(QtWidgets.QWidget):
         # build list of all checks from all data levels
         this_check = None
         for dl in data_levels:
-            data_level = getattr(qajson.qa, dl, None)
+            data_level: QajsonDataLevel = getattr(qajson.qa, dl, None)
             if data_level is None:
                 continue
             for check in data_level.checks:
@@ -112,6 +128,7 @@ class CheckWidget(QtWidgets.QWidget):
         for check_param in this_check.inputs.params:
             for widget_param in self.param_widgets:
                 if check_param.name == widget_param.param().name:
+                    # print(f"update_ui: {this_check.info.name} {check_param.name} {check_param.value}")
                     widget_param.value = check_param.value
 
     def set_specification(self, specification: QaxConfigSpecification):
@@ -122,4 +139,5 @@ class CheckWidget(QtWidgets.QWidget):
         for param_widget in self.param_widgets:
             for config_param in check_spec.parameters:
                 if (param_widget.param().name == config_param.name):
+                    # print(f"set_specification: {check_spec.checkName} {config_param.name} {config_param.value}")
                     param_widget.value = config_param.value

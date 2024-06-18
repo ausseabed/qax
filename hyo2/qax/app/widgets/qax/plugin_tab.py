@@ -1,7 +1,7 @@
 from ausseabed.qajson.model import QajsonRoot
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QSizePolicy
-from typing import Optional, NoReturn, List
+from typing import Optional, NoReturn, List, Any
 import logging
 
 from hyo2.qax.app.gui_settings import GuiSettings
@@ -78,8 +78,18 @@ class PluginTab(QtWidgets.QWidget):
         return check_ids_and_params
 
     def set_selected_checks(self, checks: list[QaxCheckReference]):
+
+        # cache info users may have entered into the plugin params
+        # just because they've removed a check doesn't mean we should
+        # throw away info that was given to other checks that haven't been
+        # removed.
+        user_input_cache: dict[str, dict[str, Any]] = {}
+        for cw in self.check_widgets:
+            user_input_cache[cw.check_reference.id] = cw.get_params_and_values()
+
         # clear out any existing check parameter widgets
         self.check_widgets.clear()
+
         while self.layout_checks.count():
             item = self.layout_checks.takeAt(0)
             widget = item.widget()
@@ -101,6 +111,12 @@ class PluginTab(QtWidgets.QWidget):
         if no_checks_added:
             nothing_label = QtWidgets.QLabel("No checks have been selected for this plugin")
             self.layout_checks.addWidget(nothing_label)
+
+        # set state of check widgets to what they were before the UI was rebuilt
+        # assuming the check wasn't removed.
+        for cw in self.check_widgets:
+            if cw.check_reference.id in user_input_cache:
+                cw.set_params_and_values(user_input_cache[cw.check_reference.id])
 
         self.layout_checks.addStretch(1)
 
