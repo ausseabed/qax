@@ -186,6 +186,7 @@ class CheckParamBoolWidget(CheckParamWidget):
         self.setLayout(hbox)
 
         label_name = QtWidgets.QLabel(f"{self._param.name}")
+        label_name.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         label_name.setMinimumWidth(self.label_min_width)
         label_name.setStyleSheet(GuiSettings.stylesheet_check_param_name())
         hbox.addWidget(label_name)
