@@ -77,7 +77,7 @@ class PluginTab(QtWidgets.QWidget):
             for check_widget in self.check_widgets]
         return check_ids_and_params
 
-    def set_selected_checks(self, checks: list[QaxCheckReference]):
+    def set_selected_checks(self, checks: list[QaxCheckReference], standard: QaxConfigSpecification|None = None):
 
         # cache info users may have entered into the plugin params
         # just because they've removed a check doesn't mean we should
@@ -117,6 +117,14 @@ class PluginTab(QtWidgets.QWidget):
         for cw in self.check_widgets:
             if cw.check_reference.id in user_input_cache:
                 cw.set_params_and_values(user_input_cache[cw.check_reference.id])
+            elif standard is not None:
+                # then get values from the currently selected standard
+                check = standard.get_config_check(cw.check_reference.id)
+                if check is not None:
+                    standard_p_and_v: dict[str, Any] = {}
+                    for p in check.parameters:
+                        standard_p_and_v[p.name] = p.value
+                    cw.set_params_and_values(standard_p_and_v)
 
         self.layout_checks.addStretch(1)
 

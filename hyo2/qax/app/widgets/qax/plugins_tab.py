@@ -49,9 +49,9 @@ class PluginsTab(QtWidgets.QWidget):
         for plugin_tab in self.plugin_tabs:
             plugin_tab.set_specification(specification)
 
-    def set_selected_checks(self, checks: list[QaxCheckReference]):
+    def set_selected_checks(self, checks: list[QaxCheckReference], standard: QaxConfigSpecification|None = None):
         for plugin_tab in self.plugin_tabs:
-            plugin_tab.set_selected_checks(checks)
+            plugin_tab.set_selected_checks(checks, standard)
 
     def update_plugin_tabs(self):
         """ Updates what plugins are shown in the bottom tabs

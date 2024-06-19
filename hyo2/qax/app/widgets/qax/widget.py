@@ -124,7 +124,7 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.prj.qa_json = qa_json
 
     def _on_check_selection_change(self, checks: list[QaxCheckReference]):
-        self.tab_plugins.set_selected_checks(checks)
+        self.tab_plugins.set_selected_checks(checks, self.tab_inputs.profile_selection.selected_specification)
         qa_json = self._build_qa_json()
         self.prj.qa_json = qa_json
 
