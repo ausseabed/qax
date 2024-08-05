@@ -3,7 +3,7 @@
 [Download the latest release installation package](https://github.com/ausseabed/qax/releases)
 
 ### Quality Assurance Tool for Multibeam Echosounder (MBES) data
-Visit the [AusSeabed Website](ausseabed.gov.au/qax) for training resources, download information and more. 
+Visit the [AusSeabed Website](https://www.ausseabed.gov.au/QAX) for training resources, download information and more. 
 
 ### About QAX
 QAX is an open-source project, jointly steered by AusSeabed, and the United States of America National Oceanic and Atmospheric Administration’s Office of Coast Survey (NOAA OCS), and the University of New Hampshire’s Center for Coastal and Ocean Mapping (UNH CCOM) that facilitates quality assurance of Multibeam Echosounder (MBES) data.
@@ -39,7 +39,7 @@ QAX runs the three QA plug-ins based on user-defined input parameters and input 
 
 ![QAX_diagram](/resources/diagrams/qax_and_others.png)
 
-Do you need more checks? Tell us what you think of QAX via GitHub issues or using our feedback form on the [AusSeabed Website](ausseabed.gov.au/qax).
+Do you need more checks? Tell us what you think of QAX via GitHub issues or using our feedback form on the [AusSeabed Website](https://www.ausseabed.gov.au/QAX).
 
 ### QAX was born from collaboration
 QAX was born from a collaboration between AusSeabed and the Center for Coastal and Ocean Mapping/Joint Hydrographic Centre (CCOM/JHC) at the University of New Hampshire and the NOAA Office of Coast Survey. QAX leverages an existing [QC Tools suite](https://www.hydroffice.org/qctools), which is part of an open research framework named [HydrOffice](https://www.hydroffice.org/) and that was developed by CCOM/JHC and NOAA. The QAX collaboration led to AusSeabed creating the first version of the QAX tool to meet the needs of the AusSeabed community. Under the hood AusSeabed developers have built QAX, only QAX itself and the FinderGC component still contain HydrOffice source code. In the future, AusSeabed aims to continue to provide updates to QAX according to its needs.
