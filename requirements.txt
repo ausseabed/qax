@@ -11,7 +11,7 @@ setuptools==70.0.0
 structlog==22.3.0
 XlsxWriter==3.0.8
 pandas==1.5.3
-pyinstaller==5.13.1
+pyinstaller==6.7.0
 cartopy
 pyproj==3.4.0
 setuptools-scm>=8.0
