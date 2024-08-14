@@ -13,6 +13,7 @@ import hyo2.qax.app.widgets.qax.manual_links as manual_links
 
 
 REL_DOCS_PATH = 'docs/_build/html/'
+ALT_DOCS_PATH = '_internal/' + REL_DOCS_PATH  # for both the Windows exe and dist versions
 
 class ManualWindow(QMainWindow):
 
@@ -95,9 +96,12 @@ class ManualWindow(QMainWindow):
 
     def docs_url(self):
         abs_docs_oath = os.path.abspath(REL_DOCS_PATH + manual_links.INDEX)
+        alt_docs_path = os.path.abspath(ALT_DOCS_PATH + manual_links.INDEX)
         if (os.path.isfile(abs_docs_oath)):
             return QUrl.fromLocalFile(abs_docs_oath)
-        raise RuntimeError("Docs not found at {}".format(abs_docs_oath))
+        elif os.path.isfile(alt_docs_path):
+            return QUrl.fromLocalFile(alt_docs_path)
+        raise RuntimeError(f"Docs not found at {abs_docs_oath} or {alt_docs_path}")
 
     def load(self):
         url = QUrl.fromUserInput(self.address_line_edit.text())
