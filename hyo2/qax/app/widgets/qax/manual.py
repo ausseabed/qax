@@ -16,29 +16,25 @@ REL_DOCS_PATH = 'docs/_build/html/'
 ALT_DOCS_PATH = '_internal/' + REL_DOCS_PATH  # for both the Windows exe and dist versions
 
 
-def _docs_index():
+def _docs_root():
     """
     Something to disentangle the original logic that hardcodes the path to be
     manual_links.INDEX which may not exist, causing the docs widget to display
     an error.
     Preference is to return a valid path, and avoid checking multiple times.
     """
-    abs_docs_oath = os.path.abspath(REL_DOCS_PATH + manual_links.INDEX)
-    alt_docs_path = os.path.abspath(ALT_DOCS_PATH + manual_links.INDEX)
+    docs_path = os.path.abspath(REL_DOCS_PATH)
+    alt_docs_path = os.path.abspath(ALT_DOCS_PATH)
 
-    # keeping original logic
-    path = manual_links.INDEX
-    success = False
-
-    if os.path.isfile(abs_docs_oath):
-        path =  abs_docs_oath
-        success = True
-    elif os.path.isfile(alt_docs_path):
+    if os.path.exists(docs_path):
+        path = docs_path
+    elif os.path.exists(alt_docs_path):
         path = alt_docs_path
-        success = True
+    else:
+        raise RuntimeError(f"Docs not found at {docs_path} or {alt_docs_path}")
 
-    return path, success
-    
+    return path
+
 
 class ManualWindow(QMainWindow):
 
@@ -62,8 +58,7 @@ class ManualWindow(QMainWindow):
         # if a url link is provided, then set the manual window to display
         # this links content. Otherwise just go to the index page
         if (link is None):
-            index_path, _ = _docs_index()
-            ManualWindow._instance.set_url(index_path)
+            ManualWindow._instance.set_url(manual_links.INDEX)
         else:
             ManualWindow._instance.set_url(link)
 
@@ -121,14 +116,13 @@ class ManualWindow(QMainWindow):
         self.web_engine_view.loadFinished.connect(self.load_finished)
 
     def docs_url(self):
-        path, success = _docs_index()
+        root_path = _docs_root()
 
-        if success:
-            return QUrl.fromLocalFile(path)
-        else:
-            abs_docs_path = os.path.abspath(REL_DOCS_PATH + manual_links.INDEX)
-            alt_docs_path = os.path.abspath(ALT_DOCS_PATH + manual_links.INDEX)
-            raise RuntimeError(f"Docs not found at {abs_docs_path} or {alt_docs_path}")
+        docs_index = root_path + manual_links.INDEX
+        if not os.path.exists(docs_index):
+            raise RuntimeError(f"Docs index not found at {docs_index}")
+
+        return docs_index
 
     def load(self):
         url = QUrl.fromUserInput(self.address_line_edit.text())
@@ -150,7 +144,8 @@ class ManualWindow(QMainWindow):
         is assumed to be in the short form (taken from the manual_links
         module).
         """
-        abs_docs_oath = os.path.abspath(REL_DOCS_PATH + url)
+        docs_root = _docs_root()
+        abs_docs_oath = docs_root + url
         file_only_path = None
         fragment = None
         if '#' in abs_docs_oath:
