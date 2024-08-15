@@ -6,14 +6,15 @@ from PySide2.QtWidgets import QLineEdit, QApplication, \
     QHBoxLayout, QLabel
 from PySide2.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
 import os
+from os.path import join as pjoin
 
 from hyo2.qax.app import qta
 from hyo2.qax.app import app_info
 import hyo2.qax.app.widgets.qax.manual_links as manual_links
 
 
-REL_DOCS_PATH = 'docs/_build/html/'
-ALT_DOCS_PATH = '_internal/' + REL_DOCS_PATH  # for both the Windows exe and dist versions
+REL_DOCS_PATH = pjoin('docs', '_build', 'html')
+ALT_DOCS_PATH = pjoin('_internal/', REL_DOCS_PATH)  # for both the Windows exe and dist versions
 
 
 def _docs_root():
@@ -118,7 +119,7 @@ class ManualWindow(QMainWindow):
     def docs_url(self):
         root_path = _docs_root()
 
-        docs_index = root_path + manual_links.INDEX
+        docs_index = os.path.join(root_path, manual_links.INDEX)
         if not os.path.exists(docs_index):
             raise RuntimeError(f"Docs index not found at {docs_index}")
 
