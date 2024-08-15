@@ -145,16 +145,17 @@ class ManualWindow(QMainWindow):
         module).
         """
         docs_root = _docs_root()
-        abs_docs_oath = docs_root + url
+        abs_docs_path = os.path.join(docs_root, url)
         file_only_path = None
         fragment = None
-        if '#' in abs_docs_oath:
+        if '#' in abs_docs_path:
             # then it has a fragment, so separate the two components
             # as this messes with the `fromLocalFile` fn
-            file_only_path = os.path.abspath(abs_docs_oath[0:abs_docs_oath.index('#')])
-            fragment = abs_docs_oath[abs_docs_oath.index('#')+1:]
+            parts = abs_docs_path.split('#')
+            file_only_path = os.path.abspath(parts[0])
+            fragment = parts[1]
         else:
-            file_only_path = os.path.abspath(abs_docs_oath)
+            file_only_path = os.path.abspath(abs_docs_path)
 
         file_url =  QUrl.fromLocalFile(file_only_path)
         if fragment is not None:
