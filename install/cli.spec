@@ -13,6 +13,7 @@ print(os.environ)
 conda_prefix = os.path.join(os.path.expanduser("~"), "miniconda", "envs", "qax")
 # epsg_data = os.path.abspath(os.path.join(conda_prefix , 'Library\\share\\epsg'))  # this dir doesn't exist
 proj_data = os.path.abspath(os.path.join(conda_prefix , 'Library\\share\\proj'))
+gdal_data = os.path.abspath(os.path.join(conda_prefix , 'Library\\share\\gdal'))
 
 qt_platforms = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\platforms'))
 qt_webengine_res = os.path.abspath(os.path.join(conda_prefix , 'Library\\resources\\*'))
@@ -35,6 +36,7 @@ datas = []
 datas += collect_data_files('hyo2.qax', include_py_files=True)
 datas += copy_metadata('hyo2.qax')
 datas.append((proj_data ,"Library\\share\\proj"))
+datas.append((gdal_data ,"Library\\share\\gdal"))
 datas.append((qt_platforms ,"platforms"))
 datas.append((qt_webengine_res ,"."))
 datas.append((qt_webengine ,"."))
@@ -86,7 +88,7 @@ a = Analysis(['cli.py'],
              datas=datas,
              hiddenimports=hiddenimports,
              hookspath=[hooks_dir],
-             runtime_hooks=[],
+             runtime_hooks=['install/hooks.py'],
              excludes=[],
              win_no_prefer_redirects=False,
              win_private_assemblies=False,
