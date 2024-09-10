@@ -45,7 +45,7 @@ datas.append((qml_libs ,"."))
 datas.append((pyside2_libs, "PySide2"))
 datas.append((styles_libs, "styles"))
 datas.append((platformthemes_libs, "plugins\\platformthemes"))
-datas.append((geoservices_libs, "geoservices"))
+datas.append((geoservices_libs, "PySide2\\plugins\\geoservices"))
 datas.append((r'..\docs\_build\html', "docs\_build\html"))
 datas.append((ggoutlier_pngs ,"."))
 
