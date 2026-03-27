@@ -4,7 +4,7 @@ import logging.handlers
 import multiprocessing as mp
 
 from ausseabed.qajson.model import QajsonRoot
-from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxPlugins
+from hyo2.qax.lib.plugin import QaxPlugins
 from hyo2.qax.lib.logging import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -163,7 +163,7 @@ class QajsonChangedQueueItem:
         self.qajson = qajson
 
     def __str__(self):
-        return f"QajsonChangedQueueItem"
+        return "QajsonChangedQueueItem"
 
 
 class ChecksCompleteQueueItem:

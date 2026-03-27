@@ -1,7 +1,5 @@
-from pathlib import Path
 import unittest
 
-from hyo2.qax.lib.config import QaxConfig
 from hyo2.qax.lib.config import QaxConfigProfile
 
 

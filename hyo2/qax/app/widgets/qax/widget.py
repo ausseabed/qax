@@ -1,13 +1,12 @@
 from ausseabed.qajson.model import QajsonRoot
 from pathlib import Path
-from PySide2 import QtGui, QtCore, QtWidgets
+from PySide2 import QtCore, QtWidgets
 from typing import NoReturn
 import logging
 import os
 
 from hyo2.qax.app import qta
 from hyo2.qax.app.widgets.qax.main_tab import MainTab
-from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
 from hyo2.qax.app.widgets.qax.plugins_tab import PluginsTab
 from hyo2.qax.app.widgets.qax.result_tab import ResultTab
 from hyo2.qax.app.widgets.qax.run_tab import RunTab, QtCheckExecutorThread
@@ -16,7 +15,7 @@ from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin, QaxCheckReferenc
 from hyo2.qax.lib.project import QAXProject
 
 from ausseabed.qajson.parser import QajsonParser
-from ausseabed.qajson.model import QajsonRoot, QajsonQa
+from ausseabed.qajson.model import QajsonQa
 
 logger = logging.getLogger(__name__)
 

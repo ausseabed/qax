@@ -1,14 +1,11 @@
 import os
-from collections import OrderedDict
 from pathlib import Path
 import unittest
 
 
-from ausseabed.qajson.model import QajsonFile, QajsonParam, QajsonInputs, \
-    QajsonOutputs, QajsonInfo, QajsonRoot, QajsonQa, QajsonDataLevel
 from ausseabed.qajson.parser import QajsonParser
 from hyo2.qax.lib.plugin import QaxPlugins, QaxConfig
-from hyo2.qax.lib.qajson_util import QajsonExcelExporter, QajsonTableSummary, QajsonFileSummary
+from hyo2.qax.lib.qajson_util import QajsonExcelExporter, QajsonFileSummary
 from hyo2.qax.app.gui_settings import GuiSettings
 
 class TestParser(unittest.TestCase):

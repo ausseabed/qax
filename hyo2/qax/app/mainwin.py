@@ -5,7 +5,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QAction, QApplication
 from pathlib import Path
-from typing import Optional, NoReturn, List
+from typing import NoReturn
 import logging
 import os
 import sys

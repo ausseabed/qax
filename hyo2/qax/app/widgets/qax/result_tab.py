@@ -4,7 +4,6 @@ from PySide2.QtWidgets import QSizePolicy
 from typing import Optional, NoReturn
 import json
 import logging
-import os
 
 from hyo2.qax.app import qta
 from hyo2.qax.app.widgets.qax.scoreboard_details import ScoreboardDetailsWidget

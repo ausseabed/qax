@@ -1,7 +1,6 @@
 from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex
-from PySide2.QtGui import QColor, QFont, QBrush
+from PySide2.QtGui import QColor
 from typing import List
-import os
 
 from hyo2.qax.lib.project import QaCheckSummary
 

@@ -302,7 +302,7 @@ class QajsonExporter():
     def export(qajson: QajsonRoot, file: Path) -> None:
         """ Exports the `qajson` object to the `file`
         """
-        raise NotImplemented("Export function must be overwritten")
+        raise NotImplementedError("Export function must be overwritten")
 
 
 class QajsonExcelExporter(QajsonExporter):

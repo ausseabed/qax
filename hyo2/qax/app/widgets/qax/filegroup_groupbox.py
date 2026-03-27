@@ -238,7 +238,7 @@ class FileGroupGroupBox(QGroupBox):
                 item_type.addItem(t)
             try:
                 row_type_index = self.available_types.index(row.file_type)
-            except ValueError as ex:
+            except ValueError:
                 row_type_index = self.available_types.index("Unknown")
 
             item_type.setCurrentIndex(row_type_index)
