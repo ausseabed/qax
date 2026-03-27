@@ -1,9 +1,8 @@
 from ausseabed.qajson.model import QajsonParam
 from PySide2 import QtCore, QtGui, QtWidgets
-from typing import Optional, NoReturn, List
+from typing import NoReturn
 
 from hyo2.qax.app.gui_settings import GuiSettings
-from hyo2.qax.lib.plugin import QaxCheckReference
 
 
 def get_param_widget(param: QajsonParam, parent=None) -> 'CheckParamWidget':
@@ -71,7 +70,7 @@ class CheckParamWidget(QtWidgets.QWidget):
     def check_state_color(self, sender):
         try:
             validator = sender.validator()
-        except AttributeError as ae:
+        except AttributeError:
             # then this component has no validator, so skip validation
             return None
         if validator is None:

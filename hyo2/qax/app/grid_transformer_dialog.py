@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QApplication, QDialog, QLineEdit, \
+from PySide2.QtWidgets import QDialog, QLineEdit, \
     QPushButton, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QWidget, \
     QSizePolicy, QComboBox, QFileDialog, QPlainTextEdit, QProgressBar, \
     QFrame
@@ -362,7 +362,7 @@ class GridTransformerDialog(QDialog):
         )
         filename, _ = QFileDialog.getSaveFileName(
             self,
-            f"Select output file",
+            "Select output file",
             GuiSettings.settings().value(gui_settings_const.output_folder_settings),
             filters)
         if filename is None:

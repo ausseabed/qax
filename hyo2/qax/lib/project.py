@@ -180,7 +180,7 @@ class QAXProject(QtCore.QObject):
                 plugins=profile_plugins
             )
             return True
-        except Exception as e:
+        except Exception:
             logging.error(traceback.format_exc())
             return False
 

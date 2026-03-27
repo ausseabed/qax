@@ -1,18 +1,13 @@
 from ausseabed.qajson.model import QajsonRoot
-from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtWidgets import QSizePolicy
-from typing import Optional, NoReturn, List
-import json
+from typing import NoReturn
 import logging
-import os
 
 from hyo2.qax.app.gui_settings import GuiSettings
-from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
 from hyo2.qax.app.widgets.qax.plugin_tab import PluginTab
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin
-from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecification
-from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin, QaxCheckReference
+from hyo2.qax.lib.config import QaxConfigProfile, QaxConfigSpecification
+from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckReference
 
 
 logger = logging.getLogger(__name__)

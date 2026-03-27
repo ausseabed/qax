@@ -1,6 +1,5 @@
-import sys
-from PySide2.QtCore import QUrl, QFileInfo, QTimer
-from PySide2.QtGui import QIcon, QColor
+from PySide2.QtCore import QUrl, QFileInfo
+from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QLineEdit, QApplication, \
     QMainWindow, QPushButton, QToolBar, QVBoxLayout, QWidget, \
     QHBoxLayout, QLabel

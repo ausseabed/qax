@@ -5,9 +5,8 @@ import re
 
 from hyo2.qax.lib.config import QaxConfig, QaxConfigCheckTool, QaxConfigProfile
 from hyo2.qax.lib.check_options import CheckOption
-from ausseabed.qajson.model import QajsonRoot, QajsonQa, QajsonDataLevel, \
-    QajsonParam, QajsonCheck, QajsonInfo, QajsonGroup, QajsonFile
-from ausseabed.qajson.parser import QajsonParser
+from ausseabed.qajson.model import QajsonRoot, QajsonDataLevel, \
+    QajsonParam, QajsonCheck, QajsonInfo, QajsonGroup
 
 """ Module defines the architecture and utility functions/classes for the
 QAX check tool plugin system. A check tool must implement the QAX check tool
@@ -541,7 +540,7 @@ class QaxPlugins():
         module_name, class_name = mod_class_bits
         try:
             plugin_module = importlib.import_module(module_name)
-        except ModuleNotFoundError as ex:
+        except ModuleNotFoundError:
             raise QaxPluginLoadError(
                 "Could not load plugin module {}".format(module_name))
 

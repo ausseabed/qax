@@ -1,11 +1,6 @@
-from pathlib import Path
-import os
 import unittest
 
-from ausseabed.qajson.parser import QajsonParser
-from ausseabed.qajson.model import QajsonRoot, QajsonQa, QajsonQa, \
-    QajsonDataLevel, QajsonCheck, QajsonOutputs, QajsonInputs, QajsonInfo, \
-    QajsonParam, QajsonExecution, QajsonGroup, QajsonFile
+from ausseabed.qajson.model import QajsonRoot
 from hyo2.qax.lib.project import QaCheckSummary
 
 

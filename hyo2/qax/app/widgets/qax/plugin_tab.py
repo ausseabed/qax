@@ -1,7 +1,7 @@
 from ausseabed.qajson.model import QajsonRoot
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2 import QtCore, QtWidgets
 from PySide2.QtWidgets import QSizePolicy
-from typing import Optional, NoReturn, List, Any
+from typing import NoReturn, Any
 import logging
 
 from hyo2.qax.app.gui_settings import GuiSettings

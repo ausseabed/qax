@@ -1,10 +1,10 @@
 from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex
-from PySide2.QtGui import QColor, QFont, QBrush
+from PySide2.QtGui import QColor, QFont
 from typing import List
 import os
 
 from hyo2.qax.app import qta
-from ausseabed.qajson.model import QajsonCheck, QajsonInfo, QajsonInputs
+from ausseabed.qajson.model import QajsonCheck
 
 
 class ScoreBoardCheckModel(QAbstractTableModel):
@@ -58,7 +58,7 @@ class ScoreBoardCheckModel(QAbstractTableModel):
                 check_name = check.info.name
                 try:
                     check_name = f"{check_name} [v.{check.info.version}]"
-                except Exception as e:
+                except Exception:
                     check_name = f"{check_name} [no version]"
                 return check_name
             elif index.column() == 2:
@@ -80,7 +80,7 @@ class ScoreBoardCheckModel(QAbstractTableModel):
                 check_state = ""
                 try:
                     check_state = check.outputs.check_state
-                except AttributeError as e:
+                except AttributeError:
                     # then this check doesn't have outputs as it hasn't been
                     # run
                     pass
@@ -105,7 +105,7 @@ class ScoreBoardCheckModel(QAbstractTableModel):
                 check_state = ""
                 try:
                     check_state = check.outputs.check_state
-                except AttributeError as e:
+                except AttributeError:
                     # then this check doesn't have outputs as it hasn't been
                     # run
                     pass
@@ -122,7 +122,7 @@ class ScoreBoardCheckModel(QAbstractTableModel):
                 try:
                     check_state = check.outputs.check_state
                     return check_state
-                except AttributeError as e:
+                except AttributeError:
                     # then this check doesn't have outputs as it hasn't been
                     # run
                     pass

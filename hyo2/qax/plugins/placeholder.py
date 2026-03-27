@@ -1,9 +1,7 @@
-from typing import List, Dict, NoReturn, Callable
-import time
+from typing import List, NoReturn, Callable
 
-from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference, \
-    QaxFileType
-from ausseabed.qajson.model import QajsonParam, QajsonRoot
+from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference
+from ausseabed.qajson.model import QajsonRoot
 
 
 class PlaceholderQaxPlugin(QaxCheckToolPlugin):

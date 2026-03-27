@@ -1,27 +1,19 @@
-import json
 import logging
 import os
 import time
 from typing import List, NoReturn, Dict
-from pathlib import Path
 from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtWidgets import QApplication, QDialog, QLineEdit, \
-    QPushButton, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QWidget, \
-    QSizePolicy, QComboBox, QFileDialog, QPlainTextEdit, QProgressBar, \
+from PySide2.QtWidgets import QLineEdit, \
+    QPushButton, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QSizePolicy, QFileDialog, QPlainTextEdit, QProgressBar, \
     QFrame, QCheckBox
-from PySide2.QtGui import QFont
 import multiprocessing as mp
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app import gui_settings_const
 
 from hyo2.qax.app import qta
-from hyo2.qax.app.gui_settings import GuiSettings
-from hyo2.qax.app import gui_settings_const
-from hyo2.qax.app.widgets.qax.check_widget import CheckWidget
-from hyo2.qax.lib.plugin import QaxCheckToolPlugin
 from hyo2.qax.lib.check_options import CheckOption
-from hyo2.qax.lib.check_executor import CheckExecutor, MultiprocessCheckExecutor, \
+from hyo2.qax.lib.check_executor import MultiprocessCheckExecutor, \
     ProgressQueueItem, CheckToolStartedQueueItem, StatusQueueItem, \
     QajsonChangedQueueItem, ChecksCompleteQueueItem
 from ausseabed.qajson.model import QajsonRoot
@@ -193,7 +185,7 @@ class RunTab(QtWidgets.QWidget):
         output_folder_layout.addWidget(self.open_output_folder_button)
         self.open_output_folder_button.setIcon(qta.icon('fa.folder-open'))
         self.open_output_folder_button.setToolTip(
-            f"Select file containing data")
+            "Select file containing data")
         self.open_output_folder_button.clicked.connect(
             self._click_open_spatial_export_folder)
         export_layout.addLayout(output_folder_layout)
@@ -206,7 +198,7 @@ class RunTab(QtWidgets.QWidget):
     def _click_open_spatial_export_folder(self):
         output_folder = QFileDialog.getExistingDirectory(
             self,
-            f"Select folder for spatial outputs",
+            "Select folder for spatial outputs",
             GuiSettings.settings().value(gui_settings_const.spatial_outputs_folder),
             QFileDialog.ShowDirsOnly)
 

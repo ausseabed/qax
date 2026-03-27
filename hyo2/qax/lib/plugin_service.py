@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin, QaxFileGroup
+from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxFileGroup
 
 """
 Offers plugin related capability as a service that can be injected into

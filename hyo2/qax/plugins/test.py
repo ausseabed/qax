@@ -1,4 +1,4 @@
-from typing import List, Dict, NoReturn, Callable
+from typing import List, NoReturn, Callable
 import time
 
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference, \

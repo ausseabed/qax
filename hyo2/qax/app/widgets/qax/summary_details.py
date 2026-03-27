@@ -1,14 +1,9 @@
-from PySide2 import QtCore, QtGui, QtWidgets, QtQuickWidgets
-from PySide2.QtCore import QObject, Signal, Property
-from PySide2.QtQuick import QQuickView
+from PySide2 import QtCore, QtWidgets, QtQuickWidgets
+from PySide2.QtCore import Signal, Property
 from PySide2.QtCore import QUrl
-from PySide2.QtGui import QColor
-from PySide2.QtPositioning import QGeoPath, QGeoCoordinate
 import os
 
-from ausseabed.qajson.model import QajsonCheck
-from hyo2.qax.app.widgets.qax.map_utils import MarkerItem, LineItem, \
-    MarkersModel, LinesModel, PolygonsModel
+from hyo2.qax.app.widgets.qax.map_utils import MarkersModel, LinesModel, PolygonsModel
 from hyo2.qax.lib.project import QaCheckSummary
 
 # from https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=9
@@ -120,7 +115,6 @@ class Manager(QtCore.QObject):
         self._selected_properties = value
 
         props_table = []
-        import random
         for key, value in self._selected_properties.items():
             props_table.append({
                 'key': key,

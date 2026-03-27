@@ -1,11 +1,8 @@
-from PySide2.QtWidgets import QApplication, QDialog, QLineEdit, \
-    QPushButton, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QWidget, \
-    QSizePolicy, QComboBox, QFileDialog, QPlainTextEdit, QProgressBar, \
-    QFrame
+from PySide2.QtWidgets import QDialog, QLineEdit, \
+    QPushButton, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QSizePolicy, QComboBox
 from PySide2.QtGui import QFont, QIntValidator
 from PySide2 import QtCore
 from typing import Any
-import logging
 
 from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings

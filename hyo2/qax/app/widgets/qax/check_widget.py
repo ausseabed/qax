@@ -1,6 +1,6 @@
 from ausseabed.qajson.model import QajsonRoot, QajsonParam, QajsonDataLevel
-from PySide2 import QtCore, QtGui, QtWidgets
-from typing import Optional, NoReturn, List, Any
+from PySide2 import QtCore, QtWidgets
+from typing import NoReturn, List, Any
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.lines import QHLine

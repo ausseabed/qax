@@ -1,10 +1,8 @@
 from ausseabed.qajson.model import QajsonRoot
-from pathlib import Path
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2 import QtCore, QtWidgets
 from PySide2.QtWidgets import QSizePolicy
 from typing import NoReturn
 
-from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.layout import FlowLayout
 from hyo2.qax.app.widgets.lines import QHLine

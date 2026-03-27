@@ -6,7 +6,6 @@ from hyo2.qax.lib.config import QaxConfigCheckTool, QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference
 from hyo2.qax.lib.plugin import QaxFileType, QaxFileGroup
 from hyo2.qax.lib.plugin import QaxPlugins
-from ausseabed.qajson.model import QajsonRoot
 
 
 class MyPlugin(QaxCheckToolPlugin):

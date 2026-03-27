@@ -1,5 +1,4 @@
-from PySide2.QtWidgets import QFrame, QLabel, QVBoxLayout, QHBoxLayout
-from PySide2.QtCore import QRect
+from PySide2.QtWidgets import QFrame
 
 """ utility widgets for including horizontal and vertical lines in components.
 """
