@@ -76,3 +76,8 @@ data/output/
 
 # Installation file artefacts
 install/Output
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+pixi.lock
+*.conda

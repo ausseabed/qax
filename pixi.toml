@@ -1,0 +1,53 @@
+[package]
+name = "hyo2-qax"
+
+# conda dependencies for the package need to duplicate pypi dependencies here,
+# they could also have different names, not in this case
+[package.run-dependencies]
+hyo2-mate="*"
+ausseabed-qajson="*"
+ausseabed-findergc=">=0.1.2"
+ausseabed-ggoutlier=">=0.1.0"
+ausseabed-mbesgc="*"
+ausseabed-mbespc="*"
+appdirs="*"
+GDAL="*"
+pandas="*"
+PySide2="*"
+qtawesome=">=1.4"
+qt-webengine="*"
+qt-main="*"
+XlsxWriter="*"
+
+[package.build.backend]
+name = "pixi-build-python"
+version = "*"
+
+## using hatchling as the build backend, so we need to specify it as a host dependency
+[package.host-dependencies]
+hatchling = "*"
+
+## Workspace below
+[workspace]
+preview = ["pixi-build"] # needed to enable `pixi build`
+channels = [
+    "conda-forge", 
+    "https://prefix.dev/kk-test",
+]
+platforms = ["win-64", "linux-64", "osx-arm64"]
+
+## These are environment dependencies for the workspace test env
+[dependencies]
+python = "3.11.*"
+hyo2-qax = { path = "." }
+sphinx = ">=9.0.4,<10"
+myst-parser = ">=5.0.0,<6"
+pytest = ">=9.0.2,<10"
+pytest-cov = ">=7.1.0,<8"
+pyinstaller = ">=6.19.0,<7"
+
+[tasks]
+pytest = "pytest --cov=hyo2.qax --cov-report=term --cov-report=html tests" 
+docs = "make -C docs html"
+qax = "qax"
+
