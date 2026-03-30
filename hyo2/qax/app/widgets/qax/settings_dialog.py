@@ -24,7 +24,7 @@ class SettingsDialog(QDialog):
             QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
         self.setWindowTitle("Settings")
 
-        self.setWindowIcon(qta.icon('fa.cog'))
+        self.setWindowIcon(qta.icon('fa6s.gear'))
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)

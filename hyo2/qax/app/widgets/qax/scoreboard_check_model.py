@@ -19,9 +19,9 @@ class ScoreBoardCheckModel(QAbstractTableModel):
 
         # qtawesome needs a GUI running to load icons, this prevents these from
         # being created at a class level (instead of per instance)
-        self.cross_icon = qta.icon('fa.close', color='red')
-        self.tick_icon = qta.icon('fa.check', color='green')
-        self.warning_icon = qta.icon('fa.warning', color='orange')
+        self.cross_icon = qta.icon('fa6s.xmark', color='red')
+        self.tick_icon = qta.icon('fa6s.check', color='green')
+        self.warning_icon = qta.icon('fa6s.triangle-exclamation', color='orange')
 
         if checks is None:
             self.checks = []

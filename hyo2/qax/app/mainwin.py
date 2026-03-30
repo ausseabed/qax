@@ -81,14 +81,14 @@ class MainWin(QtWidgets.QMainWindow):
         new_action.triggered.connect(self.new_qajson)
         fileMenu.addAction(new_action)
 
-        save_icon = qta.icon('fa.save')
+        save_icon = qta.icon('fa6s.floppy-disk')
         save_action = QAction(save_icon, "&Save", self)
         save_action.setShortcuts(QKeySequence.Save)
         save_action.setStatusTip("Save QAJSON")
         save_action.triggered.connect(self.save_qajson)
         fileMenu.addAction(save_action)
 
-        saveas_icon = qta.icon('fa.save')
+        saveas_icon = qta.icon('fa6s.floppy-disk')
         saveas_action = QAction(saveas_icon, "Save &As...", self)
         saveas_action.setShortcuts(QKeySequence.SaveAs)
         saveas_action.setStatusTip("Save QAJSON as")
@@ -118,7 +118,7 @@ class MainWin(QtWidgets.QMainWindow):
 
         fileMenu.addSeparator()
 
-        quit_icon = qta.icon('fa.close')
+        quit_icon = qta.icon('fa6s.xmark')
         quit_action = QAction(quit_icon, "&Quit", self)
         quit_action.setShortcuts(QKeySequence.Quit)
         quit_action.setStatusTip("Quit QAX")
@@ -126,7 +126,7 @@ class MainWin(QtWidgets.QMainWindow):
         fileMenu.addAction(quit_action)
 
         utilities_menu = self.menuBar.addMenu('&Utilities')
-        gridtransformer_icon = qta.icon('fa.th')
+        gridtransformer_icon = qta.icon('fa6s.table-cells')
         gridtransformer_action = QAction(
             gridtransformer_icon, "&Grid Transformer", self)
         gridtransformer_action.setStatusTip(
@@ -136,7 +136,7 @@ class MainWin(QtWidgets.QMainWindow):
 
         helpMenu = self.menuBar.addMenu('&Help')
 
-        manual_icon = qta.icon('fa.info-circle')
+        manual_icon = qta.icon('fa6s.circle-info')
         manual_action = QAction(manual_icon, "&Manual", self)
         manual_action.setStatusTip("Open the manual page")
         manual_action.triggered.connect(self.open_manual)

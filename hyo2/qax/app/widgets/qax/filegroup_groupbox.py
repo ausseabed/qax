@@ -142,14 +142,14 @@ class FileGroupGroupBox(QGroupBox):
         self.table.horizontalHeader().sectionClicked.connect(self._click_header)
         main_layout.addWidget(self.table)
 
-        self.cross_icon = qta.icon('fa.close')
+        self.cross_icon = qta.icon('fa6s.xmark')
 
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         self.add_file_button = QPushButton()
         button_layout.addWidget(self.add_file_button)
         self.add_file_button.setText("Add File")
-        self.add_file_button.setIcon(qta.icon('fa.folder-open'))
+        self.add_file_button.setIcon(qta.icon('fa6s.folder-open'))
         self.add_file_button.setToolTip("Add survey product files")
         self.add_file_button.clicked.connect(self._click_add_file)
         self.remove_all_files_button = QPushButton()
