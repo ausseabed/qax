@@ -59,9 +59,9 @@ class ResultTab(QtWidgets.QWidget):
         self.scoreboard_details = None
         self.scoreboard_selected_check = None
 
-        self.cross_icon = qta.icon('fa.close', color='red')
-        self.tick_icon = qta.icon('fa.check', color='green')
-        self.warning_icon = qta.icon('fa.warning', color='orange')
+        self.cross_icon = qta.icon('fa6s.xmark', color='red')
+        self.tick_icon = qta.icon('fa6s.check', color='green')
+        self.warning_icon = qta.icon('fa6s.triangle-exclamation', color='orange')
 
         self.view_names = ['Summary', 'Score Board', 'Json Text']
 
@@ -73,7 +73,7 @@ class ResultTab(QtWidgets.QWidget):
         self.warning_groupbox.setLayout(hbox)
         self.warning_groupbox.setHidden(True)
 
-        warning_icon_widget = qta.IconWidget('fa.warning', color='red')
+        warning_icon_widget = qta.IconWidget('fa6s.triangle-exclamation', color='red')
         warning_icon_widget.setIconSize(QtCore.QSize(48, 48))
         warning_icon_widget.update()
         hbox.addWidget(warning_icon_widget)

@@ -76,15 +76,15 @@ class ManualWindow(QMainWindow):
         self.toolbar = QToolBar()
         self.addToolBar(self.toolbar)
         self.back_button = QPushButton()
-        self.back_button.setIcon(qta.icon('fa.arrow-left'))
+        self.back_button.setIcon(qta.icon('fa6s.arrow-left'))
         self.back_button.clicked.connect(self.back)
         self.toolbar.addWidget(self.back_button)
         self.forward_button = QPushButton()
-        self.forward_button.setIcon(qta.icon('fa.arrow-right'))
+        self.forward_button.setIcon(qta.icon('fa6s.arrow-right'))
         self.forward_button.clicked.connect(self.forward)
         self.toolbar.addWidget(self.forward_button)
         self.home_button = QPushButton()
-        self.home_button.setIcon(qta.icon('fa.home'))
+        self.home_button.setIcon(qta.icon('fa6s.house'))
         self.home_button.clicked.connect(self.home)
         self.toolbar.addWidget(self.home_button)
 
@@ -180,7 +180,7 @@ class ManualButton(QPushButton):
     def __init__(self, link: str, tooltip: str = None):
         super(ManualButton, self).__init__()
 
-        self.setIcon(qta.icon('fa.info-circle', color='grey'))
+        self.setIcon(qta.icon('fa6s.circle-info', color='grey'))
         if tooltip is not None:
             self.setToolTip(tooltip)
         self.clicked.connect(self._click_show_manual)

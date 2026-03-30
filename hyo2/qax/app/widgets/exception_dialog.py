@@ -48,7 +48,7 @@ class ExceptionDialog(QDialog):
         copy_layout = QHBoxLayout()
         copy_layout.addStretch()
         button_copy = QPushButton("Copy to clipboard")
-        button_copy.setIcon(qta.icon('fa.copy'))
+        button_copy.setIcon(qta.icon('fa6s.copy'))
         button_copy.clicked.connect(self._copy_stack_trace)
         copy_layout.addWidget(button_copy)
         groupbox_layout.addLayout(copy_layout)

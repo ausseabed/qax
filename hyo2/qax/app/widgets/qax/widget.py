@@ -48,7 +48,7 @@ class QAXWidget(QtWidgets.QTabWidget):
         # noinspection PyArgumentList
         self.idx_inputs = self.tabs.insertTab(
             0, self.tab_inputs,
-            qta.icon('fa.files-o'), "")
+            qta.icon('fa6s.copy'), "")
 
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
 
@@ -65,14 +65,14 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.tab_run.run_checks.connect(self._on_execute_checks)
         self.idx_run = self.tabs.insertTab(
             2, self.tab_run,
-            qta.icon('fa.play'), "")
+            qta.icon('fa6s.play'), "")
         self.tabs.setTabToolTip(self.idx_run, "Run Checks")
 
         self.tab_result = ResultTab(self.prj)
         self.tab_result.objectName = "tab_result"
         self.idx_result = self.tabs.insertTab(
             3, self.tab_result,
-            qta.icon('fa.check'), "")
+            qta.icon('fa6s.check'), "")
         self.tabs.setTabToolTip(self.idx_result, "View check results")
 
         self.tabs.currentChanged.connect(self.change_tabs)

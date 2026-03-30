@@ -165,7 +165,7 @@ class GridTransformerInputBand(QWidget):
 
         self.open_file_button = QPushButton()
         input_file_layout.addWidget(self.open_file_button)
-        self.open_file_button.setIcon(qta.icon('fa.folder-open'))
+        self.open_file_button.setIcon(qta.icon('fa6s.folder-open'))
         self.open_file_button.setToolTip(
             f"Select file containing {self.band_name} data")
         self.open_file_button.clicked.connect(self._click_open)
@@ -256,7 +256,7 @@ class GridTransformerDialog(QDialog):
             QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
         self.setWindowTitle("Grid Transformer")
 
-        self.setWindowIcon(qta.icon('fa.th'))
+        self.setWindowIcon(qta.icon('fa6s.table-cells'))
 
         # dict to store inputs that will get passed to the grid transformer
         # this gets validated to ensure all the bits of info are in it before
@@ -341,7 +341,7 @@ class GridTransformerDialog(QDialog):
 
         self.open_output_file_button = QPushButton()
         output_file_layout.addWidget(self.open_output_file_button)
-        self.open_output_file_button.setIcon(qta.icon('fa.folder-open'))
+        self.open_output_file_button.setIcon(qta.icon('fa6s.folder-open'))
         self.open_output_file_button.setToolTip("Select output file location")
         self.open_output_file_button.clicked.connect(self._click_open_output)
 
@@ -397,7 +397,7 @@ class GridTransformerDialog(QDialog):
         self.run_button.setEnabled(False)
         self.run_button.setText("Run")
         self.run_button.setFixedWidth(100)
-        run_icon = qta.icon('fa.play', color='green')
+        run_icon = qta.icon('fa6s.play', color='green')
         self.run_button.setIcon(run_icon)
         self.run_button.clicked.connect(self._click_run)
         hbox.addWidget(self.run_button)
@@ -406,7 +406,7 @@ class GridTransformerDialog(QDialog):
         self.stop_button.setEnabled(False)
         self.stop_button.setText("Stop")
         self.stop_button.setFixedWidth(100)
-        stop_icon = qta.icon('fa.stop', color='red')
+        stop_icon = qta.icon('fa6s.stop', color='red')
         self.stop_button.setIcon(stop_icon)
         self.stop_button.clicked.connect(self._click_stop)
         hbox.addWidget(self.stop_button)
@@ -430,7 +430,7 @@ class GridTransformerDialog(QDialog):
             QSizePolicy.Expanding, QSizePolicy.Fixed)
         hbox = QHBoxLayout()
 
-        warning_icon_widget = qta.IconWidget('fa.warning', color='red')
+        warning_icon_widget = qta.IconWidget('fa6s.triangle-exclamation', color='red')
         warning_icon_widget.setIconSize(QtCore.QSize(48, 48))
         warning_icon_widget.update()
         hbox.addWidget(warning_icon_widget)
@@ -452,7 +452,7 @@ class GridTransformerDialog(QDialog):
             QSizePolicy.Expanding, QSizePolicy.Fixed)
         hbox = QHBoxLayout()
 
-        success_icon_widget = qta.IconWidget('fa.check', color='green')
+        success_icon_widget = qta.IconWidget('fa6s.check', color='green')
         success_icon_widget.setIconSize(QtCore.QSize(48, 48))
         success_icon_widget.update()
         hbox.addWidget(success_icon_widget)
