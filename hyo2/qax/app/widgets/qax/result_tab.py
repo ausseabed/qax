@@ -256,8 +256,11 @@ class ResultTab(QtWidgets.QWidget):
         if (('qa' in qa_json_dict) and
                 (qa_json_dict['qa'] is not None) and
                 (self.qa_group in qa_json_dict['qa'])):
-            self.json_viewer.setText(
-                json.dumps(qa_json_dict['qa'][self.qa_group], indent=4))
+            try:
+                txt = json.dumps(qa_json_dict['qa'][self.qa_group], indent=4)
+            except Exception as e:
+                txt = f"BAD JSON: {repr(e)}"
+            self.json_viewer.setText(txt)
 
     def _add_score_board_view(self):
         # Score Board
