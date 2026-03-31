@@ -1,6 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 import os
+import sys
+from pathlib import Path
 
 from PyInstaller.utils.hooks import copy_metadata, collect_data_files
 
@@ -10,7 +12,7 @@ qax_root = os.path.abspath(os.path.join(SPECPATH, '..'))
 
 print(os.environ)
 
-conda_prefix = os.path.join(os.path.expanduser("~"), "miniconda", "envs", "qax")
+conda_prefix = str(Path(sys.executable).parent) 
 # epsg_data = os.path.abspath(os.path.join(conda_prefix , 'Library\\share\\epsg'))  # this dir doesn't exist
 proj_data = os.path.abspath(os.path.join(conda_prefix , 'Library\\share\\proj'))
 gdal_data = os.path.abspath(os.path.join(conda_prefix , 'Library\\share\\gdal'))
@@ -24,7 +26,7 @@ pyside2_libs = os.path.abspath(os.path.join(conda_prefix , 'Lib\\site-packages\\
 styles_libs = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\styles'))
 platformthemes_libs = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\platformthemes'))
 geoservices_libs = os.path.abspath(os.path.join(conda_prefix , 'Library\\plugins\\geoservices'))
-ggoutlier_pngs = os.path.abspath(os.path.join(conda_prefix , 'Lib\\site-packages\\*.png'))
+ggoutlier_pngs = os.path.abspath(os.path.join(conda_prefix , 'Lib\\site-packages\\ggoutlier\\*.png'))
 
 bin_dir = os.path.abspath(os.path.join(conda_prefix , 'Library\\bin'))
 hooks_dir = os.path.join(spec_root ,'hooks')
@@ -46,8 +48,8 @@ datas.append((pyside2_libs, "PySide2"))
 datas.append((styles_libs, "styles"))
 datas.append((platformthemes_libs, "plugins\\platformthemes"))
 datas.append((geoservices_libs, "PySide2\\plugins\\geoservices"))
-datas.append((r'..\docs\_build\html', "docs\_build\html"))
-datas.append((ggoutlier_pngs ,"."))
+datas.append((r'..\docs\_build\html', r"docs\_build\html"))
+datas.append((ggoutlier_pngs, "ggoutlier"))
 
 hiddenimports = [
     'PySide2.QtPrintSupport',
