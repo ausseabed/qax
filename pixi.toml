@@ -38,13 +38,15 @@ platforms = ["win-64", "linux-64", "osx-arm64"]
 
 ## These are environment dependencies for the workspace test env
 [dependencies]
-python = "3.11.*"
 hyo2-qax = { path = "." }
 sphinx = ">=9.0.4,<10"
 myst-parser = ">=5.0.0,<6"
 pytest = ">=9.0.2,<10"
 pytest-cov = ">=7.1.0,<8"
 pyinstaller = ">=6.19.0,<7"
+ggoutlier = ">=0.4.3" # fix for tiling WARNINGs
+pip = "*"
+python = "=3.11" # PySide2 didn't work for 3.12 on a mac at least
 
 [tasks]
 pytest = "pytest --cov=hyo2.qax --cov-report=term --cov-report=html tests" 
