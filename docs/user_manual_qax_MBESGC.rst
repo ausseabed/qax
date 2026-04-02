@@ -318,7 +318,6 @@ Interface
 Upon initial opening of the QAX interface two windows will open.  One is a console window that provides 
 extra information and assists with debugging, the other is the main graphical user interface (GUI).
 
-.. _console:
 .. figure:: _static/console_qax.png
     :width: 1000px
     :align: center
@@ -327,7 +326,6 @@ extra information and assists with debugging, the other is the main graphical us
 
     Console window
 
-.. _QAX_Interface:
 .. figure:: _static/interface_qax.png
     :width: 1000px
     :align: center
@@ -339,7 +337,6 @@ extra information and assists with debugging, the other is the main graphical us
 The initial tab that is opened when QAX is started in the input tab.  A breakdown of the tab is explained
 below
 
-.. _QAX_input_breakdown:
 .. figure:: _static/mbesgc_qax.png
     :width: 1000px
     :align: center
@@ -359,7 +356,6 @@ that work with the plugin.  As shown in the screenshot, it is Survey DTM's.
         
 After the gridded files have been added into the QAX interface navigate to the plugins tab
 
-.. _QAX_plugins_breakdown:
 .. figure:: _static/mbesgc_parameters_qax.png
     :width: 1000px
     :align: center
@@ -389,7 +385,6 @@ Total Vertical Uncertainty Check
 #. Constant depth error - Constant depth error (a) for total vertical uncertainty check
 #. Factor of depth dependant errors - Factor of depth dependant errors (b) for total vertical uncertainty check
     
-.. _QAX_run_checks_breakdown:
 .. figure:: _static/mbesgc_runchecks_breakdown_qax.png
     :width: 1000px
     :align: center
@@ -408,7 +403,6 @@ further information and time taken to run the checks.
         * These outputs include different outputs for each different check which includes areas that have failed checks
         * Raster data containing the calculation results for comparison and analysis in other geospatial applications
 
-.. _External_application_example:
 .. figure:: _static/allowable_uncertainty_comparison.png
     :width: 500px
     :align: center
@@ -418,7 +412,6 @@ further information and time taken to run the checks.
     Example of TVU check comparison in external application.  This example was inverted by the external application.  \
     In this case the cell would pass the check with Uncertainty of 0.506 being less than the absolute value of -1.040
 
-.. _QAX_view_results_breakdown:
 .. figure:: _static/mbesgc_checkresults_breakdown_qax.png
     :width: 1000px
     :align: center

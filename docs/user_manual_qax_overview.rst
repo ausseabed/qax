@@ -10,7 +10,6 @@ QAX is an overarching framework and (graphical user interface) that is designed 
 related datasets that are "plugged in" to the framework and GUI.  It is designed to be an enabler to community designed and
 created checks giving them a home structure for their inputs, computations and meaningful outputs.
 
-.. _QAX_inputs:
 .. figure:: _static/qax_inputs.png
     :width: 500px
     :align: center
@@ -25,7 +24,6 @@ MATE is a plugin for QAX that contains the handling, smarts and output requireme
 This plugin is designed to give the user feedback on the makeup of raw data files and identify potential issues
 with system setup prior to collecting large amounts of data.
 
-.. _QAX_inputs:
 .. figure:: _static/raw_output_summary_qax.png
     :width: 500px
     :align: center
@@ -40,7 +38,7 @@ MBESGC is a plugin for QAX that contains the handling, smarts and output require
 (i.e. gridded data products).  This plugin is designed check gridded products against particular standards e.g.
 IHO Order 1a
 
-.. _QAX_inputs:
+.. _QAX_processed_output_summary:
 .. figure:: _static/processed_output_summary_qax.png
     :width: 500px
     :align: center

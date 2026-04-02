@@ -37,12 +37,11 @@ Kongsberg .all checks
 Use the scan_ALL library to provide information to the user about the raw data they are collecting
 
 .. autoclass:: hyo2.mate.lib.scan_ALL.ScanALL
-|
 
-    .. automethod:: hyo2.mate.lib.scan_ALL.ScanALL.backscatter_availability
-    
+   .. automethod:: hyo2.mate.lib.scan_ALL.ScanALL.backscatter_availability
+
 The datagrams in a .all required for backscatter processing are divided up into critical and non-critical as per the following table
-    
+
 ============================  ====================================
 Critical                       Noncritical
 ============================  ====================================
@@ -60,9 +59,9 @@ The messages within :class:`hyo2.mate.lib.scan.ScanResult` will provide informat
 The data within :class:`hyo2.mate.lib.scan.ScanResult` will indicate which datagrams aren't present in the file
 
     .. automethod:: hyo2.mate.lib.scan_ALL.ScanALL.bathymetry_availability
-    
+
 The datagrams in a .all required for bathymetry processing are divided up into critical and non-critical as per the following table
-    
+
 ============================  ====================================
 Critical                       Noncritical
 ============================  ====================================
@@ -80,18 +79,15 @@ The messages within :class:`hyo2.mate.lib.scan.ScanResult` will provide informat
 The data within :class:`hyo2.mate.lib.scan.ScanResult` will indicate which datagrams aren't present in the file
 
     .. automethod:: hyo2.mate.lib.scan_ALL.ScanALL.date_match
-|
 
     .. automethod:: hyo2.mate.lib.scan_ALL.ScanALL.ellipsoid_height_setup
-|
 
     .. automethod:: hyo2.mate.lib.scan_ALL.ScanALL.filename_changed
-|
 
     .. automethod:: hyo2.mate.lib.scan_ALL.ScanALL.ray_tracing_availability
-    
+
 The datagrams in a .all required for recalculating ray tracing are divided up into critical and non-critical as per the following table
-    
+
 ============================  ====================================
 Critical                       Noncritical
 ============================  ====================================
@@ -107,23 +103,21 @@ The messages within :class:`hyo2.mate.lib.scan.ScanResult` will provide informat
 The data within :class:`hyo2.mate.lib.scan.ScanResult` will indicate which datagrams aren't present in the file
 
     .. automethod:: hyo2.mate.lib.scan_ALL.ScanALL.runtime_parameters
-|
 
     .. automethod:: hyo2.mate.lib.scan_ALL.ScanALL.positions
-|
-    
+
 Kongsberg .kmall checks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Use the scan_KMALL library to provide information to the user about the raw data they are collecting
 
 .. autoclass:: hyo2.mate.lib.scan_KMALL.ScanKMALL
-|
 
     .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.backscatter_availability
-    
+
+
 The datagrams in a .kmall required for backscatter processing are divided up into critical and non-critical as per the following table
-    
+
 ============================  ====================================
 Critical                       Noncritical
 ============================  ====================================
@@ -138,9 +132,9 @@ The messages within :class:`hyo2.mate.lib.scan.ScanResult` will provide informat
 The data within :class:`hyo2.mate.lib.scan.ScanResult` will indicate which datagrams aren't present in the file
 
     .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.bathymetry_availability
-    
+
 The datagrams in a .kmall required for bathymetry processing are divided up into critical and non-critical as per the following table
-    
+
 ============================  ====================================
 Critical                       Noncritical
 ============================  ====================================
@@ -155,18 +149,15 @@ The messages within :class:`hyo2.mate.lib.scan.ScanResult` will provide informat
 The data within :class:`hyo2.mate.lib.scan.ScanResult` will indicate which datagrams aren't present in the file
 
     .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.date_match
-|
 
     .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.ellipsoid_height_setup
-|
 
     .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.filename_changed
-|
 
     .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.ray_tracing_availability
-    
+
 The datagrams in a .kmall required for recalculating ray tracing are divided up into critical and non-critical as per the following table
-    
+
 ============================  ====================================
 Critical                       Noncritical
 ============================  ====================================
@@ -181,11 +172,9 @@ The messages within :class:`hyo2.mate.lib.scan.ScanResult` will provide informat
 The data within :class:`hyo2.mate.lib.scan.ScanResult` will indicate which datagrams aren't present in the file
 
     .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.runtime_parameters
-|
 
     .. automethod:: hyo2.mate.lib.scan_KMALL.ScanKMALL.positions
-|
-    
+
 
 Generic sensor format .gsf checks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -193,17 +182,14 @@ Generic sensor format .gsf checks
 Use the scan_gsf library to provide information to the user about the raw data they are collecting
 
 .. autoclass:: hyo2.mate.lib.scan_gsf.ScanGsf
-|
 
     .. automethod:: hyo2.mate.lib.scan_gsf.ScanGsf.backscatter_availability
     .. note::
         Not implemented for the GSF format
 
     .. automethod:: hyo2.mate.lib.scan_gsf.ScanGsf.bathymetry_availability
-|
 
     .. automethod:: hyo2.mate.lib.scan_gsf.ScanGsf.date_match
-|
 
     .. automethod:: hyo2.mate.lib.scan_gsf.ScanGsf.ellipsoid_height_setup
     .. note::
@@ -222,13 +208,11 @@ Use the scan_gsf library to provide information to the user about the raw data t
         Not implemented for the GSF format
 
     .. automethod:: hyo2.mate.lib.scan_gsf.ScanGsf.positions
-|
 
 Outputs
 -----------------------------------------
 
 .. autoclass:: hyo2.mate.lib.scan.ScanResult
-|
 
 .. autoclass:: hyo2.mate.lib.scan.ScanState
 
@@ -238,10 +222,9 @@ Outputs
 
 Interface
 -----------------------------------------
-Upon initial opening of the QAX interface two windows will open.  One is a console window that provides 
+Upon initial opening of the QAX interface two windows will open.  One is a console window that provides
 extra information and assists with debugging, the other is the main Graphical User Interface (GUI).
 
-.. _console:
 .. figure:: _static/console_qax.png
     :width: 1000px
     :align: center
@@ -250,7 +233,6 @@ extra information and assists with debugging, the other is the main Graphical Us
 
     Console window
 
-.. _QAX_Interface:
 .. figure:: _static/interface_qax.png
     :width: 1000px
     :align: center
@@ -258,11 +240,10 @@ extra information and assists with debugging, the other is the main Graphical Us
     :figclass: align-center
 
     Initial QAX GUI interface
-    
+
 The initial tab that is opened when QAX is started in the input tab.  A breakdown of the tab is explained
 below
 
-.. _QAX_input_breakdown:
 .. figure:: _static/mate_qax.png
     :width: 1000px
     :align: center
@@ -270,7 +251,7 @@ below
     :figclass: align-center
 
     QAX mate GUI input breakdown
-    
+
 When the mate plugin is selected, the QAX interface will change to show the inputs
 that work with the plugin.  As shown in the screenshot, it is raw multibeam files, sound
 velocity profile files and TrueHeave files.
@@ -280,10 +261,9 @@ velocity profile files and TrueHeave files.
 #. Remove file - you can remove files and of the x buttons not highlighted or the clear all files button
     .. note::
         Profile selection is not implemented in the current version of QAX
-        
+
 After raw files have been added into the QAX interface navigate to the plugins tab
 
-.. _QAX_plugins_breakdown:
 .. figure:: _static/plugins_breakdown_qax.png
     :width: 1000px
     :align: center
@@ -291,14 +271,13 @@ After raw files have been added into the QAX interface navigate to the plugins t
     :figclass: align-center
 
     QAX mate parameters breakdown
-    
+
 | There is currently limited parameters able to be set for the mate plugin as most of the
   functionality exists in reading raw files and collecting metadata and information to be
   logged into the QAJSON and output GUI
 
 | After parameters are set navigate to the run checks tab
-    
-.. _QAX_run_checks_breakdown:
+
 .. figure:: _static/runchecks_breakdown_qax.png
     :width: 1000px
     :align: center
@@ -314,7 +293,6 @@ further information and time taken to run the checks.
     .. note::
         The checkbox to Export detailed spatial outputs to file is currently not implemented with the mate plugin and only works with the mbesgc plugin
 
-.. _QAX_view_results_breakdown:
 .. figure:: _static/checkresults_breakdown_qax.png
     :width: 1000px
     :align: center
@@ -322,7 +300,7 @@ further information and time taken to run the checks.
     :figclass: align-center
 
     QAX GUI view results breakdown
-    
+
 #. View Selection - Choose between a summary of all data, score board view to look at the individual line level or QAJSON output
     - Summary gives a summary of the overall check results, i.e. a count of the lines pass, fail or warning
     - Scoreboard enables viewing of results per line

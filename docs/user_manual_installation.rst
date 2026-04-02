@@ -67,10 +67,8 @@ There are 3 steps
 #. Use `pyinstaller` to generate a redistributable directory of the dependencies included in the conda env
 #. Use Inno Setup to build an msi install file from the redistributable directory contents
 
-::
 
-
-Use `pyinstaller` to generate a redistributable directory of the dependencies included in the conda env
+Use ``pyinstaller`` to generate a redistributable directory of the dependencies included in the conda env
 **********************************************************************************************************
 Run the spec file from this directory.
 
