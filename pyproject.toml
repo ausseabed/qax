@@ -46,14 +46,3 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["hyo2"]
 
-[tool.hatch.build.targets.wheel.recursive-include]
-"" = [
-    "media/*.png",
-    "media/*.ico",
-    "media/*.icns",
-    "media/*.txt",
-    "config/*.json",
-    "media/LICENSE",
-    "schemas/**/*.json",
-    "**/*.qml",
-]
