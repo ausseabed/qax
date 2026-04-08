@@ -100,7 +100,7 @@ class ManualWindow(QMainWindow):
 
         self.web_engine_view = QWebEngineView()
         self.layout.addWidget(self.web_engine_view)
-        self.initialUrl = QUrl(self.docs_url())
+        self.initialUrl = QUrl.fromLocalFile(self.docs_url())
 
         self.address_line_edit.setText(str(self.initialUrl))
 
