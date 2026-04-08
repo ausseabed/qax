@@ -5,35 +5,27 @@ from PySide2.QtWidgets import QLineEdit, QApplication, \
     QHBoxLayout, QLabel
 from PySide2.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
 import os
-from os.path import join as pjoin
+from pathlib import Path
 
 from hyo2.qax.app import qta
 from hyo2.qax.app import app_info
 import hyo2.qax.app.widgets.qax.manual_links as manual_links
 
 
-REL_DOCS_PATH = pjoin('docs', '_build', 'html')
-ALT_DOCS_PATH = pjoin('_internal/', REL_DOCS_PATH)  # for both the Windows exe and dist versions
-
-
 def _docs_root():
-    """
-    Something to disentangle the original logic that hardcodes the path to be
-    manual_links.INDEX which may not exist, causing the docs widget to display
-    an error.
-    Preference is to return a valid path, and avoid checking multiple times.
-    """
-    docs_path = os.path.abspath(REL_DOCS_PATH)
-    alt_docs_path = os.path.abspath(ALT_DOCS_PATH)
+    _base = Path(__file__).parent.parent.parent   # = hyo2/qax/app
+    root = _base/"media"/"docs"
 
-    if os.path.exists(docs_path):
-        path = docs_path
-    elif os.path.exists(alt_docs_path):
-        path = alt_docs_path
-    else:
-        raise RuntimeError(f"Docs not found at {docs_path} or {alt_docs_path}")
+    if root.exists():
+        return root
 
-    return path
+    # probably edit mode install
+    _base = _base.parent.parent.parent # = root of repo
+    root = _base/"docs"/"_build"/"html"
+    if not root.exists():
+        raise RuntimeError("Can't locate docs")
+    
+    return root
 
 
 class ManualWindow(QMainWindow):
@@ -117,7 +109,6 @@ class ManualWindow(QMainWindow):
 
     def docs_url(self):
         root_path = _docs_root()
-
         docs_index = os.path.join(root_path, manual_links.INDEX)
         if not os.path.exists(docs_index):
             raise RuntimeError(f"Docs index not found at {docs_index}")
