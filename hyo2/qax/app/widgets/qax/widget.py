@@ -107,7 +107,10 @@ class QAXWidget(QtWidgets.QTabWidget):
         # pass. This is probably because the previous update clears all
         # check param widgets and re-adds them.
         def update_specs():
-            self.tab_plugins.set_specification(self.profile.specifications[0])
+            assert self.profile is not None
+            specs = self.profile.specifications
+            if len(specs):
+                self.tab_plugins.set_specification(specs[0])
         QtCore.QTimer.singleShot(0, update_specs)
 
     def _on_specification_selected(self, specification: QaxConfigSpecification):
@@ -171,6 +174,8 @@ class QAXWidget(QtWidgets.QTabWidget):
 
         for check in self.tab_inputs.selected_checks:
             plugin_check_tool = QaxPlugins.instance().get_plugin_for_check(check.id)
+            if plugin_check_tool is None:
+                continue
             # get the plugin tab for the current check tool
             plugin_tab = next(
                 (
@@ -180,7 +185,10 @@ class QAXWidget(QtWidgets.QTabWidget):
                 ),
                 None
             )
-
+            if plugin_tab is None:
+                continue
+            
+            assert plugin_tab is not None
             check_param_details = plugin_tab.get_check_ids_and_params()
             params = next(
                 (
@@ -190,6 +198,7 @@ class QAXWidget(QtWidgets.QTabWidget):
                 ),
                 None
             )
+            assert plugin_check_tool is not None
             plugin_check_tool.update_qa_json_input_params(
                 root, check.id, params
             )
