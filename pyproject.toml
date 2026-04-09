@@ -25,7 +25,18 @@ classifiers = [
     "Topic :: Office/Business :: Office Suites",
 ]
 dependencies = [
-    "jsonschema",
+    "ausseabed-qajson",
+    "ausseabed-findergc >=0.1.3",
+    "ausseabed-ggoutlier >=0.1.0",
+    "ausseabed-mbesgc >=0.1.0",
+    "ausseabed-mbespc",
+    "hyo2-mate",
+    "appdirs",
+    "GDAL",
+    "pandas",
+    "PySide2",
+    "qtawesome >=1.4",
+    "xlsxwriter",
 ]
 
 [project.optional-dependencies]
