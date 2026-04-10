@@ -50,6 +50,6 @@ python = "=3.11" # PySide2 didn't work for 3.12 on a mac at least
 
 [tasks]
 pytest = "pytest --cov=hyo2.qax --cov-report=term --cov-report=html tests" 
-docs = "make -C docs html"
-qax = "qax"
+mkdocs = {cmd = "make html", cwd = "docs"}
+mkconda = {depends-on = ["mkdocs"], cmd = "pixi build"}
 
