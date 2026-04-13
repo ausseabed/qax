@@ -1,8 +1,13 @@
 from PyInstaller.utils.hooks import collect_data_files, copy_metadata
+from PySide2.QtCore import QLibraryInfo
+
+plugins_dir = QLibraryInfo.location(QLibraryInfo.PluginsPath)
 
 datas = [
     *collect_data_files("hyo2.qax"),
     *copy_metadata("hyo2.qax"),
+    (f"{plugins_dir}/geoservices", "PySide2/plugins/geoservices"),
+    (f"{plugins_dir}/platformthemes", "PySide2/plugins/platformthemes"),
 ]
 
 hiddenimports = [
