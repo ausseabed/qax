@@ -51,11 +51,11 @@ Homepage = "https://github.com/ausseabed/qax"
 qax = "hyo2.qax.app.gui:gui"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling >=1.27"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["hyo2"]
-
-[tool.hatch.build.targets.wheel.force-include]
-"docs/_build/html" = "hyo2/qax/app/media/docs"
+artifacts = [
+    "hyo2/qax/app/media/docs/**"
+]

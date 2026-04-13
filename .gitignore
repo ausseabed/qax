@@ -80,3 +80,7 @@ install/Output
 .pixi/*
 !.pixi/config.toml
 *.conda
+
+# skip inlined compiled docs
+hyo2/qax/app/media/docs/*
+!hyo2/qax/app/media/docs/readme.txt

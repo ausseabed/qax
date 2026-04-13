@@ -25,7 +25,7 @@ version = "*"
 
 ## using hatchling as the build backend, so we need to specify it as a host dependency
 [package.host-dependencies]
-hatchling = "*"
+hatchling = ">=1.27"
 
 ## Workspace below
 [workspace]
@@ -48,8 +48,19 @@ ggoutlier = ">=0.4.3" # fix for tiling WARNINGs
 pip = "*"
 python = "=3.11" # PySide2 didn't work for 3.12 on a mac at least
 
+[pypi-dependencies]
+# python -m build to create wheels and source dist
+build = "*"
+
 [tasks]
 pytest = "pytest --cov=hyo2.qax --cov-report=term --cov-report=html tests" 
-mkdocs = {cmd = "make html", cwd = "docs"}
-mkconda = {depends-on = ["mkdocs"], cmd = "pixi build"}
+mkconda = {depends-on = ["inline-docs"], cmd = "pixi build"}
 
+[tasks.inline-docs]
+depends-on = ["mkdocs"]
+cmd = "cp -r docs/_build/html/* hyo2/qax/app/media/docs/"
+
+[tasks.mkdocs]
+cwd = "docs"
+args = [{arg = "target", default = "html"}]
+cmd = "make {{ target }}"
