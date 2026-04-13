@@ -14,77 +14,58 @@ on:
 
 jobs:
   build:
-    # whilst we might never need it, it does however fleshout the idea of multiple os and py builds
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: ["windows-latest", "ubuntu-latest"]
-        python-version: ["3.11"]
-
-    env:
-      # mostly used as helpers for retrieving as env vars within inno setup
-      WORKDIR: ${{ github.workspace }}
-      CONDA_ENV: "qax"
+    runs-on: "ubuntu-latest" 
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v6
 
-      - name: Establish Env
-        uses: ./.github/actions/environment
+      - name: Install Pixi
+        uses: prefix-dev/setup-pixi@v0.9.5
         with:
-          env-name: "${{ env.CONDA_ENV }}"
+          cache: true
 
-      - name: Build QAX
-        id: qax-build
-        uses: ./.github/actions/build-qax
-        with:
-          env-name: "${{ env.CONDA_ENV }}"
+      - name: Build Conda Package
+        id: conda-package
+        run: |
+          pixi run mkconda
+          echo "path=$(find . -name '*.conda' | head -1)" >> $GITHUB_OUTPUT
 
-      - name: Build Docs Linux
-        if: matrix.os == 'ubuntu-latest'
-        uses: ./.github/actions/docs-linux
+      - name: Upload conda package
+        uses: actions/upload-artifact@v7
         with:
-          env-name: "${{ env.CONDA_ENV }}"
+          path: ${{ steps.conda-package.outputs.path }}
+          archive: false
 
-      - name: Build Docs Windows
-        if: matrix.os == 'windows-latest'
-        uses: ./.github/actions/docs-windows
-        with:
-          env-name: "${{ env.CONDA_ENV }}"
+  build-pdf:
+    runs-on: "ubuntu-latest" 
 
-      - name: Windows Distributions
-        if: matrix.os == 'windows-latest'
-        uses: ./.github/actions/windows
-        with:
-          env-name: "${{ env.CONDA_ENV }}"
-          qax-version: "${{ steps.qax-build.outputs.version }}"
+    steps:
+      - name: Setup LaTex
+        run: |
+          # texlive-core on conda is broken, and has been for some time apparently
+          sudo apt-get update
+          sudo apt-get install texlive-latex-extra latexmk texlive
 
-      - name: Upload
-        if: matrix.os == 'windows-latest'
-        uses: ./.github/actions/upload-qax-windows
-        with:
-          dist-name: "qax_dist_v${{ steps.qax-build.outputs.version }}"
-          dist-path: "qax_dist_v${{ steps.qax-build.outputs.version }}.zip"
-          setup-name: "qax_setup_v${{ steps.qax-build.outputs.version }}"
-          setup-path: "qax_setup_v${{ steps.qax-build.outputs.version }}.exe"
+      - name: Checkout
+        uses: actions/checkout@v6
 
-      - name: Upload PDF Doc
-        if: matrix.os == 'ubuntu-latest'
-        uses: ./.github/actions/upload-pdf-doc
+      - name: Install Pixi
+        uses: prefix-dev/setup-pixi@v0.9.5
         with:
-          pdf-name: "HydrOfficeQAX.pdf"
-          pdf-path: "docs/_build/latex/HydrOfficeQAX.pdf"
+          cache: true
 
-      # as we need to provide windows builds, only release from matrix op running windows
-      - name: Release
-        if: |
-          matrix.os == 'windows-latest' &&
-          startsWith(github.ref, 'refs/tags/v') &&
-          github.repository_owner == 'ausseabed'
-        uses: ./.github/actions/release
+      - name: Build Docs (HTML)
+        run: |
+          pixi run mkdocs html
+
+      - name: Build Docs (PDF)
+        run: |
+          pixi run mkdocs latexpdf
+
+      - name: Upload QAX PDF Document
+        uses: actions/upload-artifact@v7
         with:
-          dist-path: "qax_dist_v${{ steps.qax-build.outputs.version }}.zip"
-          setup-path: "qax_setup_v${{ steps.qax-build.outputs.version }}.exe"
-          # pdf-path: "docs/_build/latex/HydrOfficeQAX.pdf"
+          name: "HydrOfficeQAX.pdf"
+          path: "docs/_build/latex/HydrOfficeQAX.pdf"
+          retention-days: 6
