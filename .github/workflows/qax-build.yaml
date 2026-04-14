@@ -70,4 +70,5 @@ jobs:
         with:
           name: "HydrOfficeQAX.pdf"
           path: "docs/_build/latex/HydrOfficeQAX.pdf"
+          archive: false
           retention-days: 6
