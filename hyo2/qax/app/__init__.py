@@ -24,7 +24,7 @@ app_info.app_latest_url = "https://www.hydroffice.org/latest/qax.txt"
 
 app_info.app_media_path = os.path.join(app_info.app_path, "media")
 app_info.app_main_window_object_name = "MainWindow"
-app_info.app_license_path = os.path.join(app_info.app_media_path, "LICENSE")
+#app_info.app_license_path = os.path.join(app_info.app_media_path, "LICENSE")
 app_info.app_icon_path = os.path.join(app_info.app_media_path, "app_icon.png")
 
 # icon size
