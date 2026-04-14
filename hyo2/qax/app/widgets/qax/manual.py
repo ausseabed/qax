@@ -6,24 +6,28 @@ from PySide2.QtWidgets import QLineEdit, QApplication, \
 from PySide2.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
 import os
 from pathlib import Path
+import logging
 
 from hyo2.qax.app import qta
 from hyo2.qax.app import app_info
 import hyo2.qax.app.widgets.qax.manual_links as manual_links
 
+logger = logging.getLogger(__name__)
 
 def _docs_root():
     _base = Path(__file__).parent.parent.parent   # = hyo2/qax/app
     root = _base/"media"/"docs"
 
-    if root.exists():
+    if (root/"index.html").exists():
+        logger.info("Found docs at %s", root)
         return root
 
     # probably edit mode install
     _base = _base.parent.parent.parent # = root of repo
     root = _base/"docs"/"_build"/"html"
-    if not root.exists():
+    if not (root/"index.html").exists():
         raise RuntimeError("Can't locate docs")
+    logger.info("Using dev mode docs: %s", root)
     
     return root
 
