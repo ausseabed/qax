@@ -23,8 +23,6 @@ hiddenimports = [
     'hyo2.qax.plugins.placeholder',
     'ausseabed.mbesgc',
     'ausseabed.mbesgc.qax.plugin',
-    'ausseabed.mbespc',
-    'ausseabed.mbespc.qax.plugin',
     'ausseabed.findergc',
     'ausseabed.findergc.qax.plugin',
     'ausseabed.ggoutlier',
