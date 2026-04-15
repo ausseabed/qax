@@ -46,6 +46,7 @@ pyinstaller = ">=6.19.0,<7"
 ggoutlier = ">=0.4.3" # fix for tiling WARNINGs
 pip = "*"
 python = "=3.11" # PySide2 didn't work for 3.12 on a mac at least
+rattler-build = ">=0.62.0,<0.63"
 
 [pypi-dependencies]
 # python -m build to create wheels and source dist
