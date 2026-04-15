@@ -69,7 +69,14 @@ jobs:
         id: conda-package
         run: |
           pixi run mkconda
-          echo "path=$(find . -name '*.conda' | head -1)" >> $GITHUB_OUTPUT
+          CONDA_PACKAGE_PATH="$(find . -name '*.conda' | head -1)" 
+          echo "path=${CONDA_PACKAGE_PATH}" >> $GITHUB_OUTPUT
+
+      - name: Dump Package Content
+        env:
+          CONDA_PACKAGE_PATH: ${{ steps.conda-package.outputs.path }}
+        run: |
+          pixi run rattler-build package inspect --paths "${CONDA_PACKAGE_PATH}"
 
       - name: Publish Artifact
         uses: actions/upload-artifact@v7
