@@ -1,0 +1,74 @@
+name: Windows Build 
+
+on:
+  push:
+    branches:
+      - 'kk/gha'
+  workflow_dispatch:
+
+jobs:
+  build-qax-win64:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@v0.9.5
+        with:
+          cache: true
+          working-directory: install
+
+      - name: Dump Env
+        run: |
+          cd install
+          pixi list
+
+      - name: Policy
+        id: policy
+        shell: bash
+        run: |
+          V="$(pixi list| awk '/^hyo2-qax /{print $2}')"
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+
+          echo "dist=qax_dist_v${V}" >> "$GITHUB_OUTPUT"
+          echo "dist_path=install/dist/qax" >> "$GITHUB_OUTPUT"
+
+          echo "installer=qax_setup_v${V}.exe" >> "$GITHUB_OUTPUT"
+          echo "installer_path=install/qax_setup_v${V}.exe" >> "$GITHUB_OUTPUT"
+
+      - name: PyInstaller
+        run: |
+          cd install
+          pixi run pyinstaller --clean -y cli.spec
+
+      - name: ISCC
+        env:
+          VERSION: ${{ steps.policy.outputs.version }}
+        run: |
+          cd install
+          ISCC qax.iss
+
+      - name: Inspect Results
+        run: |
+          cd install
+          dir
+          tree /F /A dist/
+
+      - name: Upload QAX Windows distribution
+        uses: actions/upload-artifact@v7
+        with:
+           name: ${{ steps.policy.outputs.dist }}
+           path: ${{ steps.policy.outputs.dist_path }}
+           retention-days: 6
+
+      - name: Upload QAX Windows installer
+        uses: actions/upload-artifact@v7
+        with:
+           name: ${{ steps.policy.outputs.installer }}
+           path: ${{ steps.policy.outputs.installer_path }}
+           archive: false
+           retention-days: 6
+
+
