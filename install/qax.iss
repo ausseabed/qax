@@ -6,14 +6,13 @@
 #define MyAppPublisher "AusSeabed Development Team"
 #define MyAppURL "https://github.com/ausseabed/qax"
 #define MyAppVersion GetEnv("VERSION")
-#define WorkDir GetEnv("WORKDIR")
 
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{F5F82CC6-C6A6-4E88-B13B-9709FB7D79AB}
+AppId={{F5F82CC6-C6A6-4E88-B13B-9709FB7D79AB}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -23,17 +22,17 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-LicenseFile={#WorkDir}\dist\qax\_internal\hyo2\qax\app\media\LICENSE
+LicenseFile=..\LICENSE
 OutputBaseFilename=qax_setup_v{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
-OutputDir={#WorkDir}
+OutputDir=.
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "..\dist\qax\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+Source: "dist\qax\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 
 [Icons]
 Name: "{group}\QAX"; Filename: "{app}\qax.exe"; WorkingDir: "{app}"; IconFilename: "{app}\qax.exe"

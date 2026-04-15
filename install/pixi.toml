@@ -1,0 +1,12 @@
+[workspace]
+channels = [
+    "https://prefix.dev/kk-test",
+    "https://prefix.dev/conda-forge", 
+]
+platforms = ["win-64", "linux-64", "osx-arm64"]
+
+## These are environment dependencies for the workspace test env
+[dependencies]
+hyo2-qax = "==3.2.5rc5" 
+pyinstaller = ">=6.19.0,<7"
+python = "=3.11" # PySide2 didn't work for 3.12 on a mac at least
