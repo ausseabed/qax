@@ -15,7 +15,32 @@ on:
   workflow_dispatch:
 
 jobs:
+  policy:
+    runs-on: ubuntu-latest
+    outputs:
+      # dev|release (tags or main|develop)
+      mode: ${{ steps.eval.outputs.mode }}
+
+    steps:
+      - id: eval
+        shell: bash
+        run: |
+          MODE="dev"
+
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            MODE="release"
+          fi
+
+          if [[ "$GITHUB_REF_TYPE" == "branch" ]]; then
+            if [[ "$GITHUB_REF_NAME" == "main" || "$GITHUB_REF_NAME" == "develop" ]]; then
+              MODE="release"
+            fi
+          fi
+
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "Resolved build mode: $MODE"
   build:
+    needs: policy
     runs-on: "ubuntu-latest" 
 
     steps:
@@ -40,6 +65,8 @@ jobs:
           archive: false
 
   build-pdf:
+    needs: policy
+    if: needs.policy.outputs.mode == 'release'
     runs-on: "ubuntu-latest" 
 
     steps:
