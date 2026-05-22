@@ -1,7 +1,6 @@
 from ausseabed.qajson.model import QajsonRoot
 from PySide2 import QtCore, QtWidgets
 from PySide2.QtWidgets import QSizePolicy
-from typing import NoReturn
 import logging
 import os
 
@@ -105,7 +104,7 @@ class MainTab(QtWidgets.QWidget):
     def _on_file_group_files_removed(self, file_group):
         self.check_inputs_changed.emit()
 
-    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+    def update_ui(self, qajson: QajsonRoot) -> None:
         self.profile_selection.update_ui(qajson)
         self.file_group_selection.update_ui(qajson)
 

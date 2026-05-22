@@ -1,4 +1,4 @@
-from typing import List, NoReturn, Callable
+from typing import List, Callable
 
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference
 from ausseabed.qajson.model import QajsonRoot
@@ -28,7 +28,7 @@ class PlaceholderQaxPlugin(QaxCheckToolPlugin):
             self,
             qajson: QajsonRoot,
             progress_callback: Callable = None
-    ) -> NoReturn:
+    ) -> None:
         pass
 
     def stop(self):

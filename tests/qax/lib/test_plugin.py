@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, NoReturn, List
+from typing import Dict, List
 import unittest
 
 from hyo2.qax.lib.config import QaxConfigCheckTool, QaxConfigProfile
@@ -50,7 +50,7 @@ class MyPlugin(QaxCheckToolPlugin):
     def checks(self) -> List[QaxCheckReference]:
         return self._check_references
 
-    def run(self, qajson: Dict) -> NoReturn:
+    def run(self, qajson: Dict) -> None:
         pass
 
 
@@ -82,7 +82,7 @@ class MyOtherPlugin(QaxCheckToolPlugin):
     def checks(self) -> List[QaxCheckReference]:
         return self._check_references
 
-    def run(self, qajson: Dict) -> NoReturn:
+    def run(self, qajson: Dict) -> None:
         pass
 
 

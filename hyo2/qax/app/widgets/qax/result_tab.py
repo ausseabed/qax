@@ -1,7 +1,7 @@
 from ausseabed.qajson.model import QajsonRoot
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QSizePolicy
-from typing import Optional, NoReturn
+from typing import Optional
 import json
 import logging
 
@@ -146,15 +146,15 @@ class ResultTab(QtWidgets.QWidget):
         return self._qa_json
 
     @qa_json.setter
-    def qa_json(self, value: QajsonRoot) -> NoReturn:
+    def qa_json(self, value: QajsonRoot) -> None:
         self._qa_json = value
         self._update()
 
-    def _on_qa_json_changed(self, qa_json: QajsonRoot) -> NoReturn:
+    def _on_qa_json_changed(self, qa_json: QajsonRoot) -> None:
         self._qa_json = qa_json
         self._update()
 
-    def _update(self) -> NoReturn:
+    def _update(self) -> None:
         """ Updates the user interface based on the qa_json
         """
         if not self.prj.is_qajson_valid():

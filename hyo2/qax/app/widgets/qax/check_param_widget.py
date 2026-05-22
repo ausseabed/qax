@@ -1,6 +1,5 @@
 from ausseabed.qajson.model import QajsonParam
 from PySide2 import QtCore, QtGui, QtWidgets
-from typing import NoReturn
 
 from hyo2.qax.app.gui_settings import GuiSettings
 
@@ -50,13 +49,13 @@ class CheckParamWidget(QtWidgets.QWidget):
             "Must implement in param function of child class to return "
             "correct value type within an QajsonParam")
 
-    def _on_edited(self, *args, **kwargs) -> NoReturn:
+    def _on_edited(self, *args, **kwargs) -> None:
         sender = self.sender()
         validation_color = self.check_state_color(sender)
         self._set_validation_color(validation_color)
         self._raise_value_changed(self.param())
 
-    def _raise_value_changed(self, param: QajsonParam) -> NoReturn:
+    def _raise_value_changed(self, param: QajsonParam) -> None:
         self.value_changed.emit(param)
 
     @property

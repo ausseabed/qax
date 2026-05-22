@@ -1,7 +1,7 @@
 from ausseabed.qajson.model import QajsonRoot
 from PySide2 import QtCore, QtWidgets
 from PySide2.QtWidgets import QSizePolicy
-from typing import NoReturn, Any
+from typing import Any
 import logging
 
 from hyo2.qax.app.gui_settings import GuiSettings
@@ -128,7 +128,7 @@ class PluginTab(QtWidgets.QWidget):
 
         self.layout_checks.addStretch(1)
 
-    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+    def update_ui(self, qajson: QajsonRoot) -> None:
         for check_widget in self.check_widgets:
             check_widget.update_ui(qajson)
 
