@@ -4,8 +4,8 @@ from PySide2 import QtCore, QtGui, QtWidgets
 from hyo2.qax.app.gui_settings import GuiSettings
 
 
-def get_param_widget(param: QajsonParam, parent=None) -> 'CheckParamWidget':
-    """ Returns a `CheckParamWidget` of the correct type for the given
+def get_param_widget(param: QajsonParam, parent=None) -> "CheckParamWidget":
+    """Returns a `CheckParamWidget` of the correct type for the given
     param. Factory method.
     """
     # todo: implementation here will need to change to support more advanced
@@ -27,7 +27,7 @@ def get_param_widget(param: QajsonParam, parent=None) -> 'CheckParamWidget':
 
 
 class CheckParamWidget(QtWidgets.QWidget):
-    """ base class for all CheckParamWidgets. These show the parameter details
+    """base class for all CheckParamWidgets. These show the parameter details
     to the user, allow modification, and perform validation of user entered
     data.
     """
@@ -42,12 +42,13 @@ class CheckParamWidget(QtWidgets.QWidget):
         self.label_min_width = 200
 
     def param(self) -> QajsonParam:
-        ''' Will return valid QajsonParam if user has entered valid data, otherwise
+        """Will return valid QajsonParam if user has entered valid data, otherwise
         None for invalid data.
-        '''
+        """
         raise NotImplementedError(
             "Must implement in param function of child class to return "
-            "correct value type within an QajsonParam")
+            "correct value type within an QajsonParam"
+        )
 
     def _on_edited(self, *args, **kwargs) -> None:
         sender = self.sender()
@@ -78,9 +79,9 @@ class CheckParamWidget(QtWidgets.QWidget):
             return None
         state = validator.validate(sender.text(), 0)[0]
         if state == QtGui.QValidator.Acceptable:
-            color = '#c4df9b'  # green
+            color = "#c4df9b"  # green
         else:
-            color = '#f6989d'  # red
+            color = "#f6989d"  # red
         return color
 
     def _set_validation_color(self, color):
@@ -90,8 +91,7 @@ class CheckParamWidget(QtWidgets.QWidget):
 
 
 class CheckParamStringWidget(CheckParamWidget):
-    """ Supports parameters with string value types
-    """
+    """Supports parameters with string value types"""
 
     def __init__(self, param: QajsonParam, parent=None):
         super().__init__(param, parent=parent)
@@ -114,24 +114,18 @@ class CheckParamStringWidget(CheckParamWidget):
     def param(self) -> QajsonParam:
         if len(self.lineedit_value.text()) == 0:
             return None
-        return QajsonParam(
-            name=self._param.name,
-            value=self.lineedit_value.text()
-        )
+        return QajsonParam(name=self._param.name, value=self.lineedit_value.text())
 
     @CheckParamWidget.value.setter
     def value(self, value):
         self.lineedit_value.setText(str(value))
 
     def _set_validation_color(self, color):
-        self.lineedit_value.setStyleSheet(
-            f"QLineEdit {{ background-color: {color} }}"
-        )
+        self.lineedit_value.setStyleSheet(f"QLineEdit {{ background-color: {color} }}")
 
 
 class CheckParamIntWidget(CheckParamWidget):
-    """ Supports parameters with int value types
-    """
+    """Supports parameters with int value types"""
 
     def __init__(self, param: QajsonParam, parent=None):
         super().__init__(param, parent=parent)
@@ -156,24 +150,18 @@ class CheckParamIntWidget(CheckParamWidget):
     def param(self) -> QajsonParam:
         if len(self.lineedit_value.text()) == 0:
             return None
-        return QajsonParam(
-            name=self._param.name,
-            value=int(self.lineedit_value.text())
-        )
+        return QajsonParam(name=self._param.name, value=int(self.lineedit_value.text()))
 
     @CheckParamWidget.value.setter
     def value(self, value):
         self.lineedit_value.setText(str(value))
 
     def _set_validation_color(self, color):
-        self.lineedit_value.setStyleSheet(
-            f"QLineEdit {{ background-color: {color} }}"
-        )
+        self.lineedit_value.setStyleSheet(f"QLineEdit {{ background-color: {color} }}")
 
 
 class CheckParamBoolWidget(CheckParamWidget):
-    """ Supports parameters with bool value types
-    """
+    """Supports parameters with bool value types"""
 
     def __init__(self, param: QajsonParam, parent=None):
         super().__init__(param, parent=parent)
@@ -195,10 +183,7 @@ class CheckParamBoolWidget(CheckParamWidget):
         hbox.addWidget(self.checkbox)
 
     def param(self) -> QajsonParam:
-        return QajsonParam(
-            name=self._param.name,
-            value=self.checkbox.isChecked()
-        )
+        return QajsonParam(name=self._param.name, value=self.checkbox.isChecked())
 
     @CheckParamWidget.value.setter
     def value(self, value):
@@ -206,8 +191,7 @@ class CheckParamBoolWidget(CheckParamWidget):
 
 
 class CheckParamFloatWidget(CheckParamWidget):
-    """ Supports parameters with int value types
-    """
+    """Supports parameters with int value types"""
 
     def __init__(self, param: QajsonParam, parent=None):
         super().__init__(param, parent=parent)
@@ -233,8 +217,7 @@ class CheckParamFloatWidget(CheckParamWidget):
         if len(self.lineedit_value.text()) == 0:
             return None
         return QajsonParam(
-            name=self._param.name,
-            value=float(self.lineedit_value.text())
+            name=self._param.name, value=float(self.lineedit_value.text())
         )
 
     @CheckParamWidget.value.setter
@@ -242,14 +225,11 @@ class CheckParamFloatWidget(CheckParamWidget):
         self.lineedit_value.setText(str(value))
 
     def _set_validation_color(self, color):
-        self.lineedit_value.setStyleSheet(
-            f"QLineEdit {{ background-color: {color} }}"
-        )
+        self.lineedit_value.setStyleSheet(f"QLineEdit {{ background-color: {color} }}")
 
 
 class CheckParamUnknownWidget(CheckParamWidget):
-    """ Supports parameters with string value types
-    """
+    """Supports parameters with string value types"""
 
     def __init__(self, param: QajsonParam, parent=None):
         super().__init__(param, parent=parent)
@@ -258,17 +238,13 @@ class CheckParamUnknownWidget(CheckParamWidget):
         hbox.setContentsMargins(0, 0, 0, 0)
         self.setLayout(hbox)
 
-        label_name = QtWidgets.QLabel(
-            "Unknown param type: {}".format(self._param.name))
+        label_name = QtWidgets.QLabel("Unknown param type: {}".format(self._param.name))
         label_name.setMinimumWidth(self.label_min_width)
         label_name.setStyleSheet(GuiSettings.stylesheet_check_param_name())
         hbox.addWidget(label_name)
 
     def param(self) -> QajsonParam:
-        return QajsonParam(
-            name=self._param.name,
-            value=None
-        )
+        return QajsonParam(name=self._param.name, value=None)
 
     @CheckParamWidget.value.setter
     def value(self, value):
@@ -276,8 +252,7 @@ class CheckParamUnknownWidget(CheckParamWidget):
 
 
 class CheckParamOptionsWidget(CheckParamWidget):
-    """ Supports parameters with string value types
-    """
+    """Supports parameters with string value types"""
 
     def __init__(self, param: QajsonParam, parent=None):
         super().__init__(param, parent=parent)
@@ -294,8 +269,7 @@ class CheckParamOptionsWidget(CheckParamWidget):
 
         self.cb_value = QtWidgets.QComboBox()
         self.cb_value.setSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding,
-            QtWidgets.QSizePolicy.Preferred
+            QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred
         )
         for option in param.options:
             self.cb_value.addItem(str(option), option)
@@ -307,8 +281,7 @@ class CheckParamOptionsWidget(CheckParamWidget):
     def param(self) -> QajsonParam:
         currentIndex = self.cb_value.currentIndex()
         return QajsonParam(
-            name=self._param.name,
-            value=self.cb_value.itemData(currentIndex)
+            name=self._param.name, value=self.cb_value.itemData(currentIndex)
         )
 
     @CheckParamWidget.value.setter

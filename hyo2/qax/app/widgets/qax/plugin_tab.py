@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 class PluginTab(QtWidgets.QWidget):
-
     plugin_changed = QtCore.Signal(QaxCheckToolPlugin)
 
     def __init__(self, parent_win, prj: QAXProject, plugin: QaxCheckToolPlugin):
@@ -43,8 +42,7 @@ class PluginTab(QtWidgets.QWidget):
             self.vbox.addWidget(label_desc)
 
         self.groupbox_checks = QtWidgets.QGroupBox("Checks")
-        self.groupbox_checks.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.groupbox_checks.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.vbox.addWidget(self.groupbox_checks)
 
         layout_gb_checks = QtWidgets.QVBoxLayout()
@@ -54,7 +52,8 @@ class PluginTab(QtWidgets.QWidget):
         self.scrollarea_checks = QtWidgets.QScrollArea()
         self.scrollarea_checks.setWidgetResizable(True)
         self.scrollarea_checks.setHorizontalScrollBarPolicy(
-            QtCore.Qt.ScrollBarAlwaysOff)
+            QtCore.Qt.ScrollBarAlwaysOff
+        )
         self.scrollarea_checks.setStyleSheet("QScrollArea { border: none;}")
         layout_gb_checks.addWidget(self.scrollarea_checks)
 
@@ -66,19 +65,22 @@ class PluginTab(QtWidgets.QWidget):
     def _on_check_changed(self, check_reference: QaxCheckReference):
         self.plugin_changed.emit(self.plugin)
 
-
     def get_check_ids_and_params(self):
-        """ Returns a list of tuples. First element of each tuple is the check
+        """Returns a list of tuples. First element of each tuple is the check
         id, second element is the list of params for the check. Information is
         returned in this manner to support updating qa json.
         """
         check_ids_and_params = [
             check_widget.get_check_id_and_params()
-            for check_widget in self.check_widgets]
+            for check_widget in self.check_widgets
+        ]
         return check_ids_and_params
 
-    def set_selected_checks(self, checks: list[QaxCheckReference], standard: QaxConfigSpecification|None = None):
-
+    def set_selected_checks(
+        self,
+        checks: list[QaxCheckReference],
+        standard: QaxConfigSpecification | None = None,
+    ):
         # cache info users may have entered into the plugin params
         # just because they've removed a check doesn't mean we should
         # throw away info that was given to other checks that haven't been
@@ -109,7 +111,9 @@ class PluginTab(QtWidgets.QWidget):
                 no_checks_added = False
 
         if no_checks_added:
-            nothing_label = QtWidgets.QLabel("No checks have been selected for this plugin")
+            nothing_label = QtWidgets.QLabel(
+                "No checks have been selected for this plugin"
+            )
             self.layout_checks.addWidget(nothing_label)
 
         # set state of check widgets to what they were before the UI was rebuilt

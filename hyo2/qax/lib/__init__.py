@@ -4,6 +4,8 @@ from hyo2.qax import __version__
 
 """ Simple object that allows assignment of any attributes
 """
+
+
 class InfoObject(object):
     def __setitem__(self, key, value):
         setattr(self, key, value)
@@ -33,5 +35,5 @@ lib_info.lib_dep_dict = {
     "gdal": "osgeo",
     "numpy": "numpy",
     "matplotlib": "matplotlib",
-    "PySide2": "PySide2"
+    "PySide2": "PySide2",
 }

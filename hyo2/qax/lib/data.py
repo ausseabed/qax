@@ -3,8 +3,7 @@ from typing import List
 import os
 
 
-class RasterBandInfo():
-
+class RasterBandInfo:
     def __init__(self, index: int, name: str, data_type: str):
         self.index: int = index
         self.name: str = name
@@ -18,8 +17,7 @@ class RasterBandInfo():
             return f"{self.index} ({self.name})"
 
 
-class RasterFileInfo():
-
+class RasterFileInfo:
     def __init__(self):
         # is a valid raster input file
         self.valid = False
@@ -62,10 +60,7 @@ class RasterFileInfo():
         band_details_str = "\n".join(band_details)
 
         _, fn = os.path.split(self.filename)
-        msg = (
-            f"Filename: {fn}\n"
-            f"  Size: {self.size_x}, {self.size_y}\n"
-        )
+        msg = f"Filename: {fn}\n  Size: {self.size_x}, {self.size_y}\n"
         msg += band_details_str
 
         return msg

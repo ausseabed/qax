@@ -13,24 +13,22 @@ from hyo2.qax.lib.logging import setup_logging
 
 
 logger = logging.getLogger(__name__)
-qt_logger = logging.getLogger('qt')
+qt_logger = logging.getLogger("qt")
+
 
 def qt_custom_handler(
-        error_type: QtCore.QtMsgType,
-        error_context: QtCore.QMessageLogContext,
-        message: str
-    ):
+    error_type: QtCore.QtMsgType, error_context: QtCore.QMessageLogContext, message: str
+):
     if "Cannot read property 'id' of null" in message:
         return
     if "The event loop is already running" in message:
         return
 
-    qt_logger.info(
-        f"Qt error: {error_type} [{error_context}] -> {message}"
-    )
+    qt_logger.info(f"Qt error: {error_type} [{error_context}] -> {message}")
 
     for line in traceback.format_stack():
         qt_logger.debug(f"- {line.strip()}")
+
 
 QtCore.qInstallMessageHandler(qt_custom_handler)
 

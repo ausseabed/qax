@@ -3,9 +3,20 @@ import os
 import time
 from typing import List, Dict
 from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtWidgets import QLineEdit, \
-    QPushButton, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QSizePolicy, QFileDialog, QPlainTextEdit, QProgressBar, \
-    QFrame, QCheckBox
+from PySide2.QtWidgets import (
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGroupBox,
+    QLabel,
+    QSizePolicy,
+    QFileDialog,
+    QPlainTextEdit,
+    QProgressBar,
+    QFrame,
+    QCheckBox,
+)
 import multiprocessing as mp
 
 from hyo2.qax.app.gui_settings import GuiSettings
@@ -13,9 +24,14 @@ from hyo2.qax.app import gui_settings_const
 
 from hyo2.qax.app import qta
 from hyo2.qax.lib.check_options import CheckOption
-from hyo2.qax.lib.check_executor import MultiprocessCheckExecutor, \
-    ProgressQueueItem, CheckToolStartedQueueItem, StatusQueueItem, \
-    QajsonChangedQueueItem, ChecksCompleteQueueItem
+from hyo2.qax.lib.check_executor import (
+    MultiprocessCheckExecutor,
+    ProgressQueueItem,
+    CheckToolStartedQueueItem,
+    StatusQueueItem,
+    QajsonChangedQueueItem,
+    ChecksCompleteQueueItem,
+)
 from ausseabed.qajson.model import QajsonRoot
 from hyo2.qax.lib.project import QAXProject
 
@@ -23,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 class QtCheckExecutorThread(QtCore.QThread):
-    """ QThread implementation that starts, and then watched a check executor
+    """QThread implementation that starts, and then watched a check executor
     that is run in another thread via Python's multiprocessing module. Running
     the checks from this run method thread does allow the UI to update while
     the check run, however it is still restricted to running on a single process.
@@ -38,18 +54,16 @@ class QtCheckExecutorThread(QtCore.QThread):
     log_recieved = QtCore.Signal(logging.LogRecord)
 
     def __init__(
-            self,
-            qa_json: QajsonRoot,
-            profile_name: str,
-            check_tool_class_names: List[str]):
+        self,
+        qa_json: QajsonRoot,
+        profile_name: str,
+        check_tool_class_names: List[str],
+    ):
         super(QtCheckExecutorThread, self).__init__()
 
         self.queue = mp.Queue()
         self.mp_checkexecutor = MultiprocessCheckExecutor(
-            qa_json,
-            profile_name,
-            check_tool_class_names,
-            self.queue
+            qa_json, profile_name, check_tool_class_names, self.queue
         )
         self.mp_running = False
         self.qa_json = qa_json
@@ -72,7 +86,7 @@ class QtCheckExecutorThread(QtCore.QThread):
                     tpl = (
                         queue_item.check_tool_class_name,
                         queue_item.check_number,
-                        queue_item.total_check_count
+                        queue_item.total_check_count,
                     )
                     self.check_tool_started.emit(tpl)
                 elif isinstance(queue_item, StatusQueueItem):
@@ -97,7 +111,6 @@ class QtCheckExecutorThread(QtCore.QThread):
 
 
 class RunTab(QtWidgets.QWidget):
-
     run_checks = QtCore.Signal()
 
     def __init__(self, prj: QAXProject):
@@ -115,79 +128,82 @@ class RunTab(QtWidgets.QWidget):
         self.set_run_stop_buttons_enabled(False)
 
         self.log_formatter = logging.Formatter(
-            fmt='%(asctime)s %(levelname)s %(message)s',
-            datefmt='%H:%M:%S'
+            fmt="%(asctime)s %(levelname)s %(message)s",
+            datefmt="%H:%M:%S",
         )
 
     def _add_check_outputs(self):
         co_groupbox = QGroupBox("Check outputs")
-        co_groupbox.setSizePolicy(
-            QSizePolicy.Expanding,
-            QSizePolicy.Fixed)
+        co_groupbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         co_layout = QVBoxLayout()
         co_layout.setSpacing(16)
         co_groupbox.setLayout(co_layout)
 
         self.qajson_spatial_checkbox = QCheckBox(
-            "Include summary spatial output in QAJSON. "
-            "Supports QAX visualisation.")
+            "Include summary spatial output in QAJSON. Supports QAX visualisation."
+        )
 
         qajson_spatial_outputs = GuiSettings.settings().value(
-            gui_settings_const.spatial_outputs_qajson,
-            True,
-            bool
+            gui_settings_const.spatial_outputs_qajson, True, bool
         )
-        checkstate = QtCore.Qt.CheckState.Checked if qajson_spatial_outputs else QtCore.Qt.CheckState.Unchecked
+        checkstate = (
+            QtCore.Qt.CheckState.Checked
+            if qajson_spatial_outputs
+            else QtCore.Qt.CheckState.Unchecked
+        )
         self.qajson_spatial_checkbox.setCheckState(checkstate)
+
         def set_check_setting():
             val = self.qajson_spatial_checkbox.isChecked()
             GuiSettings.settings().setValue(
-                gui_settings_const.spatial_outputs_qajson,
-                val
+                gui_settings_const.spatial_outputs_qajson, val
             )
-        self.qajson_spatial_checkbox.stateChanged.connect(
-            set_check_setting
-        )
+
+        self.qajson_spatial_checkbox.stateChanged.connect(set_check_setting)
         co_layout.addWidget(self.qajson_spatial_checkbox)
 
         export_layout = QVBoxLayout()
         export_layout.setSpacing(4)
         self.export_spatial_checkbox = QCheckBox(
             "Export detailed spatial outputs to file. "
-            "Supports visualisation in other geospatial applications.")
-        detailed_spatial_outputs = GuiSettings.settings().value(
-            gui_settings_const.spatial_outputs_detailed,
-            False,
-            bool
+            "Supports visualisation in other geospatial applications."
         )
-        checkstate = QtCore.Qt.CheckState.Checked if detailed_spatial_outputs else QtCore.Qt.CheckState.Unchecked
+        detailed_spatial_outputs = GuiSettings.settings().value(
+            gui_settings_const.spatial_outputs_detailed, False, bool
+        )
+        checkstate = (
+            QtCore.Qt.CheckState.Checked
+            if detailed_spatial_outputs
+            else QtCore.Qt.CheckState.Unchecked
+        )
         self.export_spatial_checkbox.setCheckState(checkstate)
         self.export_spatial_checkbox.stateChanged.connect(
-            self._on_export_spatial_changed)
+            self._on_export_spatial_changed
+        )
         export_layout.addWidget(self.export_spatial_checkbox)
 
         output_folder_layout = QHBoxLayout()
         output_folder_layout.setSpacing(4)
         output_folder_layout.addSpacerItem(QtWidgets.QSpacerItem(37, 20))
-        self.output_folder_label = QLabel(
-            "Detailed spatial output folder location:")
+        self.output_folder_label = QLabel("Detailed spatial output folder location:")
         output_folder_layout.addWidget(self.output_folder_label)
         self.output_folder_input = QLineEdit()
         self.output_folder_input.setText(
-            GuiSettings.settings().value(gui_settings_const.spatial_outputs_folder))
+            GuiSettings.settings().value(gui_settings_const.spatial_outputs_folder)
+        )
         self.output_folder_input.setMinimumWidth(300)
         self.output_folder_input.setSizePolicy(
-            QSizePolicy.Expanding,
-            QSizePolicy.Expanding)
+            QSizePolicy.Expanding, QSizePolicy.Expanding
+        )
         output_folder_layout.addWidget(self.output_folder_input)
 
         self.open_output_folder_button = QPushButton()
         output_folder_layout.addWidget(self.open_output_folder_button)
-        self.open_output_folder_button.setIcon(qta.icon('fa6s.folder-open'))
-        self.open_output_folder_button.setToolTip(
-            "Select file containing data")
+        self.open_output_folder_button.setIcon(qta.icon("fa6s.folder-open"))
+        self.open_output_folder_button.setToolTip("Select file containing data")
         self.open_output_folder_button.clicked.connect(
-            self._click_open_spatial_export_folder)
+            self._click_open_spatial_export_folder
+        )
         export_layout.addLayout(output_folder_layout)
 
         co_layout.addLayout(export_layout)
@@ -200,11 +216,13 @@ class RunTab(QtWidgets.QWidget):
             self,
             "Select folder for spatial outputs",
             GuiSettings.settings().value(gui_settings_const.spatial_outputs_folder),
-            QFileDialog.ShowDirsOnly)
+            QFileDialog.ShowDirsOnly,
+        )
 
         if os.path.exists(output_folder):
             GuiSettings.settings().setValue(
-                gui_settings_const.spatial_outputs_folder, output_folder)
+                gui_settings_const.spatial_outputs_folder, output_folder
+            )
 
         self.output_folder_input.setText(output_folder)
 
@@ -216,15 +234,12 @@ class RunTab(QtWidgets.QWidget):
 
         val = self.export_spatial_checkbox.isChecked()
         GuiSettings.settings().setValue(
-            gui_settings_const.spatial_outputs_detailed,
-            val
+            gui_settings_const.spatial_outputs_detailed, val
         )
 
     def _add_process(self):
         process_groupbox = QGroupBox("Process")
-        process_groupbox.setSizePolicy(
-            QSizePolicy.Expanding,
-            QSizePolicy.Expanding)
+        process_groupbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         process_layout = QVBoxLayout()
         process_layout.setSpacing(0)
         process_groupbox.setLayout(process_layout)
@@ -244,7 +259,7 @@ class RunTab(QtWidgets.QWidget):
         self.run_button.setText("Run")
         self.run_button.setToolTip("Start check execution")
         self.run_button.setFixedWidth(100)
-        run_icon = qta.icon('fa6s.play', color='green')
+        run_icon = qta.icon("fa6s.play", color="green")
         self.run_button.setIcon(run_icon)
         self.run_button.clicked.connect(self._click_run)
         hbox.addWidget(self.run_button)
@@ -254,7 +269,7 @@ class RunTab(QtWidgets.QWidget):
         self.stop_button.setText("Stop")
         self.stop_button.setToolTip("Stop check execution")
         self.stop_button.setFixedWidth(100)
-        stop_icon = qta.icon('fa6s.stop', color='red')
+        stop_icon = qta.icon("fa6s.stop", color="red")
         self.stop_button.setIcon(stop_icon)
         self.stop_button.clicked.connect(self._click_stop)
         hbox.addWidget(self.stop_button)
@@ -263,9 +278,7 @@ class RunTab(QtWidgets.QWidget):
         self.progress_bar.setTextVisible(True)
         self.progress_bar.setAlignment(QtCore.Qt.AlignCenter)
         self.progress_bar.setValue(0)
-        self.progress_bar.setSizePolicy(
-            QSizePolicy.Expanding,
-            QSizePolicy.Expanding)
+        self.progress_bar.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         pbar_hbox.addLayout(hbox)
         pbar_hbox.addWidget(self.progress_bar)
@@ -294,42 +307,37 @@ class RunTab(QtWidgets.QWidget):
 
         self.warning_frame = QFrame()
         self.warning_frame.setVisible(False)
-        self.warning_frame.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.warning_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         hbox = QHBoxLayout()
 
-        warning_icon_widget = qta.IconWidget('fa6s.triangle-exclamation', color='red')
+        warning_icon_widget = qta.IconWidget("fa6s.triangle-exclamation", color="red")
         warning_icon_widget.setIconSize(QtCore.QSize(48, 48))
         warning_icon_widget.update()
         hbox.addWidget(warning_icon_widget)
         warning_label = QLabel(
             "Grid Transformer did not complete successfully. Please refer to "
-            "log output.")
+            "log output."
+        )
         warning_label.setStyleSheet("QLabel { color: red; }")
         warning_label.setWordWrap(True)
-        warning_label.setSizePolicy(
-            QSizePolicy.Expanding,
-            QSizePolicy.Preferred)
+        warning_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         hbox.addWidget(warning_label)
         self.warning_frame.setLayout(hbox)
         process_layout.addWidget(self.warning_frame)
 
         self.success_frame = QFrame()
         self.success_frame.setVisible(False)
-        self.success_frame.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.success_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         hbox = QHBoxLayout()
 
-        success_icon_widget = qta.IconWidget('fa6s.check', color='green')
+        success_icon_widget = qta.IconWidget("fa6s.check", color="green")
         success_icon_widget.setIconSize(QtCore.QSize(48, 48))
         success_icon_widget.update()
         hbox.addWidget(success_icon_widget)
         success_label = QLabel("All checks completed successfully.")
         success_label.setStyleSheet("QLabel { color: green; }")
         success_label.setWordWrap(True)
-        success_label.setSizePolicy(
-            QSizePolicy.Expanding,
-            QSizePolicy.Preferred)
+        success_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         hbox.addWidget(success_label)
         self.success_frame.setLayout(hbox)
         process_layout.addWidget(self.success_frame)
@@ -347,9 +355,7 @@ class RunTab(QtWidgets.QWidget):
         doc.setDefaultFont(font)
 
         self.log_messages.setReadOnly(True)
-        self.log_messages.setSizePolicy(
-            QSizePolicy.Expanding,
-            QSizePolicy.Expanding)
+        self.log_messages.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         log_layout.addWidget(self.log_messages)
         process_layout.addLayout(log_layout)
 
@@ -377,8 +383,7 @@ class RunTab(QtWidgets.QWidget):
 
         self.check_executor = check_executor
         self.check_executor.options = self.get_options()
-        self.check_executor.check_tool_started.connect(
-            self._on_check_tool_started)
+        self.check_executor.check_tool_started.connect(self._on_check_tool_started)
         self.check_executor.progress.connect(self._on_progress)
         self.check_executor.qajson_updated.connect(self._on_qajson_update)
         self.check_executor.checks_complete.connect(self._on_checks_complete)
@@ -387,13 +392,13 @@ class RunTab(QtWidgets.QWidget):
         self.check_executor.start()
 
     def get_options(self) -> Dict:
-        ''' Gets a list of options based on user entered data. eg; the spatial
+        """Gets a list of options based on user entered data. eg; the spatial
         output specifications.
-        '''
+        """
         options = {
             CheckOption.spatial_output_qajson: self.qajson_spatial_checkbox.isChecked(),
             CheckOption.spatial_output_export: self.export_spatial_checkbox.isChecked(),
-            CheckOption.spatial_output_export_location: self.output_folder_input.text()
+            CheckOption.spatial_output_export_location: self.output_folder_input.text(),
         }
 
         # check if the user has provided non-default values for the processing
@@ -427,14 +432,14 @@ class RunTab(QtWidgets.QWidget):
     @QtCore.Slot(object)
     def _on_check_tool_started(self, tpl):
         check_tool_name, check_number, total_check_count = tpl
-        self.check_name_text_label.setText("{} ({}/{})".format(
-            check_tool_name, check_number, total_check_count))
+        self.check_name_text_label.setText(
+            "{} ({}/{})".format(check_tool_name, check_number, total_check_count)
+        )
 
     @QtCore.Slot()
     def _on_checks_complete(self):
         run_time = time.perf_counter() - self.start_time
-        self._log_message(
-            f"Execution time for all checks = {run_time:.2f} sec")
+        self._log_message(f"Execution time for all checks = {run_time:.2f} sec")
         self._log_message("\n\n")
 
         self.set_run_stop_buttons_enabled(False)

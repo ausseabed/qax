@@ -40,14 +40,12 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.tab_inputs = MainTab(parent_win=self, prj=self.prj)
         self.tab_inputs.profile_selected.connect(self._on_profile_selected)
         self.tab_inputs.specification_selected.connect(self._on_specification_selected)
-        self.tab_inputs.check_inputs_changed.connect(
-            self._on_update_check_inputs)
-        self.tab_inputs.check_selection_change.connect(
-            self._on_check_selection_change)
+        self.tab_inputs.check_inputs_changed.connect(self._on_update_check_inputs)
+        self.tab_inputs.check_selection_change.connect(self._on_check_selection_change)
         # noinspection PyArgumentList
         self.idx_inputs = self.tabs.insertTab(
-            0, self.tab_inputs,
-            qta.icon('fa6s.copy'), "")
+            0, self.tab_inputs, qta.icon("fa6s.copy"), ""
+        )
 
         self.tabs.setTabToolTip(self.idx_inputs, "QAX")
 
@@ -55,23 +53,21 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.tab_plugins.plugin_changed.connect(self._on_plugin_changed)
         self.tab_plugins.set_selected_checks(self.tab_inputs.selected_checks)
         self.idx_plugins = self.tabs.insertTab(
-            1, self.tab_plugins,
-            qta.icon('ri.list-check-2'), "")
+            1, self.tab_plugins, qta.icon("ri.list-check-2"), ""
+        )
         self.tabs.setTabToolTip(self.idx_plugins, "Plugins")
 
         self.tab_run = RunTab(self.prj)
         self.tab_run.objectName = "tab_run"
         self.tab_run.run_checks.connect(self._on_execute_checks)
-        self.idx_run = self.tabs.insertTab(
-            2, self.tab_run,
-            qta.icon('fa6s.play'), "")
+        self.idx_run = self.tabs.insertTab(2, self.tab_run, qta.icon("fa6s.play"), "")
         self.tabs.setTabToolTip(self.idx_run, "Run Checks")
 
         self.tab_result = ResultTab(self.prj)
         self.tab_result.objectName = "tab_result"
         self.idx_result = self.tabs.insertTab(
-            3, self.tab_result,
-            qta.icon('fa6s.check'), "")
+            3, self.tab_result, qta.icon("fa6s.check"), ""
+        )
         self.tabs.setTabToolTip(self.idx_result, "View check results")
 
         self.tabs.currentChanged.connect(self.change_tabs)
@@ -87,7 +83,10 @@ class QAXWidget(QtWidgets.QTabWidget):
         self.status_message.emit("Initialised", 1000)
 
         def update_specs():
-            self._on_specification_selected(self.tab_inputs.profile_selection.selected_specification)
+            self._on_specification_selected(
+                self.tab_inputs.profile_selection.selected_specification
+            )
+
         QtCore.QTimer.singleShot(0, update_specs)
 
     def _on_plugin_changed(self, plugin: QaxCheckToolPlugin):
@@ -110,6 +109,7 @@ class QAXWidget(QtWidgets.QTabWidget):
             specs = self.profile.specifications
             if len(specs):
                 self.tab_plugins.set_specification(specs[0])
+
         QtCore.QTimer.singleShot(0, update_specs)
 
     def _on_specification_selected(self, specification: QaxConfigSpecification):
@@ -117,15 +117,19 @@ class QAXWidget(QtWidgets.QTabWidget):
         qa_json = self._build_qa_json()
         self.prj.qa_json = qa_json
 
-        self.status_message.emit(f"Parameter values updated to {specification.name} Standard", 2000)
+        self.status_message.emit(
+            f"Parameter values updated to {specification.name} Standard", 2000
+        )
 
     def _on_update_check_inputs(self):
-        """ Read the feature files provided by the user"""
+        """Read the feature files provided by the user"""
         qa_json = self._build_qa_json()
         self.prj.qa_json = qa_json
 
     def _on_check_selection_change(self, checks: list[QaxCheckReference]):
-        self.tab_plugins.set_selected_checks(checks, self.tab_inputs.profile_selection.selected_specification)
+        self.tab_plugins.set_selected_checks(
+            checks, self.tab_inputs.profile_selection.selected_specification
+        )
         qa_json = self._build_qa_json()
         self.prj.qa_json = qa_json
 
@@ -148,8 +152,8 @@ class QAXWidget(QtWidgets.QTabWidget):
             raw_data=None,
             survey_products=None,
         )
-        root.qa.get_or_add_data_level('raw_data')
-        root.qa.get_or_add_data_level('survey_products')
+        root.qa.get_or_add_data_level("raw_data")
+        root.qa.get_or_add_data_level("survey_products")
 
         # for each set of grouped files, loop through all the checks and see if
         # the group of files are suitable for that check. If they are, then add
@@ -166,7 +170,9 @@ class QAXWidget(QtWidgets.QTabWidget):
             for check in self.tab_inputs.selected_checks:
                 if check.supports_files(paths_and_types):
                     data_level = root.qa.get_or_add_data_level(check.data_level)
-                    plugin_check_tool = QaxPlugins.instance().get_plugin_for_check(check.id)
+                    plugin_check_tool = QaxPlugins.instance().get_plugin_for_check(
+                        check.id
+                    )
                     qajson_check = plugin_check_tool.add_check(data_level, check)
                     qajson_inputs = qajson_check.get_or_add_inputs()
                     qajson_inputs.files.extend(file_group_list)
@@ -182,31 +188,25 @@ class QAXWidget(QtWidgets.QTabWidget):
                     for ptab in self.tab_plugins.plugin_tabs
                     if type(ptab.plugin) == type(plugin_check_tool)
                 ),
-                None
+                None,
             )
             if plugin_tab is None:
                 continue
-            
+
             assert plugin_tab is not None
             check_param_details = plugin_tab.get_check_ids_and_params()
             params = next(
-                (
-                    ps
-                    for check_id, ps in check_param_details
-                    if check_id == check.id
-                ),
-                None
+                (ps for check_id, ps in check_param_details if check_id == check.id),
+                None,
             )
             assert plugin_check_tool is not None
-            plugin_check_tool.update_qa_json_input_params(
-                root, check.id, params
-            )
+            plugin_check_tool.update_qa_json_input_params(root, check.id, params)
 
         return root
 
     def _on_execute_checks(self):
-        """ the run checks """
-        logger.debug('executing checks ...')
+        """the run checks"""
+        logger.debug("executing checks ...")
         qa_json = self._build_qa_json()
 
         check_tool_plugin_class_names = [
@@ -217,9 +217,8 @@ class QAXWidget(QtWidgets.QTabWidget):
         check_tool_plugin_class_names = list(set(check_tool_plugin_class_names))
 
         executor = QtCheckExecutorThread(
-            qa_json,
-            self.profile.name,
-            check_tool_plugin_class_names)
+            qa_json, self.profile.name, check_tool_plugin_class_names
+        )
         self.tab_run.run_executor(executor)
 
     def change_tabs(self, index):

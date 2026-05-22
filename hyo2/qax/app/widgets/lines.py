@@ -11,8 +11,7 @@ class QHLine(QFrame):
         self.setFixedHeight(1)
         # self.setFrameShadow(QFrame.Sunken)
 
-        self.setStyleSheet(
-            "QFrame { border: 1px solid rgb(200, 200, 200);}")
+        self.setStyleSheet("QFrame { border: 1px solid rgb(200, 200, 200);}")
         # hbox = QHBoxLayout()
         #
         # self.setLayout(hbox)

@@ -1,6 +1,7 @@
-""" Utility functions and classes to support the use of QAJSON within the QAX
+"""Utility functions and classes to support the use of QAJSON within the QAX
 user interface
 """
+
 from collections import OrderedDict
 from pathlib import Path
 from typing import List, TypeVar, Optional, Tuple
@@ -12,18 +13,16 @@ from ausseabed.qajson.model import QajsonRoot, QajsonInfo
 from hyo2.qax.lib.plugin import QaxProfilePlugins, QaxCheckToolPlugin
 
 # summary type, type for the summary field value
-ST = TypeVar('ST')
+ST = TypeVar("ST")
 
 
-class QajsonSummaryField():
-
+class QajsonSummaryField:
     def __init__(self, name: str, value: ST = None) -> None:
         self.name = name
         self.value = value
 
 
-class QajsonSummarySection():
-
+class QajsonSummarySection:
     def __init__(self, name: str) -> None:
         self.name = name
         self.fields: List[QajsonSummaryField] = []
@@ -32,27 +31,23 @@ class QajsonSummarySection():
         new_field = QajsonSummaryField(field_name)
         self.fields.append(new_field)
         return new_field
-    
+
     def get_or_add_field(self, field_name: str) -> QajsonSummaryField:
-        field = next(
-            (f for f in self.fields if f.name == field_name),
-            None
-        )
+        field = next((f for f in self.fields if f.name == field_name), None)
         if field is None:
             return self.add_field(field_name)
         else:
             return field
 
 
-class QajsonFileSummary():
-
+class QajsonFileSummary:
     def __init__(self, filename) -> None:
         self.filename = filename
         self.sections: List[QajsonSummarySection] = []
 
     @property
     def summary_heading_label(self) -> str:
-        """ Generates a nice name based on the filename for inclusion
+        """Generates a nice name based on the filename for inclusion
         into the summary file.
         Basic logic is as follows.
         1. Identify which character is used to separate tokens in the
@@ -64,7 +59,7 @@ class QajsonFileSummary():
         If there is no separator, then just use the filename without the
         extension.
         """
-        potential_separators = ['-', '_', ' ']
+        potential_separators = ["-", "_", " "]
         name_only = Path(self.filename).stem
         separator = None
         separator_count = 0
@@ -88,13 +83,9 @@ class QajsonFileSummary():
         new_section = QajsonSummarySection(section_name)
         self.sections.append(new_section)
         return new_section
-    
-    def get_or_add_section(self, section_name: str) -> QajsonSummarySection:
 
-        section = next(
-            (s for s in self.sections if s.name == section_name),
-            None
-        )
+    def get_or_add_section(self, section_name: str) -> QajsonSummarySection:
+        section = next((s for s in self.sections if s.name == section_name), None)
         if section is None:
             return self.add_section(section_name)
         else:
@@ -109,14 +100,14 @@ class QajsonFileSummary():
         return clone_fs
 
     def row_labels(self) -> List[Tuple[str, bool]]:
-        """ Generates the list of row labels that should appear in the output
+        """Generates the list of row labels that should appear in the output
         table.
         """
         rows = []
         # the top left corner is blank
 
         for section in self.sections:
-            if section.name == 'header':
+            if section.name == "header":
                 # then there's no label for the header
                 pass
             else:
@@ -128,12 +119,12 @@ class QajsonFileSummary():
         return rows
 
     def row_values(self) -> List[str]:
-        """ Generates the list of row values that should appear in the output
+        """Generates the list of row values that should appear in the output
         table.
         """
         values = []
         for section in self.sections:
-            if section.name == 'header':
+            if section.name == "header":
                 pass
             else:
                 # the blank line where the section label runs across
@@ -145,15 +136,13 @@ class QajsonFileSummary():
         return values
 
 
-class QajsonTableSummaryCheck():
-
+class QajsonTableSummaryCheck:
     def __init__(self, check_info: QajsonInfo) -> None:
         self.check_info = check_info
         self.file_summaries = OrderedDict()
 
 
-class QajsonTableSummary():
-
+class QajsonTableSummary:
     def __init__(self, qajson: QajsonRoot, plugins: QaxProfilePlugins) -> None:
         self.check_summaries = None
         self.qajson = qajson
@@ -161,10 +150,10 @@ class QajsonTableSummary():
 
         # TODO - this list should be included in the ausseabed.qajson
         # pacakge somewhere
-        self.all_data_levels = ['raw_data', 'chart_adequacy', 'survey_products']
+        self.all_data_levels = ["raw_data", "chart_adequacy", "survey_products"]
 
     def get_header_fields(self) -> List[str]:
-        """ Get a list of field that are included in the header section for all
+        """Get a list of field that are included in the header section for all
         files.
         """
         # headers to be included irrespective of the plugins group selected
@@ -176,13 +165,13 @@ class QajsonTableSummary():
         return constant_headers
 
     def initialise_check_list(self) -> None:
-        """ Builds the initial list of all checks that were included
+        """Builds the initial list of all checks that were included
         in the QAJSON
         """
         # build a dictionary of all the checks based on the check ID
         # this will ensure we only have a list of unique checks
         all_checks = OrderedDict()
-        
+
         for dl_name in self.all_data_levels:
             dl = self.qajson.qa.get_data_level(dl_name)
             if dl is None:
@@ -193,10 +182,8 @@ class QajsonTableSummary():
 
         self.check_summaries = all_checks
 
-
     def initialise_file_list(self) -> None:
-        """ Builds a list of all files under each QajsonTableSummaryCheck
-        """
+        """Builds a list of all files under each QajsonTableSummaryCheck"""
         self.all_files = []
 
         for dl_name in self.all_data_levels:
@@ -212,7 +199,9 @@ class QajsonTableSummary():
                 input_file_name = input_file.path
                 if input_file_name not in self.all_files:
                     self.all_files.append(input_file_name)
-                self.check_summaries[check.info.id].file_summaries[input_file_name] = check
+                self.check_summaries[check.info.id].file_summaries[input_file_name] = (
+                    check
+                )
 
     def build_template(self) -> None:
         self.template_file_summary = QajsonFileSummary(None)
@@ -231,12 +220,14 @@ class QajsonTableSummary():
                 sd_list = plugin.get_summary_details(self.qajson)
                 for section_name, field_name in sd_list:
                     section = self.template_file_summary.get_or_add_section(
-                        section_name)
+                        section_name
+                    )
                     section.get_or_add_field(field_name)
 
-    def __get_plugin(self, field_name: str, section_name: str) -> Optional[QaxCheckToolPlugin]:
-        """ Gets a plugin that provides this field value
-        """
+    def __get_plugin(
+        self, field_name: str, section_name: str
+    ) -> Optional[QaxCheckToolPlugin]:
+        """Gets a plugin that provides this field value"""
         for _, check in self.check_summaries.items():
             qajson_check_info = check.check_info
             plugin = self.plugins.get_plugin_for_check(qajson_check_info.id)
@@ -247,13 +238,16 @@ class QajsonTableSummary():
                         return plugin
         return None
 
-    def _get_field_value(self, field_name: str, section_name: str, filename: str) -> object:
+    def _get_field_value(
+        self, field_name: str, section_name: str, filename: str
+    ) -> object:
         plugin = self.__get_plugin(field_name, section_name)
         if plugin is None:
             return "no plugin"
-        value = plugin.get_summary_value(section_name, field_name, filename, self.qajson)
+        value = plugin.get_summary_value(
+            section_name, field_name, filename, self.qajson
+        )
         return value
-
 
     def build(self) -> None:
         self.file_summaries: List[QajsonFileSummary] = []
@@ -266,13 +260,9 @@ class QajsonTableSummary():
                     value = self._get_field_value(field.name, section.name, filename)
                     field.value = value
 
-
-
-
-
     @property
     def rows(self) -> int:
-        """ Gets the number of rows that will be output base on the extracted
+        """Gets the number of rows that will be output base on the extracted
         summary information
         """
         if len(self.file_summaries) < 1:
@@ -281,16 +271,12 @@ class QajsonTableSummary():
 
     @property
     def columns(self) -> int:
-        """ Number of columns in this table
-        """
+        """Number of columns in this table"""
         # number of files plus 1 column to include the labels
         return len(self.file_summaries) + 1
 
 
-
-
-class QajsonExporter():
-
+class QajsonExporter:
     def __init__(self) -> None:
         # name of the exporter
         self.name = None
@@ -300,21 +286,21 @@ class QajsonExporter():
         self.extension = None
 
     def export(qajson: QajsonRoot, file: Path) -> None:
-        """ Exports the `qajson` object to the `file`
-        """
+        """Exports the `qajson` object to the `file`"""
         raise NotImplementedError("Export function must be overwritten")
 
 
 class QajsonExcelExporter(QajsonExporter):
-
     def __init__(self) -> None:
         super().__init__()
         self.name = "Microsoft Excel"
         self.description = "Save QAJSON to Microsoft Excel workbook"
         self.extension = "xlsx"
 
-    def _get_safe_shortname(self, file_summary: QajsonFileSummary, existing_data: List) -> str:
-        """ Ensures there are no duplicate short names included in the orderedDict
+    def _get_safe_shortname(
+        self, file_summary: QajsonFileSummary, existing_data: List
+    ) -> str:
+        """Ensures there are no duplicate short names included in the orderedDict
         that is converted to pandas and then xls. Duplicate names must be avoided
         as the dictionary will simply replace existing entries.
         """
@@ -329,47 +315,48 @@ class QajsonExcelExporter(QajsonExporter):
         else:
             return f"{short_name} ({count})"
 
-
     def _generate_summary_dataframe(
-            self,
-            tableSummary: QajsonTableSummary
-        ) -> pd.DataFrame:
-        """ Generate pandas data frame including summary data for all the
+        self, tableSummary: QajsonTableSummary
+    ) -> pd.DataFrame:
+        """Generate pandas data frame including summary data for all the
         checks and files in this tableSummary
         """
         processed_summaries = []
 
         data = OrderedDict()
         row_label = [rl[0] for rl in tableSummary.template_file_summary.row_labels()]
-        data[''] = row_label
+        data[""] = row_label
         for file_summary in tableSummary.file_summaries:
-            short_filename = self._get_safe_shortname(
-                file_summary, processed_summaries)
+            short_filename = self._get_safe_shortname(file_summary, processed_summaries)
             data[short_filename] = file_summary.row_values()
             processed_summaries.append(file_summary)
 
         df = pd.DataFrame(data)
         return df
 
-    def _write_formatted_file(self, dataFrame: pd.DataFrame, tableSummary: QajsonTableSummary, output_file: Path) -> None:
-        writer = pd.ExcelWriter(
-            output_file,
-            engine='xlsxwriter'
-        )
-        dataFrame.to_excel(writer, sheet_name='Sheet1', index=False)
-        workbook  = writer.book
-        worksheet: xlsxwriter.workbook.Worksheet = writer.sheets['Sheet1']
+    def _write_formatted_file(
+        self,
+        dataFrame: pd.DataFrame,
+        tableSummary: QajsonTableSummary,
+        output_file: Path,
+    ) -> None:
+        writer = pd.ExcelWriter(output_file, engine="xlsxwriter")
+        dataFrame.to_excel(writer, sheet_name="Sheet1", index=False)
+        workbook = writer.book
+        worksheet: xlsxwriter.workbook.Worksheet = writer.sheets["Sheet1"]
 
         # apply a blue background color to each of the section header rows
-        sectionStyle = workbook.add_format({'bg_color': 'B4C6E7'})
-        for rowIndex, value in enumerate(tableSummary.template_file_summary.row_labels()):
+        sectionStyle = workbook.add_format({"bg_color": "B4C6E7"})
+        for rowIndex, value in enumerate(
+            tableSummary.template_file_summary.row_labels()
+        ):
             _, isSectionHeading = value
             if isSectionHeading:
                 # +1 to row index because excel is 1 based indexing
                 worksheet.set_row(rowIndex + 1, None, sectionStyle)
 
-        firstColumnStyle = workbook.add_format({'text_wrap': True})
-        worksheet.set_column(0,0, width=25, cell_format=firstColumnStyle)
+        firstColumnStyle = workbook.add_format({"text_wrap": True})
+        worksheet.set_column(0, 0, width=25, cell_format=firstColumnStyle)
 
         # set width of remaining columns that include data
         worksheet.set_column(1, len(tableSummary.file_summaries) + 1, width=30)
@@ -380,13 +367,9 @@ class QajsonExcelExporter(QajsonExporter):
         writer.close()
 
     def export(
-            self,
-            qajson: QajsonRoot,
-            file: Path,
-            plugins: QaxProfilePlugins
-        ) -> None:
-        """ Writes QAJSON to an XLSX file
-        """
+        self, qajson: QajsonRoot, file: Path, plugins: QaxProfilePlugins
+    ) -> None:
+        """Writes QAJSON to an XLSX file"""
 
         tableSummary = QajsonTableSummary(qajson, plugins)
         tableSummary.initialise_check_list()
@@ -396,6 +379,3 @@ class QajsonExcelExporter(QajsonExporter):
 
         df = self._generate_summary_dataframe(tableSummary)
         self._write_formatted_file(df, tableSummary, output_file=file)
-
-
-

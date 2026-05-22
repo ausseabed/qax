@@ -6,7 +6,6 @@ from hyo2.qax.lib.project import QaCheckSummary
 
 
 class SummaryModel(QAbstractTableModel):
-
     color_fail = QColor(200, 100, 100, 50)
     color_warning = QColor(255, 213, 0, 50)
     color_ok = QColor(100, 200, 100, 50)
@@ -21,17 +20,17 @@ class SummaryModel(QAbstractTableModel):
             self.check_summaries = checks
 
     def rowCount(self, index=QModelIndex()):
-        """ Returns the number of rows the model holds. """
+        """Returns the number of rows the model holds."""
         return len(self.check_summaries)
 
     def columnCount(self, index=QModelIndex()):
-        """ Returns the number of columns the model holds. """
+        """Returns the number of columns the model holds."""
         return 5
 
     def data(self, index, role=Qt.DisplayRole):
-        """ Depending on the index and role given, return data. If not
-            returning data, return None (PySide equivalent of QT's
-            "invalid QVariant").
+        """Depending on the index and role given, return data. If not
+        returning data, return None (PySide equivalent of QT's
+        "invalid QVariant").
         """
         if not index.isValid():
             return None
@@ -48,8 +47,7 @@ class SummaryModel(QAbstractTableModel):
                 if check_summary.version is None:
                     check_name = "{} [no version]".format(check_name)
                 else:
-                    check_name = "{} [v.{}]".format(
-                        check_name, check_summary.version)
+                    check_name = "{} [v.{}]".format(check_name, check_summary.version)
 
                 return check_name
             elif index.column() == 1:
@@ -77,7 +75,7 @@ class SummaryModel(QAbstractTableModel):
         return None
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
-        """ Set the headers to be displayed. """
+        """Set the headers to be displayed."""
         if role != Qt.DisplayRole:
             return None
 

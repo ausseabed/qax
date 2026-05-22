@@ -3,10 +3,24 @@ import os
 
 from typing import Optional
 from PySide2 import QtCore
-from PySide2.QtWidgets import \
-    QSizePolicy, QComboBox, QTableWidget, QGroupBox, QVBoxLayout, \
-    QHBoxLayout, QTableWidgetItem, QPushButton, QFileDialog, QHeaderView, \
-    QDialog, QDialogButtonBox, QLabel, QLineEdit, QAbstractItemView, QFrame
+from PySide2.QtWidgets import (
+    QSizePolicy,
+    QComboBox,
+    QTableWidget,
+    QGroupBox,
+    QVBoxLayout,
+    QHBoxLayout,
+    QTableWidgetItem,
+    QPushButton,
+    QFileDialog,
+    QHeaderView,
+    QDialog,
+    QDialogButtonBox,
+    QLabel,
+    QLineEdit,
+    QAbstractItemView,
+    QFrame,
+)
 
 from hyo2.qax.app import qta
 from hyo2.qax.app.gui_settings import GuiSettings
@@ -17,15 +31,11 @@ from ausseabed.qajson.model import QajsonRoot, QajsonFile, QajsonDataLevel
 
 logger = logging.getLogger(__name__)
 
-class GroupRow:
 
+class GroupRow:
     def __init__(
-            self,
-            filename: str,
-            dataset: str,
-            file_type: str,
-            file_details:str
-        ) -> None:
+        self, filename: str, dataset: str, file_type: str, file_details: str
+    ) -> None:
         self.filename = filename
         self._dataset = dataset
         self._user_set_dataset = False
@@ -61,14 +71,12 @@ class GroupRow:
 
     def __str__(self) -> str:
         return (
-            f"{self.filename_short} {self.dataset} "
-            f"{self.file_type} {self.file_details}"
+            f"{self.filename_short} {self.dataset} {self.file_type} {self.file_details}"
         )
 
 
 class NewDatasetDialog(QDialog):
-    """ Simple dialog window to prompt user for a new dataset name
-    """
+    """Simple dialog window to prompt user for a new dataset name"""
 
     def __init__(self, parent=None, default_name="new dataset"):
         super().__init__(parent)
@@ -92,13 +100,11 @@ class NewDatasetDialog(QDialog):
         self.setLayout(self.layout)
 
     def get_name(self) -> str:
-        """ Get the name entered by the user in the dialog
-        """
+        """Get the name entered by the user in the dialog"""
         return self.name_field.text()
 
 
 class FileGroupGroupBox(QGroupBox):
-
     filenames_added = QtCore.Signal()
     filenames_removed = QtCore.Signal()
     dataset_changed = QtCore.Signal()
@@ -113,10 +119,10 @@ class FileGroupGroupBox(QGroupBox):
         self.sort_reversed = False
         self.last_sort_column = -1
 
-        self.plugin_service:Optional[PluginService] = None
+        self.plugin_service: Optional[PluginService] = None
         self.no_checks_selected_layout = None
 
-        self.rows:list[GroupRow] = []
+        self.rows: list[GroupRow] = []
         self.available_datasets: list[str] = []
         self.available_datasets.append("default")
         self.available_types: list[str] = []
@@ -128,12 +134,22 @@ class FileGroupGroupBox(QGroupBox):
         # hide the table row numbers
         self.table.verticalHeader().setVisible(False)
         self.table.setColumnCount(5)
-        self.table.setHorizontalHeaderLabels(["Filename", "Dataset", "Type", "Details" , ""])
+        self.table.setHorizontalHeaderLabels(
+            ["Filename", "Dataset", "Type", "Details", ""]
+        )
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        self.table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
-        self.table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)
+        self.table.horizontalHeader().setSectionResizeMode(
+            1, QHeaderView.ResizeToContents
+        )
+        self.table.horizontalHeader().setSectionResizeMode(
+            2, QHeaderView.ResizeToContents
+        )
+        self.table.horizontalHeader().setSectionResizeMode(
+            3, QHeaderView.ResizeToContents
+        )
+        self.table.horizontalHeader().setSectionResizeMode(
+            4, QHeaderView.ResizeToContents
+        )
         # don't highlight the column headers when one of them is clicked (for sorting)
         self.table.horizontalHeader().setHighlightSections(False)
         # there's no need to select any rows in this table
@@ -142,14 +158,14 @@ class FileGroupGroupBox(QGroupBox):
         self.table.horizontalHeader().sectionClicked.connect(self._click_header)
         main_layout.addWidget(self.table)
 
-        self.cross_icon = qta.icon('fa6s.xmark')
+        self.cross_icon = qta.icon("fa6s.xmark")
 
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         self.add_file_button = QPushButton()
         button_layout.addWidget(self.add_file_button)
         self.add_file_button.setText("Add File")
-        self.add_file_button.setIcon(qta.icon('fa6s.folder-open'))
+        self.add_file_button.setIcon(qta.icon("fa6s.folder-open"))
         self.add_file_button.setToolTip("Add survey product files")
         self.add_file_button.clicked.connect(self._click_add_file)
         self.remove_all_files_button = QPushButton()
@@ -167,7 +183,7 @@ class FileGroupGroupBox(QGroupBox):
         if self.last_sort_column == header_index:
             # if the user has clicked the same column header twice then reverse the
             # sort order for this column
-            self.sort_reversed =  not self.sort_reversed
+            self.sort_reversed = not self.sort_reversed
 
         # sort the rows list (in place) by whatever column the user has clicked
         if header_index == 0:
@@ -184,12 +200,12 @@ class FileGroupGroupBox(QGroupBox):
 
     def __update_table(self) -> None:
         # show and hide the little ^ char Qt uses to show sorting
-        if (self.last_sort_column == -1):
+        if self.last_sort_column == -1:
             self.table.horizontalHeader().setSortIndicatorShown(False)
         else:
             self.table.horizontalHeader().setSortIndicatorShown(True)
         # update the order and column being sorted on (if any)
-        if (self.last_sort_column != -1):
+        if self.last_sort_column != -1:
             order = (
                 QtCore.Qt.SortOrder.DescendingOrder
                 if self.sort_reversed
@@ -203,7 +219,8 @@ class FileGroupGroupBox(QGroupBox):
             item_filename.setToolTip(row.filename)
             item_filename_widget = QFrame()
             item_filename_widget.setSizePolicy(
-                QSizePolicy.Expanding, QSizePolicy.Minimum)
+                QSizePolicy.Expanding, QSizePolicy.Minimum
+            )
             item_filename_widget.setLayout(QHBoxLayout())
             item_filename_widget.layout().addWidget(item_filename)
             item_filename_widget.layout().addStretch()
@@ -213,7 +230,8 @@ class FileGroupGroupBox(QGroupBox):
 
             item_dataset = QComboBox()
             item_dataset.setSizePolicy(
-                QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+                QSizePolicy.MinimumExpanding, QSizePolicy.Preferred
+            )
             for ds in self.available_datasets:
                 item_dataset.addItem(ds)
             item_dataset.addItem("New...")
@@ -223,7 +241,8 @@ class FileGroupGroupBox(QGroupBox):
             )
             item_dataset_widget = QFrame()
             item_dataset_widget.setSizePolicy(
-                QSizePolicy.Expanding, QSizePolicy.Minimum)
+                QSizePolicy.Expanding, QSizePolicy.Minimum
+            )
             item_dataset_widget.setLayout(QHBoxLayout())
             item_dataset_widget.layout().addWidget(item_dataset)
             item_dataset_widget.layout().addStretch()
@@ -232,8 +251,7 @@ class FileGroupGroupBox(QGroupBox):
             self.table.setCellWidget(i, 1, item_dataset_widget)
 
             item_type = QComboBox()
-            item_type.setSizePolicy(
-                QSizePolicy.Expanding, QSizePolicy.Minimum)
+            item_type.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
             for t in self.available_types:
                 item_type.addItem(t)
             try:
@@ -246,8 +264,7 @@ class FileGroupGroupBox(QGroupBox):
                 lambda x, row=row: self._file_type_changed(x, row)
             )
             item_type_widget = QFrame()
-            item_type_widget.setSizePolicy(
-                QSizePolicy.Expanding, QSizePolicy.Minimum)
+            item_type_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
             item_type_widget.setLayout(QHBoxLayout())
             item_type_widget.layout().addWidget(item_type)
             item_type_widget.layout().addStretch()
@@ -259,8 +276,7 @@ class FileGroupGroupBox(QGroupBox):
             self.table.setItem(i, 3, item_file_details)
 
             item_remove_button = QPushButton()
-            item_remove_button.setSizePolicy(
-                QSizePolicy.Minimum, QSizePolicy.Minimum)
+            item_remove_button.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
             item_remove_button.setText("")
             item_remove_button.setIcon(self.cross_icon)
             item_remove_button.clicked.connect(
@@ -268,11 +284,14 @@ class FileGroupGroupBox(QGroupBox):
             )
             item_remove_button_widget = QFrame()
             item_remove_button_widget.setSizePolicy(
-                QSizePolicy.Expanding, QSizePolicy.Expanding)
+                QSizePolicy.Expanding, QSizePolicy.Expanding
+            )
             item_remove_button_widget.setLayout(QVBoxLayout())
             item_remove_button_widget.layout().addWidget(item_remove_button)
             item_remove_button_widget.layout().addStretch()
-            item_remove_button_widget.layout().setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+            item_remove_button_widget.layout().setAlignment(
+                QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter
+            )
             item_remove_button_widget.layout().setContentsMargins(0, 0, 0, 0)
             self.table.setCellWidget(i, 4, item_remove_button_widget)
 
@@ -285,7 +304,7 @@ class FileGroupGroupBox(QGroupBox):
         # has changed its size (as it has a dataset name with a new width)
         self.table.horizontalHeader().resizeSections()
 
-    def _remove_file(self, x, row:GroupRow):
+    def _remove_file(self, x, row: GroupRow):
         self.rows.remove(row)
         self.__update_table()
         self.filenames_removed.emit()
@@ -299,10 +318,7 @@ class FileGroupGroupBox(QGroupBox):
             ft = self.plugin_service.identify_file_group(filename)
             fd = self.plugin_service.get_file_details(filename)
             gr = GroupRow(
-                filename=filename,
-                dataset='default',
-                file_type=ft,
-                file_details=fd
+                filename=filename, dataset="default", file_type=ft, file_details=fd
             )
             self.rows.append(gr)
 
@@ -311,15 +327,15 @@ class FileGroupGroupBox(QGroupBox):
         self.__update_table()
 
     def __get_new_dataset_name(self, count=1) -> str:
-        """ Generates a new default name based on a simple number
+        """Generates a new default name based on a simple number
         sequence
         """
         test_name = f"dataset {count:02}"
         if test_name in self.available_datasets:
-            return self.__get_new_dataset_name(count=count+1)
+            return self.__get_new_dataset_name(count=count + 1)
         return test_name
 
-    def _dataset_changed(self, index: int, row:GroupRow):
+    def _dataset_changed(self, index: int, row: GroupRow):
         if index >= len(self.available_datasets):
             # then 'New...' has been selected
             ndd = NewDatasetDialog(self, self.__get_new_dataset_name())
@@ -338,19 +354,16 @@ class FileGroupGroupBox(QGroupBox):
             row.dataset = self.available_datasets[index]
         self.dataset_changed.emit()
 
-    def _file_type_changed(self, index: int, row:GroupRow):
+    def _file_type_changed(self, index: int, row: GroupRow):
         row.file_type = self.available_types[index]
         self.filetype_changed.emit()
 
     def _click_add_file(self):
         import_folder_name = "import_folder_all"
-        filters:list[str] = []
-        all_ext:list[str] = []
+        filters: list[str] = []
+        all_ext: list[str] = []
         for file_group in self.plugin_service.get_all_file_groups():
-            all_fg_ext = [
-                "*.{}".format(ft.extension)
-                for ft in file_group.file_types
-            ]
+            all_fg_ext = ["*.{}".format(ft.extension) for ft in file_group.file_types]
             all_ext.extend(all_fg_ext)
             all_fg_ext_str = " ".join(all_fg_ext)
             all_fg_formats = f"{file_group.name} ({all_fg_ext_str})"
@@ -367,19 +380,18 @@ class FileGroupGroupBox(QGroupBox):
             self,
             "Add File",
             GuiSettings.settings().value(import_folder_name),
-            ";; ".join(filters))
+            ";; ".join(filters),
+        )
         if len(selections) == 0:
-            logger.debug('adding raw: aborted')
+            logger.debug("adding raw: aborted")
             return
 
         last_open_folder = os.path.dirname(selections[0])
         if os.path.exists(last_open_folder):
-            GuiSettings.settings().setValue(
-                import_folder_name, last_open_folder)
+            GuiSettings.settings().setValue(import_folder_name, last_open_folder)
 
         new_selected_files = [
-            os.path.abspath(selection).replace("\\", "/")
-            for selection in selections
+            os.path.abspath(selection).replace("\\", "/") for selection in selections
         ]
 
         self.__add_new_files(new_selected_files)
@@ -391,7 +403,7 @@ class FileGroupGroupBox(QGroupBox):
         self.__update_table()
 
     def get_grouped_files(self) -> list[list[QajsonFile]]:
-        """ Returns a list of lists containing QajsonFiles, each nested list
+        """Returns a list of lists containing QajsonFiles, each nested list
         is a grouping based on the 'Dataset' specified by the user.
         """
         # key is dataset name, value is list of files that belong to dataset
@@ -410,14 +422,14 @@ class FileGroupGroupBox(QGroupBox):
         return list(group_dict.values())
 
     def __is_same_qajsonfile(self, a: QajsonFile, b: QajsonFile) -> bool:
-        """ Compares two QajsonFile objects
-        """
+        """Compares two QajsonFile objects"""
         # this should likely be a part of the qajson lib
         return a.file_type == b.file_type and a.path == b.path
 
-    def __is_same_qajsonfile_group(self, a: list[QajsonFile], b: list[QajsonFile]) -> bool:
-        """ Compares two lists of QajsonFile objects
-        """
+    def __is_same_qajsonfile_group(
+        self, a: list[QajsonFile], b: list[QajsonFile]
+    ) -> bool:
+        """Compares two lists of QajsonFile objects"""
         # this should likely be a part of the qajson lib
         for i in a:
             found = False
@@ -429,7 +441,7 @@ class FileGroupGroupBox(QGroupBox):
         return True
 
     def update_ui(self, qajson: QajsonRoot) -> None:
-        """ Updates this UI component to show the information within the qajson
+        """Updates this UI component to show the information within the qajson
         object. In this case the files, and their grouping.
         """
         # we need to build a list of the groups within the QAJSON. Groups will probably
@@ -442,8 +454,8 @@ class FileGroupGroupBox(QGroupBox):
 
         # create a list of all data levels, this makes it easier to iterate over
         all_dl: list[QajsonDataLevel] = []
-        all_dl.append(qajson.qa.get_data_level('raw_data'))
-        all_dl.append(qajson.qa.get_data_level('survey_products'))
+        all_dl.append(qajson.qa.get_data_level("raw_data"))
+        all_dl.append(qajson.qa.get_data_level("survey_products"))
 
         # for each data level and each check in these, grab the group of files
         for dl in all_dl:
@@ -479,7 +491,7 @@ class FileGroupGroupBox(QGroupBox):
                         filename=f.path,
                         dataset=ds_name,
                         file_type=f.file_type,
-                        file_details=self.plugin_service.get_file_details(f.path)
+                        file_details=self.plugin_service.get_file_details(f.path),
                     )
                 )
 

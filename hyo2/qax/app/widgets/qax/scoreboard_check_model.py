@@ -8,7 +8,6 @@ from ausseabed.qajson.model import QajsonCheck
 
 
 class ScoreBoardCheckModel(QAbstractTableModel):
-
     color_fail = QColor(200, 100, 100, 50)
     color_warning = QColor(255, 213, 0, 50)
     color_ok = QColor(100, 200, 100, 50)
@@ -19,9 +18,9 @@ class ScoreBoardCheckModel(QAbstractTableModel):
 
         # qtawesome needs a GUI running to load icons, this prevents these from
         # being created at a class level (instead of per instance)
-        self.cross_icon = qta.icon('fa6s.xmark', color='red')
-        self.tick_icon = qta.icon('fa6s.check', color='green')
-        self.warning_icon = qta.icon('fa6s.triangle-exclamation', color='orange')
+        self.cross_icon = qta.icon("fa6s.xmark", color="red")
+        self.tick_icon = qta.icon("fa6s.check", color="green")
+        self.warning_icon = qta.icon("fa6s.triangle-exclamation", color="orange")
 
         if checks is None:
             self.checks = []
@@ -29,17 +28,17 @@ class ScoreBoardCheckModel(QAbstractTableModel):
             self.checks = checks
 
     def rowCount(self, index=QModelIndex()):
-        """ Returns the number of rows the model holds. """
+        """Returns the number of rows the model holds."""
         return len(self.checks)
 
     def columnCount(self, index=QModelIndex()):
-        """ Returns the number of columns the model holds. """
+        """Returns the number of columns the model holds."""
         return 5
 
     def data(self, index, role=Qt.DisplayRole):
-        """ Depending on the index and role given, return data. If not
-            returning data, return None (PySide equivalent of QT's
-            "invalid QVariant").
+        """Depending on the index and role given, return data. If not
+        returning data, return None (PySide equivalent of QT's
+        "invalid QVariant").
         """
         if not index.isValid():
             return None
@@ -136,12 +135,12 @@ class ScoreBoardCheckModel(QAbstractTableModel):
                 return QColor(255, 0, 0, 0)
         elif role == Qt.TextAlignmentRole:
             if index.column() in [0, 1, 2]:
-                return (Qt.AlignLeft | Qt.AlignTop)
+                return Qt.AlignLeft | Qt.AlignTop
 
         return None
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
-        """ Set the headers to be displayed. """
+        """Set the headers to be displayed."""
         if role != Qt.DisplayRole:
             return None
 

@@ -1,5 +1,4 @@
-from PySide2.QtCore import QAbstractListModel, QModelIndex, Qt, QByteArray, \
-    QPointF
+from PySide2.QtCore import QAbstractListModel, QModelIndex, Qt, QByteArray, QPointF
 from PySide2.QtGui import QColor
 
 
@@ -62,11 +61,12 @@ class LineItem(object):
 
 class PolygonItem(object):
     def __init__(
-            self,
-            coordinates,
-            color=QColor("blue"),
-            line_color=QColor("blue"),
-            line_width=5):
+        self,
+        coordinates,
+        color=QColor("blue"),
+        line_color=QColor("blue"),
+        line_width=5,
+    ):
         self._coordinates = coordinates
         self._color = color
         self._line_color = line_color
@@ -107,7 +107,7 @@ class MarkersModel(QAbstractListModel):
         PositionRole: QByteArray(b"markerPosition"),
         ColorRole: QByteArray(b"markerColor"),
         SizeRole: QByteArray(b"markerSize"),
-        PropertiesRole: QByteArray(b"markerProperties")
+        PropertiesRole: QByteArray(b"markerProperties"),
     }
 
     def __init__(self, parent=None):
@@ -166,30 +166,28 @@ class MarkersModel(QAbstractListModel):
             return Qt.ItemIsEnabled
         return QAbstractListModel.flags(index) | Qt.ItemIsEditable
 
-    def add_from_geojson(self, geojson, color='red'):
+    def add_from_geojson(self, geojson, color="red"):
         new_items = []
-        if not(geojson['type'] == 'FeatureCollection'):
+        if not (geojson["type"] == "FeatureCollection"):
             return
-        features = geojson['features']
+        features = geojson["features"]
         for feature in features:
-            if feature['type'] != 'Feature':
+            if feature["type"] != "Feature":
                 continue
-            geometry = feature['geometry']
-            if geometry['type'] != 'Point':
+            geometry = feature["geometry"]
+            if geometry["type"] != "Point":
                 continue
-            coordinate = geometry['coordinates']
+            coordinate = geometry["coordinates"]
 
             new_marker = MarkerItem(
                 QPointF(coordinate[1], coordinate[0]),
                 color=QColor(color),
-                properties=feature['properties']
+                properties=feature["properties"],
             )
             new_items.append(new_marker)
 
         self.beginInsertRows(
-            QModelIndex(),
-            self.rowCount(),
-            self.rowCount() + len(new_items) - 1
+            QModelIndex(), self.rowCount(), self.rowCount() + len(new_items) - 1
         )
         self._items.extend(new_items)
         self.endInsertRows()
@@ -203,7 +201,7 @@ class LinesModel(QAbstractListModel):
     _roles = {
         CoordinatesRole: QByteArray(b"lineCoordinates"),
         ColorRole: QByteArray(b"lineColor"),
-        WidthRole: QByteArray(b"lineWidth")
+        WidthRole: QByteArray(b"lineWidth"),
     }
 
     def __init__(self, parent=None):
@@ -258,35 +256,32 @@ class LinesModel(QAbstractListModel):
             return Qt.ItemIsEnabled
         return QAbstractListModel.flags(index) | Qt.ItemIsEditable
 
-    def add_from_geojson(self, geojson, color='red'):
+    def add_from_geojson(self, geojson, color="red"):
         new_lines = []
-        if not (geojson['type'] == 'FeatureCollection'):
+        if not (geojson["type"] == "FeatureCollection"):
             return
-        features = geojson['features']
+        features = geojson["features"]
         for feature in features:
-            if feature['type'] != 'Feature':
+            if feature["type"] != "Feature":
                 continue
-            geometry = feature['geometry']
-            if geometry['type'] != 'LineString':
+            geometry = feature["geometry"]
+            if geometry["type"] != "LineString":
                 continue
-            coordinates = geometry['coordinates']
+            coordinates = geometry["coordinates"]
             line_points = []
             for coordinate in coordinates:
-                line_points.append({
-                    'latitude': coordinate[1],
-                    'longitude': coordinate[0],
-                })
+                line_points.append(
+                    {
+                        "latitude": coordinate[1],
+                        "longitude": coordinate[0],
+                    }
+                )
 
-            new_line = LineItem(
-                line_points,
-                QColor(color)
-            )
+            new_line = LineItem(line_points, QColor(color))
             new_lines.append(new_line)
 
         self.beginInsertRows(
-            QModelIndex(),
-            self.rowCount(),
-            self.rowCount() + len(new_lines) - 1
+            QModelIndex(), self.rowCount(), self.rowCount() + len(new_lines) - 1
         )
         self._items.extend(new_lines)
         self.endInsertRows()
@@ -302,7 +297,7 @@ class PolygonsModel(QAbstractListModel):
         CoordinatesRole: QByteArray(b"polygonCoordinates"),
         LineColorRole: QByteArray(b"lineColor"),
         LineWidthRole: QByteArray(b"lineWidth"),
-        ColorRole: QByteArray(b"mcolor")
+        ColorRole: QByteArray(b"mcolor"),
     }
 
     def __init__(self, parent=None):
@@ -362,42 +357,41 @@ class PolygonsModel(QAbstractListModel):
         return QAbstractListModel.flags(index) | Qt.ItemIsEditable
 
     def add_from_geojson(
-            self,
-            geojson,
-            color='green',
-            line_color='blue',
-            line_width=5
-        ):
-        ''' Update this model with data from a geojson multipolygon
-        '''
+        self,
+        geojson,
+        color="green",
+        line_color="blue",
+        line_width=5,
+    ):
+        """Update this model with data from a geojson multipolygon"""
         new_polys = []
-        if not (geojson['type'] == 'MultiPolygon'):
+        if not (geojson["type"] == "MultiPolygon"):
             return
         # get the list of polygons from this multipolygon
         # note each polygon will have multiple coord lists
         # for holes
-        polygons_list = geojson['coordinates']
+        polygons_list = geojson["coordinates"]
         for poly_loop in polygons_list:
             for poly_coords in poly_loop:
                 poly_points = []
                 for coordinate in poly_coords:
-                    poly_points.append({
-                        'latitude': coordinate[1],
-                        'longitude': coordinate[0],
-                    })
+                    poly_points.append(
+                        {
+                            "latitude": coordinate[1],
+                            "longitude": coordinate[0],
+                        }
+                    )
 
                 new_poly = PolygonItem(
                     poly_points,
                     color=color,
                     line_color=line_color,
-                    line_width=line_width
+                    line_width=line_width,
                 )
                 new_polys.append(new_poly)
 
         self.beginInsertRows(
-            QModelIndex(),
-            self.rowCount(),
-            self.rowCount() + len(new_polys) - 1
+            QModelIndex(), self.rowCount(), self.rowCount() + len(new_polys) - 1
         )
         self._items.extend(new_polys)
         self.endInsertRows()

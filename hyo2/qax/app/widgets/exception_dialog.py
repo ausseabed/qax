@@ -1,6 +1,14 @@
-from PySide2.QtWidgets import QApplication, QDialog, \
-    QPushButton, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, \
-    QTextBrowser, QDialogButtonBox
+from PySide2.QtWidgets import (
+    QApplication,
+    QDialog,
+    QPushButton,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGroupBox,
+    QLabel,
+    QTextBrowser,
+    QDialogButtonBox,
+)
 from PySide2.QtGui import QFont
 from PySide2 import QtCore
 import traceback
@@ -11,22 +19,24 @@ from hyo2.qax.app import app_info
 """
 Dialog for displaying Exception information to users
 """
-class ExceptionDialog(QDialog):
 
+
+class ExceptionDialog(QDialog):
     def __init__(
-            self,
-            exception_type: type,
-            exception_value: BaseException,
-            exception_traceback: traceback,
-            parent=None
-        ):
-        super(
-            ExceptionDialog,
-            self).__init__(
+        self,
+        exception_type: type,
+        exception_value: BaseException,
+        exception_traceback: traceback,
+        parent=None,
+    ):
+        super(ExceptionDialog, self).__init__(
             parent,
-            QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
+            QtCore.Qt.WindowSystemMenuHint
+            | QtCore.Qt.WindowTitleHint
+            | QtCore.Qt.WindowCloseButtonHint,
+        )
         self.setWindowTitle("Error")
-        self.setWindowIcon(qta.icon('msc.run-errors'))
+        self.setWindowIcon(qta.icon("msc.run-errors"))
         self.setMinimumSize(300, 200)
         self.resize(500, 300)
 
@@ -48,7 +58,7 @@ class ExceptionDialog(QDialog):
         copy_layout = QHBoxLayout()
         copy_layout.addStretch()
         button_copy = QPushButton("Copy to clipboard")
-        button_copy.setIcon(qta.icon('fa6s.copy'))
+        button_copy.setIcon(qta.icon("fa6s.copy"))
         button_copy.clicked.connect(self._copy_stack_trace)
         copy_layout.addWidget(button_copy)
         groupbox_layout.addLayout(copy_layout)
@@ -68,8 +78,8 @@ class ExceptionDialog(QDialog):
         text_label = QLabel(self)
         text = (
             "Please copy the above stack trace text and create a "
-            "<a href=\"https://github.com/ausseabed/qax/issues\">bug report</a> "
-            f"or write an email to <a href=\"mailto:{app_info.app_support_email}\">{app_info.app_support_email}</a>."
+            '<a href="https://github.com/ausseabed/qax/issues">bug report</a> '
+            f'or write an email to <a href="mailto:{app_info.app_support_email}">{app_info.app_support_email}</a>.'
         )
 
         text_label.setWordWrap(True)
@@ -90,4 +100,3 @@ class ExceptionDialog(QDialog):
 
     def _copy_stack_trace(self):
         QApplication.clipboard().setText(self.traceback_str)
-

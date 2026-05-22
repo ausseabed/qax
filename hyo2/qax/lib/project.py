@@ -16,51 +16,52 @@ from hyo2.qax.lib.qajson_util import QajsonExcelExporter
 logger = logging.getLogger(__name__)
 
 
-class QaCheckSummary():
-    """ Class defines properties that make up a summary of a single QA
+class QaCheckSummary:
+    """Class defines properties that make up a summary of a single QA
     check that may have been run multiple times.
     """
 
     @classmethod
     def __process_check_summary(
-            cls,
-            data_level: str,
-            check: QajsonCheck,
-            summaries: dict) -> None:
+        cls, data_level: str, check: QajsonCheck, summaries: dict
+    ) -> None:
         # a name and id tuple is used to reference the summaries
         nid = (check.info.id, check.info.name)
         if nid in summaries:
             summary = summaries[nid]
         else:
             summary = QaCheckSummary(
-                id=check.info.id, name=check.info.name,
-                version=check.info.version, data_level=data_level)
+                id=check.info.id,
+                name=check.info.name,
+                version=check.info.version,
+                data_level=data_level,
+            )
             summaries[nid] = summary
 
         summary.add_check(check)
 
     @classmethod
-    def get_summary(cls, qa_json: QajsonRoot) -> List['QaCheckSummary']:
-        """ Builds a list of check summaries from the qa json object
-        """
+    def get_summary(cls, qa_json: QajsonRoot) -> List["QaCheckSummary"]:
+        """Builds a list of check summaries from the qa json object"""
         summaries = {}  # tuple of check id and name used as key
         if qa_json.qa is not None:
             for check in qa_json.qa.raw_data.checks:
-                QaCheckSummary.__process_check_summary(
-                    'raw_data', check, summaries)
+                QaCheckSummary.__process_check_summary("raw_data", check, summaries)
             for check in qa_json.qa.survey_products.checks:
                 QaCheckSummary.__process_check_summary(
-                    'survey_products', check, summaries)
+                    "survey_products", check, summaries
+                )
 
             if qa_json.qa.chart_adequacy is not None:
                 for check in qa_json.qa.chart_adequacy.checks:
                     QaCheckSummary.__process_check_summary(
-                        'chart_adequacy', check, summaries)
+                        "chart_adequacy", check, summaries
+                    )
 
         return list(summaries.values())
 
     def __init__(self, id: str, name: str, version: str, data_level: str):
-        """ Constructor
+        """Constructor
 
         :param str id: id of the check that is summarised by this object
         :param str name: name of the check that is summarised by this object
@@ -84,19 +85,18 @@ class QaCheckSummary():
         self.checks = []
 
     def add_check(self, check) -> None:
-        """ Adds a check to this summary
-        """
+        """Adds a check to this summary"""
         self.checks.append(check)
 
-        if (check.outputs is not None and check.outputs.execution is not None):
+        if check.outputs is not None and check.outputs.execution is not None:
             self.total_executions += 1
-            if check.outputs.execution.status == 'failed':
+            if check.outputs.execution.status == "failed":
                 self.failed_executions += 1
                 self.failed_execution_files.extend(check.inputs.files)
-            if check.outputs.check_state == 'fail':
+            if check.outputs.check_state == "fail":
                 self.failed_check_state += 1
                 self.failed_check_state_files.extend(check.inputs.files)
-            if check.outputs.check_state == 'warning':
+            if check.outputs.check_state == "warning":
                 self.warning_check_state += 1
                 self.warning_check_state_files.extend(check.inputs.files)
 
@@ -108,13 +108,17 @@ class QaCheckSummary():
             "failed_executions = {} \n"
             "failed_check_state = {} \n"
         ).format(
-            self.id, self.name, self.total_executions, self.failed_executions,
-            self.failed_check_state)
+            self.id,
+            self.name,
+            self.total_executions,
+            self.failed_executions,
+            self.failed_check_state,
+        )
 
 
 # inherits from QObject to support signals
 class QAXProject(QtCore.QObject):
-    """ Class represents the current QAX project as configured by the user.
+    """Class represents the current QAX project as configured by the user.
     This includes option settings, QA JSON details are persisted elsewhere.
     """
 
@@ -174,11 +178,7 @@ class QAXProject(QtCore.QObject):
         profile_plugins = QaxPlugins.instance().get_profile_plugins(self.profile)
         exporter = QajsonExcelExporter()
         try:
-            exporter.export(
-                self.qa_json,
-                file=output_file,
-                plugins=profile_plugins
-            )
+            exporter.export(self.qa_json, file=output_file, plugins=profile_plugins)
             return True
         except Exception:
             logging.error(traceback.format_exc())
@@ -193,19 +193,19 @@ class QAXProject(QtCore.QObject):
         return QaCheckSummary.get_summary(self.qa_json)
 
     def is_qajson_valid(self) -> bool:
-        ''' Checks if the qa json object is valid. This may return false if the
+        """Checks if the qa json object is valid. This may return false if the
         user has entered invalid information into the check parameters (for
         example).
-        '''
+        """
         return qajson_valid(self.qa_json)
 
     def execute_all(self, qa_group: str = "survey_products"):
-        checks = self.inputs.qa_json.js['qa'][qa_group]['checks']
+        checks = self.inputs.qa_json.js["qa"][qa_group]["checks"]
         logger.debug("checks: %s" % checks)
         nr_of_checks = len(checks)
         for idx in range(nr_of_checks):
             # TODO
-            checks[idx]['outputs']['execution']['status'] = "completed"
+            checks[idx]["outputs"]["execution"]["status"] = "completed"
 
     def __repr__(self):
         msg = super().__repr__()

@@ -10,18 +10,16 @@ from hyo2.qax.lib.logging import setup_logging
 logger = logging.getLogger(__name__)
 
 
-class CheckExecutor():
-    """ Executes checks sequentially, calling a number of functions throughout
+class CheckExecutor:
+    """Executes checks sequentially, calling a number of functions throughout
     to provide feedback on execution status. This class will work independently
     but is intended to be inherited (refer to MultiprocessCheckExecutor for
     example)
     """
 
     def __init__(
-            self,
-            qa_json: QajsonRoot,
-            profile_name: str,
-            check_tool_class_names: List[str]):
+        self, qa_json: QajsonRoot, profile_name: str, check_tool_class_names: List[str]
+    ):
         self.qa_json = qa_json
         self.profile_name = profile_name
         self.check_tool_class_names = check_tool_class_names
@@ -35,10 +33,7 @@ class CheckExecutor():
         self.options = {}
 
         self.check_tools = [
-            QaxPlugins.instance().get_plugin(
-                self.profile_name,
-                check_tool_class_name
-            )
+            QaxPlugins.instance().get_plugin(self.profile_name, check_tool_class_name)
             for check_tool_class_name in self.check_tool_class_names
         ]
 
@@ -71,9 +66,7 @@ class CheckExecutor():
                 return
 
             self._check_tool_started(
-                check_tool,
-                self.current_check_number,
-                len(self.check_tools)
+                check_tool, self.current_check_number, len(self.check_tools)
             )
 
             check_tool.options = self.options
@@ -83,7 +76,7 @@ class CheckExecutor():
                     self.qa_json,
                     self._progress_callback,
                     self._qajson_update_callback,
-                    self.is_stopped
+                    self.is_stopped,
                 )
                 self._increment_check_number()
             except Exception as ex:
@@ -114,14 +107,13 @@ class CheckExecutor():
         self.stopped = True
 
 
-''' The following *QueueItem classes are used for communication between the parent
+""" The following *QueueItem classes are used for communication between the parent
 and child process via a multiprocessing queue. The information they pass needs to
 be kept simple (must be pickle'able).
-'''
+"""
 
 
 class ProgressQueueItem:
-
     def __init__(self, check_tool_class_name: str, progress: float):
         self.check_tool_class_name = check_tool_class_name
         self.progress = progress
@@ -131,12 +123,9 @@ class ProgressQueueItem:
 
 
 class CheckToolStartedQueueItem:
-
     def __init__(
-            self,
-            check_tool_class_name: str,
-            check_number: int,
-            total_check_count: int):
+        self, check_tool_class_name: str, check_number: int, total_check_count: int
+    ):
         self.check_tool_class_name = check_tool_class_name
         self.check_number = check_number
         self.total_check_count = total_check_count
@@ -149,7 +138,6 @@ class CheckToolStartedQueueItem:
 
 
 class StatusQueueItem:
-
     def __init__(self, status: str):
         self.status = status
 
@@ -158,7 +146,6 @@ class StatusQueueItem:
 
 
 class QajsonChangedQueueItem:
-
     def __init__(self, qajson: QajsonRoot):
         self.qajson = qajson
 
@@ -167,7 +154,7 @@ class QajsonChangedQueueItem:
 
 
 class ChecksCompleteQueueItem:
-    """ There's no information to pass back when the checks have completed, this
+    """There's no information to pass back when the checks have completed, this
     class exists to maintain the patern of passing these instance back to the
     GUI thread via a single thread.
     """
@@ -177,24 +164,21 @@ class ChecksCompleteQueueItem:
 
 
 class MultiprocessCheckExecutor(mp.Process, CheckExecutor):
-    ''' Implementation of multiprocessing Process class for the QAX CheckExecutor.
+    """Implementation of multiprocessing Process class for the QAX CheckExecutor.
     Allows the checks to be processed in a background thread (to keep UI
     responsive). Communication with parent thread is handled by the Queue object
     passed into __init__
-    '''
+    """
 
     def __init__(
-            self,
-            qa_json: QajsonRoot,
-            profile_name: str,
-            check_tool_class_names: List[str],
-            queue: mp.Queue):
+        self,
+        qa_json: QajsonRoot,
+        profile_name: str,
+        check_tool_class_names: List[str],
+        queue: mp.Queue,
+    ):
         super(MultiprocessCheckExecutor, self).__init__()
-        CheckExecutor.__init__(
-            self,
-            qa_json,
-            profile_name,
-            check_tool_class_names)
+        CheckExecutor.__init__(self, qa_json, profile_name, check_tool_class_names)
         self.queue = queue
         self.stop_event = mp.Event()
 
@@ -221,23 +205,16 @@ class MultiprocessCheckExecutor(mp.Process, CheckExecutor):
 
     def _progress_callback(self, check_tool, progress):
         # check_tool is none when all the checks have been completed
-        check_tool_str = (
-            None
-            if check_tool is None else check_tool.plugin_class
-        )
+        check_tool_str = None if check_tool is None else check_tool.plugin_class
         progress_item = ProgressQueueItem(check_tool_str, progress)
         self.queue.put(progress_item)
 
     def _qajson_update_callback(self):
-        self.queue.put(
-            QajsonChangedQueueItem(self.qa_json)
-        )
+        self.queue.put(QajsonChangedQueueItem(self.qa_json))
 
     def _check_tool_started(self, check_tool, check_number, total_check_count):
         cts_item = CheckToolStartedQueueItem(
-            check_tool.plugin_class,
-            check_number,
-            total_check_count
+            check_tool.plugin_class, check_number, total_check_count
         )
         self.queue.put(cts_item)
 
