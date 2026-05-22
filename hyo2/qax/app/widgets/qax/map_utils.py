@@ -122,7 +122,7 @@ class MarkersModel(QAbstractListModel):
 
     def data(self, index, role=Qt.DisplayRole):
         if index.row() >= self.rowCount():
-            return QVariant()
+            return None
         marker = self._items[index.row()]
 
         if role == MarkersModel.PositionRole:
@@ -134,7 +134,7 @@ class MarkersModel(QAbstractListModel):
         elif role == MarkersModel.PropertiesRole:
             return marker.properties()
 
-        return QVariant()
+        return None
 
     def setData(self, index, value, role=Qt.EditRole):
         if index.isValid():
@@ -218,7 +218,7 @@ class LinesModel(QAbstractListModel):
 
     def data(self, index, role=Qt.DisplayRole):
         if index.row() >= self.rowCount():
-            return QVariant()
+            return None
         marker = self._items[index.row()]
 
         if role == LinesModel.CoordinatesRole:
@@ -228,7 +228,7 @@ class LinesModel(QAbstractListModel):
         elif role == LinesModel.WidthRole:
             return marker.width()
 
-        return QVariant()
+        return None
 
     def setData(self, index, value, role=Qt.EditRole):
         if index.isValid():
@@ -317,7 +317,7 @@ class PolygonsModel(QAbstractListModel):
 
     def data(self, index, role=Qt.DisplayRole):
         if index.row() >= self.rowCount():
-            return QVariant()
+            return None
         marker = self._items[index.row()]
 
         if role == PolygonsModel.CoordinatesRole:
@@ -329,7 +329,7 @@ class PolygonsModel(QAbstractListModel):
         elif role == PolygonsModel.ColorRole:
             return marker.color()
 
-        return QVariant()
+        return None
 
     def setData(self, index, value, role=Qt.EditRole):
         if index.isValid():
