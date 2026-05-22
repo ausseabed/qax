@@ -94,7 +94,7 @@ grid nodes.  In this example the settings required are:
 Parameter                                         Value
 ================================================  ====================================
 Minimum Soundings per node (mspn)                 9
-Minimum Soundings per node at percentage (mspna)  100
+Minimum Soundings per node percentage (mspp)      100
 ================================================  ====================================
 
 The Density layer from your grid is then compared to the minimum sounding \
@@ -226,8 +226,8 @@ QAJSON output object that contains:
 | **?** nodes were found to be under the Minimum Soundings per node setting (**mspn**)
 | where the **?** is a count of the nodes that were under the threshold and **mspn** is minimum soundings per node parameter setup by the user
 | 
-| **?**\% of nodes were found to have a sounding count above **mspna**. This is required to be **mspp**\% of all nodes
-| where the **?** is a percentage of the  total nodes that were under the threshold and **mspna** entered by the user.  **mspp** is the required percentage entered by the user
+| **?**\% of nodes were found to have a sounding count above **mspn**. This is required to be **mspp**\% of all nodes
+| where the **?** is a percentage of the  total nodes that were under the threshold and **mspn** entered by the user.  **mspp** is the required percentage entered by the user
 | 
 | **data**:
 | For this check the data is a dictionary containing the keys:
