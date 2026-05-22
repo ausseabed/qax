@@ -1,4 +1,3 @@
-
 from PySide2.QtGui import QStandardItemModel, QStandardItem
 
 
@@ -37,9 +36,7 @@ class DictTreeModel(QStandardItemModel):
         # at various levels
         # If we didn't exclude the map data here all the geojson would be
         # browseable
-        self.exclusions = {
-            1: set(['map'])
-        }
+        self.exclusions = {1: set(["map"])}
 
     def _recurse_dict(self, tree_item, data_item, depth):
         exclusions_for_depth = set()
@@ -55,10 +52,10 @@ class DictTreeModel(QStandardItemModel):
                 new_item = QStandardItem(param_name)
                 new_item.setText(param_name)
                 tree_item.appendRow(new_item)
-                self._recurse_dict(new_item, param_value, depth+1)
+                self._recurse_dict(new_item, param_value, depth + 1)
         elif isinstance(data_item, list):
             for param_value in data_item:
-                self._recurse_dict(tree_item, param_value, depth+1)
+                self._recurse_dict(tree_item, param_value, depth + 1)
         else:
             new_item = QStandardItem(str(data_item))
             new_item.setText(str(data_item))

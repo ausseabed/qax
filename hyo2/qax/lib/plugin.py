@@ -5,8 +5,14 @@ import re
 
 from hyo2.qax.lib.config import QaxConfig, QaxConfigCheckTool, QaxConfigProfile
 from hyo2.qax.lib.check_options import CheckOption
-from ausseabed.qajson.model import QajsonRoot, QajsonDataLevel, \
-    QajsonParam, QajsonCheck, QajsonInfo, QajsonGroup
+from ausseabed.qajson.model import (
+    QajsonRoot,
+    QajsonDataLevel,
+    QajsonParam,
+    QajsonCheck,
+    QajsonInfo,
+    QajsonGroup,
+)
 
 """ Module defines the architecture and utility functions/classes for the
 QAX check tool plugin system. A check tool must implement the QAX check tool
@@ -23,23 +29,18 @@ class QaxFileType:
     """
 
     @classmethod
-    def from_dict(cls, data: Dict) -> 'QaxFileType':
-        icon = data['icon'] if 'icon' in data else None
+    def from_dict(cls, data: Dict) -> "QaxFileType":
+        icon = data["icon"] if "icon" in data else None
         file_type = cls(
-            name=data['name'],
-            extension=data['extension'],
-            group=data['group'],
-            icon=icon
+            name=data["name"],
+            extension=data["extension"],
+            group=data["group"],
+            icon=icon,
         )
         return file_type
 
-    def __init__(
-            self,
-            name: str,
-            extension: str,
-            group: str,
-            icon: str = None):
-        """ Constructor
+    def __init__(self, name: str, extension: str, group: str, icon: str = None):
+        """Constructor
 
         :param str name: name of the file type (not the filename)
         :param str extension: extension of the file type
@@ -58,15 +59,14 @@ class QaxFileType:
         return "{} (*.{})".format(self.name, self.extension)
 
     def supports_file(self, file_path: Path, file_group: str) -> bool:
-        """ Returns True if the file_path file's extension matches
+        """Returns True if the file_path file's extension matches
         `self.extension` and the file_group matches `self.extension`.
         """
         extension = file_path.suffix
-        extension = extension.lstrip('.')
+        extension = extension.lstrip(".")
         return (
-            ((extension == self.extension) or (self.extension == '*')) and
-            file_group == self.group
-        )
+            (extension == self.extension) or (self.extension == "*")
+        ) and file_group == self.group
 
     def __repr__(self):
         msg = super().__repr__()
@@ -78,28 +78,24 @@ class QaxFileType:
 
 
 class QaxFileGroup:
-    """ Defines a collection of file types. This is constructed by util
+    """Defines a collection of file types. This is constructed by util
     functions to support the user interface. The file lists presented to users
     are based on these groups
     """
 
     @classmethod
-    def from_dict(cls, data: Dict) -> 'QaxFileGroup':
-        file_type_dicts = data['fileTypes'] if 'fileTypes' in data else []
+    def from_dict(cls, data: Dict) -> "QaxFileGroup":
+        file_type_dicts = data["fileTypes"] if "fileTypes" in data else []
         file_types = [
-            QaxFileType.from_dict(file_type_dict)
-            for file_type_dict in file_type_dicts]
+            QaxFileType.from_dict(file_type_dict) for file_type_dict in file_type_dicts
+        ]
 
-        survey_product = cls(
-            name=data['name'],
-            file_types=file_types
-        )
+        survey_product = cls(name=data["name"], file_types=file_types)
         return survey_product
 
     @staticmethod
-    def merge(file_groups: List['QaxFileGroup']) -> List['QaxFileGroup']:
-        """ Merges a list of file groups so that it contains no duplicates
-        """
+    def merge(file_groups: List["QaxFileGroup"]) -> List["QaxFileGroup"]:
+        """Merges a list of file groups so that it contains no duplicates"""
         file_groups_dict = {}
         for fg in file_groups:
             for file_type in fg.file_types:
@@ -117,57 +113,56 @@ class QaxFileGroup:
         self.file_types = file_types
 
     def clean_name(self) -> str:
-        """ Name with white space and special characters removed (or replaced)
+        """Name with white space and special characters removed (or replaced)
         to support use in file names or config params.
         """
-        name = self.name.replace(' ', '_')
-        name = re.sub('[^a-zA-Z0-9_\\n\\.]', '', name)
+        name = self.name.replace(" ", "_")
+        name = re.sub("[^a-zA-Z0-9_\\n\\.]", "", name)
         return name
 
     def matching_file_type(self, path: Path) -> QaxFileType:
-        """ Finds a file type with an extension that matched that of the
+        """Finds a file type with an extension that matched that of the
         given path. None will be returned if no matching file type is found.
         """
         extension = path.suffix
-        extension = extension.lstrip('.')
-        match = next(
-            (ft for ft in self.file_types if ft.extension == extension), None)
+        extension = extension.lstrip(".")
+        match = next((ft for ft in self.file_types if ft.extension == extension), None)
         return match
 
     def add(self, file_type: QaxFileType) -> None:
-        """ Adds a new file type to this group. Duplicates will not be added.
-        """
+        """Adds a new file type to this group. Duplicates will not be added."""
         match = next(
             (
-                ft for ft in self.file_types
+                ft
+                for ft in self.file_types
                 if (
-                    ft.name == file_type.name and
-                    ft.extension == file_type.extension and
-                    ft.group == file_type.group
+                    ft.name == file_type.name
+                    and ft.extension == file_type.extension
+                    and ft.group == file_type.group
                 )
             ),
-            None
+            None,
         )
         if match is None:
             self.file_types.append(file_type)
 
 
-class QaxCheckReference():
-    """ Defines a reference to a check that is implemented elsewhere. Class
+class QaxCheckReference:
+    """Defines a reference to a check that is implemented elsewhere. Class
     includes details required to generate a QA JSON check definition. Does not
     include implementation of the check.
     """
 
     def __init__(
-            self,
-            id: str,
-            name: str,
-            data_level: str,
-            description: str = None,
-            supported_file_types: List[QaxFileType] = [],
-            default_input_params: List[QajsonParam] = [],
-            version: str = None,
-            parameter_help_link: str = None
+        self,
+        id: str,
+        name: str,
+        data_level: str,
+        description: str = None,
+        supported_file_types: List[QaxFileType] = [],
+        default_input_params: List[QajsonParam] = [],
+        version: str = None,
+        parameter_help_link: str = None,
     ):
         """
         Constructor
@@ -200,33 +195,30 @@ class QaxCheckReference():
         self.parameter_help_link = parameter_help_link
 
     def supports_file(self, file_path: Path, file_group: str) -> bool:
-        """ Returns True if the file_path file is supported by this check tool.
-        """
+        """Returns True if the file_path file is supported by this check tool."""
         for supported_file_type in self.supported_file_types:
             if supported_file_type.supports_file(file_path, file_group):
                 return True
         return False
 
     def supports_files(self, files: list[tuple[Path, str]]) -> bool:
-        """ Returns True if the file_path file is supported by this check tool.
-        """
+        """Returns True if the file_path file is supported by this check tool."""
         for p, t in files:
             if not self.supports_file(p, t):
                 return False
         return True
 
 
-class QaxCheckToolPlugin():
-    """ Check tools must inherit this plugin class
-    """
+class QaxCheckToolPlugin:
+    """Check tools must inherit this plugin class"""
 
     def __init__(self):
         # name of the check tool
-        self.name = 'unknown'
+        self.name = "unknown"
         self.description = None
         self.plugin_class = None  # full namespace string
         self.icon = None
-        self.profile = None   # QaxConfigProfile, set when plugin loaded
+        self.profile = None  # QaxConfigProfile, set when plugin loaded
         self.options = {}
 
     @property
@@ -265,8 +257,7 @@ class QaxCheckToolPlugin():
             return None
 
     def get_file_groups(self) -> List[QaxFileGroup]:
-        """ Generate a list of file groups for this check tool plugin
-        """
+        """Generate a list of file groups for this check tool plugin"""
         file_groups_dict = {}
         for check in self.checks():
             for file_type in check.supported_file_types:
@@ -280,11 +271,9 @@ class QaxCheckToolPlugin():
         return list(file_groups_dict.values())
 
     def add_check(
-            self,
-            data_level: QajsonDataLevel,
-            check_reference: QaxCheckReference) -> QajsonCheck:
-        """ Adds a new check to this QajsondataLevel. Returns the new QajsonCheck
-        """
+        self, data_level: QajsonDataLevel, check_reference: QaxCheckReference
+    ) -> QajsonCheck:
+        """Adds a new check to this QajsondataLevel. Returns the new QajsonCheck"""
         check_info = QajsonInfo(
             id=check_reference.id,
             name=check_reference.name,
@@ -298,10 +287,9 @@ class QaxCheckToolPlugin():
         return new_check
 
     def _get_or_add_check(
-            self,
-            data_level: QajsonDataLevel,
-            check_reference: QaxCheckReference) -> QajsonCheck:
-        """ If a check exists it will be returned, otherwise a new check will
+        self, data_level: QajsonDataLevel, check_reference: QaxCheckReference
+    ) -> QajsonCheck:
+        """If a check exists it will be returned, otherwise a new check will
         be created, added, and then returned.
         """
         matching_check = data_level.get_check(check_reference.id)
@@ -311,12 +299,13 @@ class QaxCheckToolPlugin():
         return self.add_check(data_level, check_reference)
 
     def _get_qajson_checks(self, qajson: QajsonRoot) -> List[QajsonCheck]:
-        """ Gets a list of the qajson check objects that within this qajson
+        """Gets a list of the qajson check objects that within this qajson
         root object. Utility function
         """
         #  list of all the data levels
         data_levels = [
-            getattr(qajson.qa, a) for a in dir(qajson.qa)
+            getattr(qajson.qa, a)
+            for a in dir(qajson.qa)
             if isinstance(getattr(qajson.qa, a), QajsonDataLevel)
         ]
 
@@ -329,30 +318,29 @@ class QaxCheckToolPlugin():
                     all_checks.append(check)
         return all_checks
 
-    def _checks_filtered_by_file(self, filename: str, checks: List[QajsonCheck]) -> List[QajsonCheck]:
-      """ Filters the list of QajsonCheck objects so that it only includes checks
-      that have been run on this file.
-      """
-      filtered_checks = []
-      for check in checks:
-          for file in check.inputs.files:
-              if file.path == filename:
-                  filtered_checks.append(check)
-      return filtered_checks
+    def _checks_filtered_by_file(
+        self, filename: str, checks: List[QajsonCheck]
+    ) -> List[QajsonCheck]:
+        """Filters the list of QajsonCheck objects so that it only includes checks
+        that have been run on this file.
+        """
+        filtered_checks = []
+        for check in checks:
+            for file in check.inputs.files:
+                if file.path == filename:
+                    filtered_checks.append(check)
+        return filtered_checks
 
-    def _checks_filtered_by_name(self, check_name: str, checks: List[QajsonCheck]) -> List[QajsonCheck]:
-        filtered_checks = [
-            c for c in checks
-            if c.info.name == check_name
-        ]
+    def _checks_filtered_by_name(
+        self, check_name: str, checks: List[QajsonCheck]
+    ) -> List[QajsonCheck]:
+        filtered_checks = [c for c in checks if c.info.name == check_name]
         return filtered_checks
 
     def update_qa_json_input_params(
-            self,
-            qa_json: QajsonRoot,
-            check_id: str,
-            params: List[QajsonParam]) -> None:
-        """ Updates the input definitions included in the qa_json object
+        self, qa_json: QajsonRoot, check_id: str, params: List[QajsonParam]
+    ) -> None:
+        """Updates the input definitions included in the qa_json object
         to include the `params` list. Parameters are only added to a check if
         the check already exists in the `qa_json` object, and the check id
         matches that passed to this function.
@@ -384,18 +372,16 @@ class QaxCheckToolPlugin():
             inputs.params.extend(params)
 
     def implements_check(self, check_id: str) -> bool:
-        """ Does this plugin implement this check
-        """
-        return (self.get_check_reference(check_id) is not None)
+        """Does this plugin implement this check"""
+        return self.get_check_reference(check_id) is not None
 
     def get_check_reference(self, check_id: str) -> QaxCheckReference:
-        """ gets a check reference with the given id, if not found return None
-        """
+        """gets a check reference with the given id, if not found return None"""
         check = next((cr for cr in self.checks() if cr.id == check_id), None)
         return check
 
     def checks(self) -> List[QaxCheckReference]:
-        """ returns a list of checks that are provided by this check tool.
+        """returns a list of checks that are provided by this check tool.
         Each check includes a list of what file formats it supports and what
         data level it belongs too.
 
@@ -404,13 +390,13 @@ class QaxCheckToolPlugin():
         raise NotImplementedError
 
     def run(
-            self,
-            qajson: QajsonRoot,
-            progress_callback: Callable = None,
-            qajson_update_callback: Callable = None,
-            is_stopped: Callable = None
+        self,
+        qajson: QajsonRoot,
+        progress_callback: Callable = None,
+        qajson_update_callback: Callable = None,
+        is_stopped: Callable = None,
     ) -> None:
-        """ Runs the checks implemented within the check tool plugin.
+        """Runs the checks implemented within the check tool plugin.
 
         * Must be implemented by plugin. *
 
@@ -429,7 +415,7 @@ class QaxCheckToolPlugin():
         raise NotImplementedError
 
     def get_summary_details(self, qajson: QajsonRoot) -> List[Tuple[str, str]]:
-        """ Gets a list of summary fields that can be extracted from this
+        """Gets a list of summary fields that can be extracted from this
         plugin. This is returned as a list of tuples, each tuple being two
         strings for the grouping of the field (section name) and the name
         of the field.
@@ -439,19 +425,15 @@ class QaxCheckToolPlugin():
         return []
 
     def get_summary_value(
-            self,
-            field_section: str,
-            field_name: str,
-            filename: str,
-            qajson: QajsonRoot
-        ) -> object:
-        """ Gets the summary value from the qajson and returns it. This
+        self, field_section: str, field_name: str, filename: str, qajson: QajsonRoot
+    ) -> object:
+        """Gets the summary value from the qajson and returns it. This
         value may be a string or number type.
         """
         raise NotImplementedError("Plugins must implement get_summary_value function")
 
     def get_file_details(self, filename: str) -> str:
-        """ Gets a description of the file based on how the plugin would describe the
+        """Gets a description of the file based on how the plugin would describe the
         file. This is presented to the user in the "details" column of the file inputs
         tab within teh QAX user interface.
         If not overriden by the check plugin it simply returns an empty string
@@ -459,28 +441,23 @@ class QaxCheckToolPlugin():
         return ""
 
 
-class QaxProfilePlugins():
-    """ Manages a list of plugins that are specific to single profile
-    """
+class QaxProfilePlugins:
+    """Manages a list of plugins that are specific to single profile"""
 
     def __init__(self, plugins: List[QaxCheckToolPlugin]):
         self.plugins = plugins
 
     def update_qa_json_input_params(
-            self,
-            qa_json: QajsonRoot,
-            check_id: str,
-            params: List[QajsonParam]) -> None:
-        """ Refer to docstring for QaxProfile. This function simply runs
+        self, qa_json: QajsonRoot, check_id: str, params: List[QajsonParam]
+    ) -> None:
+        """Refer to docstring for QaxProfile. This function simply runs
         the equivalent QaxProfile function for each plugin.
         """
         for plugin in self.plugins:
             plugin.update_qa_json_input_params(qa_json, check_id, params)
 
-    def get_plugin_for_check(
-            self, check_id: str) -> Optional[QaxCheckToolPlugin]:
-        """ Gets the plugin that this check belongs to or return None if not found
-        """
+    def get_plugin_for_check(self, check_id: str) -> Optional[QaxCheckToolPlugin]:
+        """Gets the plugin that this check belongs to or return None if not found"""
         for plugin in self.plugins:
             check_ref = plugin.get_check_reference(check_id)
             if check_ref is not None:
@@ -489,28 +466,26 @@ class QaxProfilePlugins():
 
 
 class QaxPluginError(Exception):
-    """ Custom Error for plugin issues
-    """
+    """Custom Error for plugin issues"""
 
     def __init__(self, message):
         super().__init__(message)
 
 
 class QaxPluginLoadError(QaxPluginError):
-    """ Custom Error for plugin issues
-    """
+    """Custom Error for plugin issues"""
 
     def __init__(self, message):
         super().__init__(message)
 
 
-class QaxPlugins():
-    """ Class manages plugins
-    """
+class QaxPlugins:
+    """Class manages plugins"""
+
     _instance = None  # singleton instance
 
     @staticmethod
-    def instance() -> 'QaxPlugins':
+    def instance() -> "QaxPlugins":
         if QaxPlugins._instance is None:
             raise QaxPluginError("Plugins have not been loaded")
         return QaxPlugins._instance
@@ -519,35 +494,38 @@ class QaxPlugins():
         self.plugins: list[QaxCheckToolPlugin] = []
 
     def _load_plugin(
-            self,
-            profile: QaxConfigProfile,
-            check_tool: QaxConfigCheckTool
+        self, profile: QaxConfigProfile, check_tool: QaxConfigCheckTool
     ) -> QaxCheckToolPlugin:
-        """ creates an instance of the plugin based on the `plugin_class`
+        """creates an instance of the plugin based on the `plugin_class`
         defined in the QA JSON config for the given `check_tool`
         """
         if check_tool.plugin_class is None:
             raise QaxPluginError(
-                "No pluginClass defined for {}".format(check_tool.name))
+                "No pluginClass defined for {}".format(check_tool.name)
+            )
 
-        mod_class_bits = check_tool.plugin_class.rsplit('.', 1)
+        mod_class_bits = check_tool.plugin_class.rsplit(".", 1)
         if len(mod_class_bits) < 2:
             raise QaxPluginError(
                 "pluginClass is expected to be a fully qualified class "
                 "name (eg; `qax.hyo2.plugin.myplugin.MyPlugin`). "
-                "{} was provided".format(check_tool.name))
+                "{} was provided".format(check_tool.name)
+            )
 
         module_name, class_name = mod_class_bits
         try:
             plugin_module = importlib.import_module(module_name)
         except ModuleNotFoundError:
             raise QaxPluginLoadError(
-                "Could not load plugin module {}".format(module_name))
+                "Could not load plugin module {}".format(module_name)
+            )
 
         if not hasattr(plugin_module, class_name):
             raise QaxPluginLoadError(
-                "Could not load plugin class {} (of module {})"
-                .format(class_name, module_name))
+                "Could not load plugin class {} (of module {})".format(
+                    class_name, module_name
+                )
+            )
 
         plugin_class = getattr(plugin_module, class_name)
         plugin_instance = plugin_class()
@@ -557,17 +535,14 @@ class QaxPlugins():
             plugin_instance.icon = check_tool.icon
         if check_tool.name is not None and len(check_tool.name) > 0:
             plugin_instance.name = check_tool.name
-        if check_tool.description is not None and len(
-                check_tool.description) > 0:
+        if check_tool.description is not None and len(check_tool.description) > 0:
             plugin_instance.description = check_tool.description
         return plugin_instance
 
     def get_plugin(
-            self,
-            profile_name: str,
-            check_tool_class: str
+        self, profile_name: str, check_tool_class: str
     ) -> Optional[QaxCheckToolPlugin]:
-        """ Gets a plugin instance that has already been loaded based on the
+        """Gets a plugin instance that has already been loaded based on the
         class name string (as included in QAX config) and the profile name.
         Will return None if no matching plugin found.
         """
@@ -576,26 +551,24 @@ class QaxPlugins():
                 p
                 for p in self.plugins
                 if (
-                    p.plugin_class == check_tool_class and
-                    p.profile.name == profile_name)
+                    p.plugin_class == check_tool_class
+                    and p.profile.name == profile_name
+                )
             ),
-            None
+            None,
         )
         return match
 
     def get_plugin_for_check(self, check_id: str) -> Optional[QaxCheckToolPlugin]:
-        """ Gets the plugin that this check belongs to or return None if not found
-        """
+        """Gets the plugin that this check belongs to or return None if not found"""
         for plugin in self.plugins:
             check_ref = plugin.get_check_reference(check_id)
             if check_ref is not None:
                 return plugin
         return None
 
-    def get_profile_plugins(
-            self, profile: QaxConfigProfile) -> QaxProfilePlugins:
-        """ Gets the plugins for this profile ONLY
-        """
+    def get_profile_plugins(self, profile: QaxConfigProfile) -> QaxProfilePlugins:
+        """Gets the plugins for this profile ONLY"""
         plugins = []
         for check_tool in profile.check_tools:
             plugin = self.get_plugin(profile.name, check_tool.plugin_class)
@@ -605,8 +578,7 @@ class QaxPlugins():
         return QaxProfilePlugins(plugins)
 
     def load(self, config: QaxConfig) -> None:
-        """ Loads plugins defined in `config`
-        """
+        """Loads plugins defined in `config`"""
         for profile in config.profiles:
             for check_tool in profile.check_tools:
                 plugin = self._load_plugin(profile, check_tool)

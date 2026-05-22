@@ -4,7 +4,6 @@ from hyo2.qax import __author__, __version__
 
 
 class TestQAX(unittest.TestCase):
-
     def test_author(self):
         self.assertGreaterEqual(len(__author__.split(";")), 2)
 

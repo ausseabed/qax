@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class PluginsTab(QtWidgets.QWidget):
-
     plugin_changed = QtCore.Signal(QaxCheckToolPlugin)
 
     def __init__(self, parent_win, prj):
@@ -43,13 +42,16 @@ class PluginsTab(QtWidgets.QWidget):
         for plugin_tab in self.plugin_tabs:
             plugin_tab.set_specification(specification)
 
-    def set_selected_checks(self, checks: list[QaxCheckReference], standard: QaxConfigSpecification|None = None):
+    def set_selected_checks(
+        self,
+        checks: list[QaxCheckReference],
+        standard: QaxConfigSpecification | None = None,
+    ):
         for plugin_tab in self.plugin_tabs:
             plugin_tab.set_selected_checks(checks, standard)
 
     def update_plugin_tabs(self):
-        """ Updates what plugins are shown in the bottom tabs
-        """
+        """Updates what plugins are shown in the bottom tabs"""
         for plugin_tab in self.plugin_tabs:
             plugin_tab.setParent(None)
         self.plugin_tabs.clear()
@@ -58,20 +60,15 @@ class PluginsTab(QtWidgets.QWidget):
             return
 
         # get plugin instances for current profile from singleton
-        plugins = (
-            QaxPlugins.instance().get_profile_plugins(self.profile)
-            .plugins
-        )
+        plugins = QaxPlugins.instance().get_profile_plugins(self.profile).plugins
 
         for plugin in plugins:
-            plugin_tab = PluginTab(
-                parent_win=self, prj=self.prj, plugin=plugin)
+            plugin_tab = PluginTab(parent_win=self, prj=self.prj, plugin=plugin)
             plugin_tab.plugin_changed.connect(self._on_plugin_changed)
             self.plugin_tabs.append(plugin_tab)
             icon_path = GuiSettings.icon_path(plugin.icon)
             if icon_path is not None:
-                tab_index = self.tabs.addTab(
-                    plugin_tab, QtGui.QIcon(icon_path), "")
+                tab_index = self.tabs.addTab(plugin_tab, QtGui.QIcon(icon_path), "")
             else:
                 tab_index = self.tabs.addTab(plugin_tab, plugin.name)
             self.tabs.setTabToolTip(tab_index, plugin.name)

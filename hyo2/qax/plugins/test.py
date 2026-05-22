@@ -1,33 +1,25 @@
 from typing import List, Callable
 import time
 
-from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference, \
-    QaxFileType
+from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference, QaxFileType
 from ausseabed.qajson.model import QajsonParam, QajsonRoot
 
 
 class FlierFinderQaxPlugin(QaxCheckToolPlugin):
-
     # all Mate checks support the same file types
     supported_file_types = [
         QaxFileType(
-            name="BAG file",
-            extension="bag",
-            group="Survey DTMs",
-            icon="bag.png"
+            name="BAG file", extension="bag", group="Survey DTMs", icon="bag.png"
         ),
         QaxFileType(
-            name="CSAR file",
-            extension="csar",
-            group="Survey DTMs",
-            icon="csar.png"
-        )
+            name="CSAR file", extension="csar", group="Survey DTMs", icon="csar.png"
+        ),
     ]
 
     def __init__(self):
         super(FlierFinderQaxPlugin, self).__init__()
         # name of the check tool
-        self.name = 'Flier Finder'
+        self.name = "Flier Finder"
         self._check_references = self._build_check_references()
         self.stopped = False
 
@@ -42,7 +34,7 @@ class FlierFinderQaxPlugin(QaxCheckToolPlugin):
                 QajsonParam("Height threshold", "32.3"),
                 QajsonParam("Algorithm", "nearest"),
                 QajsonParam("Max flier count", 20),
-            ]
+            ],
         )
 
         return [cr]
@@ -50,11 +42,7 @@ class FlierFinderQaxPlugin(QaxCheckToolPlugin):
     def checks(self) -> List[QaxCheckReference]:
         return self._check_references
 
-    def run(
-            self,
-            qajson: QajsonRoot,
-            progress_callback: Callable = None
-            ) -> None:
+    def run(self, qajson: QajsonRoot, progress_callback: Callable = None) -> None:
         self.stopped = False
         print("Start flier finder checks")
         max_val = 20
@@ -62,7 +50,7 @@ class FlierFinderQaxPlugin(QaxCheckToolPlugin):
             if self.stopped:
                 return
             time.sleep(0.5)
-            progress_callback(self, i/max_val)
+            progress_callback(self, i / max_val)
         print("End flier finder checks")
 
     def stop(self):
@@ -70,27 +58,20 @@ class FlierFinderQaxPlugin(QaxCheckToolPlugin):
 
 
 class HolidayFinderQaxPlugin(QaxCheckToolPlugin):
-
     # all Mate checks support the same file types
     supported_file_types = [
         QaxFileType(
-            name="BAG file",
-            extension="bag",
-            group="Survey DTMs",
-            icon="bag.png"
+            name="BAG file", extension="bag", group="Survey DTMs", icon="bag.png"
         ),
         QaxFileType(
-            name="CSAR file",
-            extension="csar",
-            group="Survey DTMs",
-            icon="csar.png"
-        )
+            name="CSAR file", extension="csar", group="Survey DTMs", icon="csar.png"
+        ),
     ]
 
     def __init__(self):
         super(HolidayFinderQaxPlugin, self).__init__()
         # name of the check tool
-        self.name = 'Holiday Finder'
+        self.name = "Holiday Finder"
         self._check_references = self._build_check_references()
         self.stopped = False
 
@@ -100,18 +81,14 @@ class HolidayFinderQaxPlugin(QaxCheckToolPlugin):
             name="Holiday finder checks",
             data_level="survey_products",
             description="Identifies areas of missing data",
-            supported_file_types=HolidayFinderQaxPlugin.supported_file_types
+            supported_file_types=HolidayFinderQaxPlugin.supported_file_types,
         )
         return [cr]
 
     def checks(self) -> List[QaxCheckReference]:
         return self._check_references
 
-    def run(
-            self,
-            qajson: QajsonRoot,
-            progress_callback: Callable = None
-            ) -> None:
+    def run(self, qajson: QajsonRoot, progress_callback: Callable = None) -> None:
         self.stopped = False
         print("Start holiday finder checks")
         max_val = 20
@@ -119,7 +96,7 @@ class HolidayFinderQaxPlugin(QaxCheckToolPlugin):
             if self.stopped:
                 return
             time.sleep(0.5)
-            progress_callback(self, i/max_val)
+            progress_callback(self, i / max_val)
         print("End holiday finder checks")
 
     def stop(self):
@@ -127,37 +104,22 @@ class HolidayFinderQaxPlugin(QaxCheckToolPlugin):
 
 
 class CoverageCheckQaxPlugin(QaxCheckToolPlugin):
-
     # all Mate checks support the same file types
     supported_file_types = [
         QaxFileType(
-            name="BAG file",
-            extension="bag",
-            group="Survey DTMs",
-            icon="bag.png"
+            name="BAG file", extension="bag", group="Survey DTMs", icon="bag.png"
         ),
         QaxFileType(
-            name="CSAR file",
-            extension="csar",
-            group="Survey DTMs",
-            icon="csar.png"
+            name="CSAR file", extension="csar", group="Survey DTMs", icon="csar.png"
         ),
-        QaxFileType(
-            name="Shapefile",
-            extension="shp",
-            group="Expected coverage"
-        ),
-        QaxFileType(
-            name="GeoJSON",
-            extension="json",
-            group="Expected coverage"
-        )
+        QaxFileType(name="Shapefile", extension="shp", group="Expected coverage"),
+        QaxFileType(name="GeoJSON", extension="json", group="Expected coverage"),
     ]
 
     def __init__(self):
         super(CoverageCheckQaxPlugin, self).__init__()
         # name of the check tool
-        self.name = 'Coverage checker'
+        self.name = "Coverage checker"
         self._check_references = self._build_check_references()
         self.stopped = False
 
@@ -167,18 +129,14 @@ class CoverageCheckQaxPlugin(QaxCheckToolPlugin):
             name="Coverage checker",
             data_level="survey_products",
             description="Confirms coverage of data across expected area",
-            supported_file_types=CoverageCheckQaxPlugin.supported_file_types
+            supported_file_types=CoverageCheckQaxPlugin.supported_file_types,
         )
         return [cr]
 
     def checks(self) -> List[QaxCheckReference]:
         return self._check_references
 
-    def run(
-            self,
-            qajson: QajsonRoot,
-            progress_callback: Callable = None
-            ) -> None:
+    def run(self, qajson: QajsonRoot, progress_callback: Callable = None) -> None:
         self.stopped = False
         print("Start Coverage checker checks")
         max_val = 10
@@ -186,7 +144,7 @@ class CoverageCheckQaxPlugin(QaxCheckToolPlugin):
             if self.stopped:
                 return
             time.sleep(0.5)
-            progress_callback(self, i/max_val)
+            progress_callback(self, i / max_val)
         print("End Coverage checker checks")
 
     def stop(self):

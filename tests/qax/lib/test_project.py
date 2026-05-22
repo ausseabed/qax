@@ -5,108 +5,109 @@ from hyo2.qax.lib.project import QaCheckSummary
 
 
 class TestQaCheckSummary(unittest.TestCase):
-
-    qa_json = QajsonRoot.from_dict({
-        "qa": {
-            "version": "0.1.4",
-            "raw_data": {
-                "checks": [
-                    {
-                        "info": {
-                            "id": "1",
-                            "name": "check 01",
-                            "version": "1",
-                            "group": {"id": "", "name": ""}
-                        },
-                        "inputs": {
-                            "files": [
-                                {"path": "file1.txt", "file_type": "Raw Files"}
-                            ]
-                        },
-                        "outputs": {
-                            "percentage": 0,
-                            "execution": {
-                                "start": "2019-07-08T14:56:49.006647",
-                                "end": "2019-07-08T14:56:49.006677",
-                                "status": "completed"
+    qa_json = QajsonRoot.from_dict(
+        {
+            "qa": {
+                "version": "0.1.4",
+                "raw_data": {
+                    "checks": [
+                        {
+                            "info": {
+                                "id": "1",
+                                "name": "check 01",
+                                "version": "1",
+                                "group": {"id": "", "name": ""},
                             },
-                            "files": [],
-                            "check_state": "pass"
-                        }
-                    },
-                    {
-                        "info": {
-                            "id": "1",
-                            "name": "check 01",
-                            "version": "1",
-                            "group": {"id": "", "name": ""}
-                        },
-                        "inputs": {
-                            "files": [
-                                {"path": "file3.txt", "file_type": "Raw Files"}
-                            ]
-                        },
-                        "outputs": {
-                            "percentage": 0,
-                            "execution": {
-                                "start": "2019-07-08T14:56:49.006647",
-                                "end": "2019-07-08T14:56:49.006677",
-                                "status": "completed"
+                            "inputs": {
+                                "files": [
+                                    {"path": "file1.txt", "file_type": "Raw Files"}
+                                ]
                             },
-                            "files": [],
-                            "check_state": "pass"
-                        }
-                    },
-                    {
-                        "info": {
-                            "id": "1",
-                            "name": "check 01",
-                            "version": "1",
-                            "group": {"id": "", "name": ""}
-                        },
-                        "inputs": {
-                            "files": [
-                                {"path": "file4.txt", "file_type": "Raw Files"}
-                            ]
-                        },
-                        "outputs": {
-                            "percentage": 0,
-                            "execution": {
-                                "start": "2019-07-08T14:56:49.006647",
-                                "end": "2019-07-08T14:56:49.006677",
-                                "status": "completed"
+                            "outputs": {
+                                "percentage": 0,
+                                "execution": {
+                                    "start": "2019-07-08T14:56:49.006647",
+                                    "end": "2019-07-08T14:56:49.006677",
+                                    "status": "completed",
+                                },
+                                "files": [],
+                                "check_state": "pass",
                             },
-                            "files": [],
-                            "check_state": "fail"
-                        }
-                    },
-                    {
-                        "info": {
-                            "id": "2",
-                            "name": "check 02",
-                            "version": "1",
-                            "group": {"id": "", "name": ""}
                         },
-                        "inputs": {
-                            "files": [
-                                {"path": "file2.txt", "file_type": "Raw Files"}
-                            ]
-                        },
-                        "outputs": {
-                            "percentage": 0,
-                            "execution": {
-                                "start": "2019-07-08T14:56:49.006647",
-                                "end": "2019-07-08T14:56:49.006677",
-                                "status": "failed"
+                        {
+                            "info": {
+                                "id": "1",
+                                "name": "check 01",
+                                "version": "1",
+                                "group": {"id": "", "name": ""},
                             },
-                            "files": []
-                        }
-                    },
-                ]
-            },
-            "survey_products": []
+                            "inputs": {
+                                "files": [
+                                    {"path": "file3.txt", "file_type": "Raw Files"}
+                                ]
+                            },
+                            "outputs": {
+                                "percentage": 0,
+                                "execution": {
+                                    "start": "2019-07-08T14:56:49.006647",
+                                    "end": "2019-07-08T14:56:49.006677",
+                                    "status": "completed",
+                                },
+                                "files": [],
+                                "check_state": "pass",
+                            },
+                        },
+                        {
+                            "info": {
+                                "id": "1",
+                                "name": "check 01",
+                                "version": "1",
+                                "group": {"id": "", "name": ""},
+                            },
+                            "inputs": {
+                                "files": [
+                                    {"path": "file4.txt", "file_type": "Raw Files"}
+                                ]
+                            },
+                            "outputs": {
+                                "percentage": 0,
+                                "execution": {
+                                    "start": "2019-07-08T14:56:49.006647",
+                                    "end": "2019-07-08T14:56:49.006677",
+                                    "status": "completed",
+                                },
+                                "files": [],
+                                "check_state": "fail",
+                            },
+                        },
+                        {
+                            "info": {
+                                "id": "2",
+                                "name": "check 02",
+                                "version": "1",
+                                "group": {"id": "", "name": ""},
+                            },
+                            "inputs": {
+                                "files": [
+                                    {"path": "file2.txt", "file_type": "Raw Files"}
+                                ]
+                            },
+                            "outputs": {
+                                "percentage": 0,
+                                "execution": {
+                                    "start": "2019-07-08T14:56:49.006647",
+                                    "end": "2019-07-08T14:56:49.006677",
+                                    "status": "failed",
+                                },
+                                "files": [],
+                            },
+                        },
+                    ]
+                },
+                "survey_products": [],
+            }
         }
-    })
+    )
 
     def test_get_summary(self):
         summaries = QaCheckSummary.get_summary(TestQaCheckSummary.qa_json)

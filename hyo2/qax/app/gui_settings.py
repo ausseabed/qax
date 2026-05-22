@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 # Settings in common with the QC Tools widgets
 #
 class GuiSettings:
-
     @classmethod
     def single_line_height(cls):
         """the height of a single line"""
@@ -53,12 +52,12 @@ class GuiSettings:
     @staticmethod
     def config():
         udd = user_data_dir(appname=app_info.app_name)
-        return os.path.join(udd, 'config')
+        return os.path.join(udd, "config")
 
     @staticmethod
     def settings_file():
         config_dir = GuiSettings.config()
-        settings_file = os.path.join(config_dir, 'settings.ini')
+        settings_file = os.path.join(config_dir, "settings.ini")
         return settings_file
 
     @staticmethod
@@ -68,7 +67,7 @@ class GuiSettings:
 
     @staticmethod
     def icon_path(icon: str) -> Optional[str]:
-        """ Checks if the icon filename exists in the media folder. Otherwise
+        """Checks if the icon filename exists in the media folder. Otherwise
         attempt to treat `icon` as a absolute path to the icon image file.
         If neither exist as files, return None.
         """
@@ -93,7 +92,9 @@ class GuiSettings:
 
     @staticmethod
     def stylesheet_slider_labels():
-        return "QLabel { color: rgb(185, 185, 185); font: 7pt; padding: 5px 0px 0px 0px;}"
+        return (
+            "QLabel { color: rgb(185, 185, 185); font: 7pt; padding: 5px 0px 0px 0px;}"
+        )
 
     @staticmethod
     def stylesheet_plugin_tab_titles():
@@ -109,8 +110,10 @@ class GuiSettings:
 
     @staticmethod
     def stylesheet_info_button():
-        return "QPushButton { background-color: rgba(255, 255, 255, 0); }\n" \
-               "QPushButton:hover { background-color: rgba(230, 230, 230, 100); }\n"
+        return (
+            "QPushButton { background-color: rgba(255, 255, 255, 0); }\n"
+            "QPushButton:hover { background-color: rgba(230, 230, 230, 100); }\n"
+        )
 
     @staticmethod
     def text_button_width():

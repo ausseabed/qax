@@ -5,8 +5,7 @@ import logging
 import os
 
 from hyo2.qax.app.widgets.qax.profile_groupbox import ProfileGroupBox
-from hyo2.qax.app.widgets.qax.filegroup_groupbox \
-    import FileGroupGroupBox
+from hyo2.qax.app.widgets.qax.filegroup_groupbox import FileGroupGroupBox
 from hyo2.qax.lib.config import QaxConfig, QaxConfigProfile, QaxConfigSpecification
 from hyo2.qax.lib.plugin import QaxPlugins, QaxCheckToolPlugin, QaxCheckReference
 from hyo2.qax.lib.plugin_service import PluginService
@@ -17,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class MainTab(QtWidgets.QWidget):
-
     here = os.path.abspath(os.path.dirname(__file__))
 
     profile_selected = QtCore.Signal(QaxConfigProfile)
@@ -40,31 +38,33 @@ class MainTab(QtWidgets.QWidget):
         self.setLayout(self.vbox)
 
         # Include widget for selecting profile and check tools to run
-        self.profile_selection = ProfileGroupBox(
-            self, self.prj, QaxConfig.instance())
-        self.profile_selection.profile_selected.connect(
-            self._on_profile_selected)
+        self.profile_selection = ProfileGroupBox(self, self.prj, QaxConfig.instance())
+        self.profile_selection.profile_selected.connect(self._on_profile_selected)
         self.profile_selection.specification_selected.connect(
-            self._on_specification_selected)
-        self.profile_selection.check_selection_change.connect(
-            self._on_checks_selected)
+            self._on_specification_selected
+        )
+        self.profile_selection.check_selection_change.connect(self._on_checks_selected)
         self.vbox.addWidget(self.profile_selection)
 
         self.file_group_selection = FileGroupGroupBox(self, self.prj)
         self.file_group_selection.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Expanding)
+            QSizePolicy.Expanding, QSizePolicy.Expanding
+        )
         self.vbox.addWidget(self.file_group_selection)
 
-        self._on_checks_selected(
-            self.profile_selection.selected_checks())
+        self._on_checks_selected(self.profile_selection.selected_checks())
         self.file_group_selection.filenames_added.connect(
-            self._on_file_group_files_changed)
+            self._on_file_group_files_changed
+        )
         self.file_group_selection.filenames_removed.connect(
-            self._on_file_group_files_changed)
+            self._on_file_group_files_changed
+        )
         self.file_group_selection.dataset_changed.connect(
-            self._on_file_group_files_changed)
+            self._on_file_group_files_changed
+        )
         self.file_group_selection.filetype_changed.connect(
-            self._on_file_group_files_changed)
+            self._on_file_group_files_changed
+        )
 
     def initialize(self):
         self.profile_selection.initialize()
@@ -84,10 +84,7 @@ class MainTab(QtWidgets.QWidget):
 
         plugins: set[QaxCheckToolPlugin] = set()
         for check in checks:
-
-            check_tool_plugin = QaxPlugins.instance().get_plugin_for_check(
-                check.id
-            )
+            check_tool_plugin = QaxPlugins.instance().get_plugin_for_check(check.id)
             plugins.add(check_tool_plugin)
 
         plugins = list(plugins)

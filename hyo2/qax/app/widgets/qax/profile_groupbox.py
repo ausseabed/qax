@@ -12,9 +12,10 @@ from hyo2.qax.lib.config import QaxConfigProfile, QaxConfig, QaxConfigSpecificat
 
 
 class CheckCheckBox(QtWidgets.QCheckBox):
-    """ Subclass for checkbox widget to allow it to maintain a reference to
+    """Subclass for checkbox widget to allow it to maintain a reference to
     a QaxCheckReference
     """
+
     def __init__(self, *args, **kwargs):
         QtWidgets.QCheckBox.__init__(self, *args, **kwargs)
         self._check: QaxCheckReference | None = None
@@ -27,7 +28,7 @@ class CheckCheckBox(QtWidgets.QCheckBox):
 
 
 class ProfileGroupBox(QtWidgets.QGroupBox):
-    """ Profile selection and display of check tools included in the selected
+    """Profile selection and display of check tools included in the selected
     profile.
     """
 
@@ -55,15 +56,18 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         vbox_profile_label_selection = QtWidgets.QVBoxLayout()
         vbox_profile_label_selection.setAlignment(QtCore.Qt.AlignTop)
         hbox.addLayout(vbox_profile_label_selection)
-        vbox_profile_label_selection.addWidget(ManualLabelButton(
-            manual_links.INTERFACE_PROFILE,
-            "Profile:",
-            "Show profile help"
-        ))
+        vbox_profile_label_selection.addWidget(
+            ManualLabelButton(
+                manual_links.INTERFACE_PROFILE,
+                "Profile:",
+                "Show profile help",
+            )
+        )
 
         self.profile_combobox = QtWidgets.QComboBox()
         self.profile_combobox.setSizePolicy(
-            QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+            QSizePolicy.MinimumExpanding, QSizePolicy.Preferred
+        )
         for profile in config.profiles:
             self.profile_combobox.addItem(profile.name, profile)
 
@@ -72,42 +76,57 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
 
         self.profile_description_label = QtWidgets.QLabel("")
         self.profile_description_label.setSizePolicy(
-            QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+            QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding
+        )
         self.profile_description_label.setWordWrap(True)
         self.profile_description_label.setStyleSheet("padding-left :5px")
         vbox_profile_label_selection.addWidget(self.profile_description_label)
-        vbox_profile_label_selection.setAlignment(self.profile_description_label, QtCore.Qt.AlignTop)
+        vbox_profile_label_selection.setAlignment(
+            self.profile_description_label, QtCore.Qt.AlignTop
+        )
 
         # Specification selection
         vbox_profile_specification_selection = QtWidgets.QVBoxLayout()
         vbox_profile_specification_selection.setAlignment(QtCore.Qt.AlignTop)
         hbox.addLayout(vbox_profile_specification_selection)
-        vbox_profile_specification_selection.addWidget(ManualLabelButton(
-            manual_links.INTERFACE_STANDARD,
-            "Standard:",
-            "Show Standards help"
-        ))
+        vbox_profile_specification_selection.addWidget(
+            ManualLabelButton(
+                manual_links.INTERFACE_STANDARD,
+                "Standard:",
+                "Show Standards help",
+            )
+        )
 
         self.specification_combobox = QtWidgets.QComboBox()
         self.specification_combobox.setSizePolicy(
-            QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
-        self.specification_combobox.currentIndexChanged.connect(self.on_set_specification)
+            QSizePolicy.MinimumExpanding, QSizePolicy.Preferred
+        )
+        self.specification_combobox.currentIndexChanged.connect(
+            self.on_set_specification
+        )
         vbox_profile_specification_selection.addWidget(self.specification_combobox)
         self.specification_description_label = QtWidgets.QLabel("")
         self.specification_description_label.setWordWrap(True)
         self.specification_description_label.setSizePolicy(
-            QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+            QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding
+        )
         self.specification_description_label.setStyleSheet("padding-left :5px")
-        vbox_profile_specification_selection.addWidget(self.specification_description_label)
-        vbox_profile_specification_selection.setAlignment(self.specification_description_label, QtCore.Qt.AlignTop)
+        vbox_profile_specification_selection.addWidget(
+            self.specification_description_label
+        )
+        vbox_profile_specification_selection.setAlignment(
+            self.specification_description_label, QtCore.Qt.AlignTop
+        )
 
         vbox.addWidget(QHLine())
 
-        vbox.addWidget(ManualLabelButton(
-            manual_links.INTERFACE_CHECK_TOOL_SELECTION,
-            "Check Tools:",
-            "Show check tool selection help"
-        ))
+        vbox.addWidget(
+            ManualLabelButton(
+                manual_links.INTERFACE_CHECK_TOOL_SELECTION,
+                "Check Tools:",
+                "Show check tool selection help",
+            )
+        )
 
         self.check_tools_layout = QtWidgets.QVBoxLayout()
         self.check_tools_layout.setSpacing(12)
@@ -115,24 +134,33 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
 
     def initialize(self):
         settings = GuiSettings.settings()
-        settings_selected_profile_name = settings.value("selected_profile", defaultValue="None")
-        settings_selected_specification_name = settings.value("selected_specification", defaultValue="None")
+        settings_selected_profile_name = settings.value(
+            "selected_profile", defaultValue="None"
+        )
+        settings_selected_specification_name = settings.value(
+            "selected_specification", defaultValue="None"
+        )
 
         self.profile_combobox.setCurrentIndex(0)
         self.on_set_profile(0)
         for index, p in enumerate(self.config.profiles):
-            if settings_selected_profile_name != "None" and settings_selected_profile_name == p.name:
+            if (
+                settings_selected_profile_name != "None"
+                and settings_selected_profile_name == p.name
+            ):
                 self.profile_combobox.setCurrentIndex(index)
                 self.on_set_profile(index)
 
         for index, s in enumerate(self.selected_profile.specifications):
-            if settings_selected_specification_name != "None" and settings_selected_specification_name == s.name:
+            if (
+                settings_selected_specification_name != "None"
+                and settings_selected_specification_name == s.name
+            ):
                 self.specification_combobox.setCurrentIndex(index)
                 self.on_set_specification(index)
 
     def __clear_layout(self, layout: QtWidgets.QLayout):
-        """ Recursively remove all widgets from the given layout and any nested layouts.
-        """
+        """Recursively remove all widgets from the given layout and any nested layouts."""
         if layout is None:
             return
 
@@ -147,7 +175,7 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
                     self.__clear_layout(sublayout)
 
     def update_check_tools(self, profile: QaxConfigProfile):
-        """ Updates the list of check tool checkboxes based on the given
+        """Updates the list of check tool checkboxes based on the given
         profile.
         """
         self.check_checkboxes.clear()
@@ -163,21 +191,19 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
             check_tool_label.setAlignment(QtCore.Qt.AlignTop)
             check_tool_label.setStyleSheet("font-weight: bold")
 
-            check_tool_label.setSizePolicy(
-                QSizePolicy.Minimum, QSizePolicy.Minimum)
+            check_tool_label.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
             check_tool_layout.addWidget(check_tool_label)
 
             checks_frame = QtWidgets.QFrame()
             checks_layout = FlowLayout()
             checks_frame.setLayout(checks_layout)
 
-            checks_frame.setSizePolicy(
-                QSizePolicy.Expanding, QSizePolicy.Minimum)
+            checks_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
             check_tool_layout.addWidget(checks_frame)
 
             check_tool_plugin = QaxPlugins.instance().get_plugin(
                 profile_name=self.selected_profile.name,
-                check_tool_class=check_tool.plugin_class
+                check_tool_class=check_tool.plugin_class,
             )
 
             for check_ref in check_tool_plugin.checks():
@@ -185,16 +211,14 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
                 check_widget.setCheck(check_ref)
                 check_widget.setMinimumWidth(150)
                 check_widget.setStyleSheet("padding-right: 10px;")
-                check_widget.stateChanged.connect(
-                    self.on_check_change
-                )
+                check_widget.stateChanged.connect(self.on_check_change)
                 checks_layout.addWidget(check_widget)
 
                 self.check_checkboxes.append(check_widget)
 
     def update_specifications(self, profile: QaxConfigProfile):
-        """ updates the combobox list of specifications with the specifications
-        from the selected profile """
+        """updates the combobox list of specifications with the specifications
+        from the selected profile"""
         self.specification_combobox.clear()
         for specification in profile.specifications:
             self.specification_combobox.addItem(specification.name, specification)
@@ -209,8 +233,7 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
             )
 
     def selected_checks(self) -> list[QaxCheckReference]:
-        """ Gets a list of checks that have been selected
-        """
+        """Gets a list of checks that have been selected"""
         checks = [
             ccb.check()
             for ccb in self.check_checkboxes
@@ -219,8 +242,7 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         return checks
 
     def on_set_profile(self, currentIndex):
-        """ Event handler for user selection of profile
-        """
+        """Event handler for user selection of profile"""
         profile = self.profile_combobox.itemData(currentIndex)
         self.selected_profile = profile
         if profile.description is not None:
@@ -233,7 +255,6 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         if len(profile.specifications) > 0:
             self.set_selected_checks(profile.specifications[0])
         self.on_check_change()
-
 
     def on_set_specification(self, currentIndex):
         if currentIndex == -1:
@@ -253,16 +274,18 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         self.specification_selected.emit(specification)
 
     def set_selected_checks(self, specification: QaxConfigSpecification):
-        """ sets the checked checks to those included in the standard
-        """
+        """sets the checked checks to those included in the standard"""
         for ccb in self.check_checkboxes:
             standard_check = specification.get_config_check(ccb.check().id)
-            checkstate = QtCore.Qt.CheckState.Unchecked if standard_check is None else QtCore.Qt.CheckState.Checked
+            checkstate = (
+                QtCore.Qt.CheckState.Unchecked
+                if standard_check is None
+                else QtCore.Qt.CheckState.Checked
+            )
             ccb.setCheckState(checkstate)
 
     def on_check_change(self):
-        """ Event handler for user selection change of individual checks
-        """
+        """Event handler for user selection change of individual checks"""
         self.check_selection_change.emit(self.selected_checks())
 
     def update_ui(self, qajson: QajsonRoot) -> None:
@@ -281,4 +304,6 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         if self.selected_specification is None:
             settings.setValue("selected_specification", "None")
         else:
-            settings.setValue("selected_specification", self.selected_specification.name)
+            settings.setValue(
+                "selected_specification", self.selected_specification.name
+            )

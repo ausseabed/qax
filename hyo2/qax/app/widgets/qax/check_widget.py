@@ -4,16 +4,17 @@ from typing import List, Any
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.lines import QHLine
-from hyo2.qax.app.widgets.qax.check_param_widget import CheckParamWidget, \
-    get_param_widget
+from hyo2.qax.app.widgets.qax.check_param_widget import (
+    CheckParamWidget,
+    get_param_widget,
+)
 from hyo2.qax.app.widgets.qax.manual import ManualButton
 from hyo2.qax.lib.plugin import QaxCheckReference
 from hyo2.qax.lib.config import QaxConfigSpecification
 
 
 class CheckWidget(QtWidgets.QWidget):
-    """ Display details for single check
-    """
+    """Display details for single check"""
 
     check_changed = QtCore.Signal(QaxCheckReference)
 
@@ -33,17 +34,16 @@ class CheckWidget(QtWidgets.QWidget):
 
         if self.check_reference.description is not None:
             label_description = QtWidgets.QLabel(
-                "{}".format(self.check_reference.description))
+                "{}".format(self.check_reference.description)
+            )
             vbox.addWidget(label_description)
 
-        if (
-            (self.check_reference.default_input_params is None) or
-            (len(self.check_reference.default_input_params) == 0)
+        if (self.check_reference.default_input_params is None) or (
+            len(self.check_reference.default_input_params) == 0
         ):
             hbox = QtWidgets.QHBoxLayout()
             hbox.addStretch()
-            label_no_params = QtWidgets.QLabel(
-                "Check accepts no input parameters")
+            label_no_params = QtWidgets.QLabel("Check accepts no input parameters")
             hbox.addWidget(label_no_params)
             hbox.addStretch()
             vbox.addLayout(hbox)
@@ -56,14 +56,13 @@ class CheckWidget(QtWidgets.QWidget):
             params_label_layout = QtWidgets.QHBoxLayout()
             params_label = QtWidgets.QLabel("Parameters")
             params_label.setStyleSheet(
-                "QLabel { font-weight: bold; "
-                "padding: 0px 0px 0px 0px;}"
+                "QLabel { font-weight: bold; padding: 0px 0px 0px 0px;}"
             )
             params_label_layout.addWidget(params_label)
             if check_reference.parameter_help_link is not None:
                 params_help = ManualButton(
                     check_reference.parameter_help_link,
-                    f"Show {check_reference.name} parameters help"
+                    f"Show {check_reference.name} parameters help",
                 )
                 params_label_layout.addWidget(params_help)
             params_label_layout.addStretch(1)
@@ -81,16 +80,14 @@ class CheckWidget(QtWidgets.QWidget):
         vbox.addWidget(QHLine())
 
     def get_params_and_values(self) -> dict[str, Any]:
-        """ function used to generate a cache of this widgets state
-        """
+        """function used to generate a cache of this widgets state"""
         p_and_v: dict[str, Any] = {}
         for pw in self.param_widgets:
             p_and_v[pw.param().name] = pw.value
         return p_and_v
 
     def set_params_and_values(self, p_and_v: dict[str, Any]) -> None:
-        """ function restores widget state to that of the previous cache (p_and_v)
-        """
+        """function restores widget state to that of the previous cache (p_and_v)"""
         for pw in self.param_widgets:
             if pw.param().name in p_and_v:
                 pw.value = p_and_v[pw.param().name]
@@ -99,7 +96,7 @@ class CheckWidget(QtWidgets.QWidget):
         self.check_changed.emit(self.check_reference)
 
     def get_check_id_and_params(self):
-        """ Returns a tuple. First element of each tuple is the check
+        """Returns a tuple. First element of each tuple is the check
         id, second element is the list of params for the check. Information is
         returned in this manner to support updating qa json.
         """
@@ -108,7 +105,7 @@ class CheckWidget(QtWidgets.QWidget):
         return res
 
     def update_ui(self, qajson: QajsonRoot) -> None:
-        data_levels = ['raw_data', 'survey_products', 'chart_adequacy']
+        data_levels = ["raw_data", "survey_products", "chart_adequacy"]
         # build list of all checks from all data levels
         this_check = None
         for dl in data_levels:
@@ -138,6 +135,6 @@ class CheckWidget(QtWidgets.QWidget):
             return
         for param_widget in self.param_widgets:
             for config_param in check_spec.parameters:
-                if (param_widget.param().name == config_param.name):
+                if param_widget.param().name == config_param.name:
                     # print(f"set_specification: {check_spec.checkName} {config_param.name} {config_param.value}")
                     param_widget.value = config_param.value

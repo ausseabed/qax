@@ -22,7 +22,7 @@ def icon(*names, **kwargs):
         media_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "media"))
         icon_path = os.path.join(media_folder, "%s.png" % names[0])
         if not os.path.exists(icon_path):
-            raise RuntimeError('Unable to locate icon at %s' % icon_path)
+            raise RuntimeError("Unable to locate icon at %s" % icon_path)
         return QtGui.QIcon(icon_path)
 
 
@@ -40,7 +40,7 @@ class IconWidget(QtWidgets.QLabel):
     """
 
     def __init__(self, *names, **kwargs):
-        super().__init__(parent=kwargs.get('parent'))
+        super().__init__(parent=kwargs.get("parent"))
         self._icon = None
         self._size = QtCore.QSize(16, 16)
         self.setIcon(icon(*names, **kwargs))

@@ -1,8 +1,16 @@
 from PySide2.QtCore import QUrl, QFileInfo
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QLineEdit, QApplication, \
-    QMainWindow, QPushButton, QToolBar, QVBoxLayout, QWidget, \
-    QHBoxLayout, QLabel
+from PySide2.QtWidgets import (
+    QLineEdit,
+    QApplication,
+    QMainWindow,
+    QPushButton,
+    QToolBar,
+    QVBoxLayout,
+    QWidget,
+    QHBoxLayout,
+    QLabel,
+)
 from PySide2.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
 import os
 from pathlib import Path
@@ -14,26 +22,26 @@ import hyo2.qax.app.widgets.qax.manual_links as manual_links
 
 logger = logging.getLogger(__name__)
 
-def _docs_root():
-    _base = Path(__file__).parent.parent.parent   # = hyo2/qax/app
-    root = _base/"media"/"docs"
 
-    if (root/"index.html").exists():
+def _docs_root():
+    _base = Path(__file__).parent.parent.parent  # = hyo2/qax/app
+    root = _base / "media" / "docs"
+
+    if (root / "index.html").exists():
         logger.info("Found docs at %s", root)
         return root
 
     # probably edit mode install
-    _base = _base.parent.parent.parent # = root of repo
-    root = _base/"docs"/"_build"/"html"
-    if not (root/"index.html").exists():
+    _base = _base.parent.parent.parent  # = root of repo
+    root = _base / "docs" / "_build" / "html"
+    if not (root / "index.html").exists():
         raise RuntimeError("Can't locate docs")
     logger.info("Using dev mode docs: %s", root)
-    
+
     return root
 
 
 class ManualWindow(QMainWindow):
-
     # singleton instance for the Manual Dialog window
     _instance = None
 
@@ -41,19 +49,19 @@ class ManualWindow(QMainWindow):
     # to enable this function to be called from anywhere in the QAX
     # code base
     @classmethod
-    def show_manual(cls, link = None):
-        if (ManualWindow._instance is None):
+    def show_manual(cls, link=None):
+        if ManualWindow._instance is None:
             man_win = ManualWindow()
             app = QApplication.instance()
             available_geometry = app.desktop().availableGeometry(man_win)
             man_win.resize(
-                available_geometry.width() * 2 / 3,
-                available_geometry.height() * 2 / 3)
+                available_geometry.width() * 2 / 3, available_geometry.height() * 2 / 3
+            )
             ManualWindow._instance = man_win
 
         # if a url link is provided, then set the manual window to display
         # this links content. Otherwise just go to the index page
-        if (link is None):
+        if link is None:
             ManualWindow._instance.set_url(manual_links.INDEX)
         else:
             ManualWindow._instance.set_url(link)
@@ -64,7 +72,7 @@ class ManualWindow(QMainWindow):
     def __init__(self):
         super(ManualWindow, self).__init__()
 
-        self.setWindowTitle('QAX Manual')
+        self.setWindowTitle("QAX Manual")
 
         icon_info = QFileInfo(app_info.app_icon_path)
         self.setWindowIcon(QIcon(icon_info.absoluteFilePath()))
@@ -72,15 +80,15 @@ class ManualWindow(QMainWindow):
         self.toolbar = QToolBar()
         self.addToolBar(self.toolbar)
         self.back_button = QPushButton()
-        self.back_button.setIcon(qta.icon('fa6s.arrow-left'))
+        self.back_button.setIcon(qta.icon("fa6s.arrow-left"))
         self.back_button.clicked.connect(self.back)
         self.toolbar.addWidget(self.back_button)
         self.forward_button = QPushButton()
-        self.forward_button.setIcon(qta.icon('fa6s.arrow-right'))
+        self.forward_button.setIcon(qta.icon("fa6s.arrow-right"))
         self.forward_button.clicked.connect(self.forward)
         self.toolbar.addWidget(self.forward_button)
         self.home_button = QPushButton()
-        self.home_button.setIcon(qta.icon('fa6s.house'))
+        self.home_button.setIcon(qta.icon("fa6s.house"))
         self.home_button.clicked.connect(self.home)
         self.toolbar.addWidget(self.home_button)
 
@@ -135,7 +143,7 @@ class ManualWindow(QMainWindow):
         self.web_engine_view.load(self.initialUrl)
 
     def set_url(self, url: str) -> None:
-        """ Sets the contents displayed by the manual dialog. url
+        """Sets the contents displayed by the manual dialog. url
         is assumed to be in the short form (taken from the manual_links
         module).
         """
@@ -143,16 +151,16 @@ class ManualWindow(QMainWindow):
         abs_docs_path = os.path.join(docs_root, url)
         file_only_path = None
         fragment = None
-        if '#' in abs_docs_path:
+        if "#" in abs_docs_path:
             # then it has a fragment, so separate the two components
             # as this messes with the `fromLocalFile` fn
-            parts = abs_docs_path.split('#')
+            parts = abs_docs_path.split("#")
             file_only_path = os.path.abspath(parts[0])
             fragment = parts[1]
         else:
             file_only_path = os.path.abspath(abs_docs_path)
 
-        file_url =  QUrl.fromLocalFile(file_only_path)
+        file_url = QUrl.fromLocalFile(file_only_path)
         if fragment is not None:
             file_url.setFragment(fragment)
 
@@ -175,7 +183,7 @@ class ManualButton(QPushButton):
     def __init__(self, link: str, tooltip: str = None):
         super(ManualButton, self).__init__()
 
-        self.setIcon(qta.icon('fa6s.circle-info', color='grey'))
+        self.setIcon(qta.icon("fa6s.circle-info", color="grey"))
         if tooltip is not None:
             self.setToolTip(tooltip)
         self.clicked.connect(self._click_show_manual)
@@ -183,10 +191,10 @@ class ManualButton(QPushButton):
 
         self.setStyleSheet(
             "QPushButton {"
-                # "background: rgb(255, 0, 0);"
-                # "color: rgb(125, 125, 0);"
-                "font-size: 10pt;"
-                "border: none;"
+            # "background: rgb(255, 0, 0);"
+            # "color: rgb(125, 125, 0);"
+            "font-size: 10pt;"
+            "border: none;"
             "}"
         )
 
@@ -210,9 +218,6 @@ class ManualLabelButton(QWidget):
         self.setLayout(layout)
         label = QLabel(label)
         layout.addWidget(label)
-        help_button = ManualButton(
-            link,
-            tooltip
-        )
+        help_button = ManualButton(link, tooltip)
         layout.addWidget(help_button)
         layout.addStretch(1)
