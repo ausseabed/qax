@@ -1,7 +1,6 @@
 from ausseabed.qajson.model import QajsonRoot
 from PySide2 import QtCore, QtWidgets
 from PySide2.QtWidgets import QSizePolicy
-from typing import NoReturn
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.layout import FlowLayout
@@ -266,7 +265,7 @@ class ProfileGroupBox(QtWidgets.QGroupBox):
         """
         self.check_selection_change.emit(self.selected_checks())
 
-    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+    def update_ui(self, qajson: QajsonRoot) -> None:
         # we don't save the profile in the qajson file, so there's nothing we
         # can do here till qajson is updated
         pass

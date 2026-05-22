@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-from typing import List, NoReturn, Dict
+from typing import List, Dict
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QLineEdit, \
     QPushButton, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QSizePolicy, QFileDialog, QPlainTextEdit, QProgressBar, \
@@ -355,7 +355,7 @@ class RunTab(QtWidgets.QWidget):
 
         self.vbox.addWidget(process_groupbox)
 
-    def set_run_stop_buttons_enabled(self, is_running: bool) -> NoReturn:
+    def set_run_stop_buttons_enabled(self, is_running: bool) -> None:
         if is_running:
             self.run_button.setEnabled(False)
             self.stop_button.setEnabled(True)

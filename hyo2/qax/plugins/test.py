@@ -1,4 +1,4 @@
-from typing import List, NoReturn, Callable
+from typing import List, Callable
 import time
 
 from hyo2.qax.lib.plugin import QaxCheckToolPlugin, QaxCheckReference, \
@@ -54,7 +54,7 @@ class FlierFinderQaxPlugin(QaxCheckToolPlugin):
             self,
             qajson: QajsonRoot,
             progress_callback: Callable = None
-            ) -> NoReturn:
+            ) -> None:
         self.stopped = False
         print("Start flier finder checks")
         max_val = 20
@@ -111,7 +111,7 @@ class HolidayFinderQaxPlugin(QaxCheckToolPlugin):
             self,
             qajson: QajsonRoot,
             progress_callback: Callable = None
-            ) -> NoReturn:
+            ) -> None:
         self.stopped = False
         print("Start holiday finder checks")
         max_val = 20
@@ -178,7 +178,7 @@ class CoverageCheckQaxPlugin(QaxCheckToolPlugin):
             self,
             qajson: QajsonRoot,
             progress_callback: Callable = None
-            ) -> NoReturn:
+            ) -> None:
         self.stopped = False
         print("Start Coverage checker checks")
         max_val = 10

@@ -3,7 +3,7 @@ from ausseabed.qajson.parser import QajsonParser
 from ausseabed.qajson.utils import qajson_valid
 from pathlib import Path
 from PySide2 import QtCore
-from typing import Optional, NoReturn, List
+from typing import Optional, List
 import json
 import logging
 import traceback
@@ -26,7 +26,7 @@ class QaCheckSummary():
             cls,
             data_level: str,
             check: QajsonCheck,
-            summaries: dict) -> NoReturn:
+            summaries: dict) -> None:
         # a name and id tuple is used to reference the summaries
         nid = (check.info.id, check.info.name)
         if nid in summaries:
@@ -134,7 +134,7 @@ class QAXProject(QtCore.QObject):
         return self._qa_json
 
     @qa_json.setter
-    def qa_json(self, value: Optional[QajsonRoot]) -> NoReturn:
+    def qa_json(self, value: Optional[QajsonRoot]) -> None:
         self._qa_json = value
         self.qa_json_changed.emit(self._qa_json)
 
@@ -143,7 +143,7 @@ class QAXProject(QtCore.QObject):
         return self._qa_json_path
 
     @qa_json_path.setter
-    def qa_json_path(self, value: Optional[Path]) -> NoReturn:
+    def qa_json_path(self, value: Optional[Path]) -> None:
         self._qa_json_path = value
         self.qa_json_path_changed.emit(self._qa_json_path)
 
@@ -152,7 +152,7 @@ class QAXProject(QtCore.QObject):
         return self._profile
 
     @profile.setter
-    def profile(self, value: QaxConfigProfile) -> NoReturn:
+    def profile(self, value: QaxConfigProfile) -> None:
         self._profile = value
 
     def get_qa_json_path(self) -> Path:
@@ -160,7 +160,7 @@ class QAXProject(QtCore.QObject):
             return self.qa_json_path
         raise RuntimeError("could not construct qa json path")
 
-    def save_qa_json(self) -> NoReturn:
+    def save_qa_json(self) -> None:
         path = self.get_qa_json_path()
         if self.qa_json_path is None or str(path) != str(self.qa_json_path):
             # then set the qa json path to fire events so the ui updates
@@ -184,7 +184,7 @@ class QAXProject(QtCore.QObject):
             logging.error(traceback.format_exc())
             return False
 
-    def open_qa_json(self) -> NoReturn:
+    def open_qa_json(self) -> None:
         path = self.qa_json_path
         qajsonparser = QajsonParser(path)
         self.qa_json = qajsonparser.root

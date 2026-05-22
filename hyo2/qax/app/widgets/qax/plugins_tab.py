@@ -1,6 +1,5 @@
 from ausseabed.qajson.model import QajsonRoot
 from PySide2 import QtCore, QtGui, QtWidgets
-from typing import NoReturn
 import logging
 
 from hyo2.qax.app.gui_settings import GuiSettings
@@ -80,6 +79,6 @@ class PluginsTab(QtWidgets.QWidget):
     def _on_plugin_changed(self, plugin: QaxCheckToolPlugin):
         self.plugin_changed.emit(plugin)
 
-    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+    def update_ui(self, qajson: QajsonRoot) -> None:
         for plugin_tab in self.plugin_tabs:
             plugin_tab.update_ui(qajson)

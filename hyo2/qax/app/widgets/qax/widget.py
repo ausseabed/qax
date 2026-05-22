@@ -1,7 +1,6 @@
 from ausseabed.qajson.model import QajsonRoot
 from pathlib import Path
 from PySide2 import QtCore, QtWidgets
-from typing import NoReturn
 import logging
 import os
 
@@ -230,7 +229,7 @@ class QAXWidget(QtWidgets.QTabWidget):
     def change_info_url(self, url):
         self.main_win.change_info_url(url)
 
-    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+    def update_ui(self, qajson: QajsonRoot) -> None:
         self.tab_inputs.update_ui(qajson)
         self.tab_plugins.update_ui(qajson)
 

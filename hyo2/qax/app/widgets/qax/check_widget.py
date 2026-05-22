@@ -1,6 +1,6 @@
 from ausseabed.qajson.model import QajsonRoot, QajsonParam, QajsonDataLevel
 from PySide2 import QtCore, QtWidgets
-from typing import NoReturn, List, Any
+from typing import List, Any
 
 from hyo2.qax.app.gui_settings import GuiSettings
 from hyo2.qax.app.widgets.lines import QHLine
@@ -107,7 +107,7 @@ class CheckWidget(QtWidgets.QWidget):
         res = (self.check_reference.id, params)
         return res
 
-    def update_ui(self, qajson: QajsonRoot) -> NoReturn:
+    def update_ui(self, qajson: QajsonRoot) -> None:
         data_levels = ['raw_data', 'survey_products', 'chart_adequacy']
         # build list of all checks from all data levels
         this_check = None

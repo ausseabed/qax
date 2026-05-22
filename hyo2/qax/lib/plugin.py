@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, NoReturn, Optional, Callable, Tuple
+from typing import Dict, List, Optional, Callable, Tuple
 import importlib
 import re
 
@@ -134,7 +134,7 @@ class QaxFileGroup:
             (ft for ft in self.file_types if ft.extension == extension), None)
         return match
 
-    def add(self, file_type: QaxFileType) -> NoReturn:
+    def add(self, file_type: QaxFileType) -> None:
         """ Adds a new file type to this group. Duplicates will not be added.
         """
         match = next(
@@ -351,7 +351,7 @@ class QaxCheckToolPlugin():
             self,
             qa_json: QajsonRoot,
             check_id: str,
-            params: List[QajsonParam]) -> NoReturn:
+            params: List[QajsonParam]) -> None:
         """ Updates the input definitions included in the qa_json object
         to include the `params` list. Parameters are only added to a check if
         the check already exists in the `qa_json` object, and the check id
@@ -409,7 +409,7 @@ class QaxCheckToolPlugin():
             progress_callback: Callable = None,
             qajson_update_callback: Callable = None,
             is_stopped: Callable = None
-    ) -> NoReturn:
+    ) -> None:
         """ Runs the checks implemented within the check tool plugin.
 
         * Must be implemented by plugin. *
@@ -470,7 +470,7 @@ class QaxProfilePlugins():
             self,
             qa_json: QajsonRoot,
             check_id: str,
-            params: List[QajsonParam]) -> NoReturn:
+            params: List[QajsonParam]) -> None:
         """ Refer to docstring for QaxProfile. This function simply runs
         the equivalent QaxProfile function for each plugin.
         """
@@ -604,7 +604,7 @@ class QaxPlugins():
             plugins.append(plugin)
         return QaxProfilePlugins(plugins)
 
-    def load(self, config: QaxConfig) -> NoReturn:
+    def load(self, config: QaxConfig) -> None:
         """ Loads plugins defined in `config`
         """
         for profile in config.profiles:
