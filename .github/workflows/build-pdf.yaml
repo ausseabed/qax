@@ -1,0 +1,73 @@
+name: QAX PDF
+
+on:
+  push:
+    branches:
+      - "main"
+      - "kk/*"
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  pull_request:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    outputs:
+      # dev|release (tags or main|develop)
+      mode: ${{ steps.eval.outputs.mode }}
+
+    steps:
+      - id: eval
+        shell: bash
+        run: |
+          MODE="dev"
+
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            MODE="release"
+          fi
+
+          if [[ "$GITHUB_REF_TYPE" == "branch" && "$GITHUB_REF_NAME" == "main" ]]; then
+            MODE="release"
+          fi
+
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "Resolved build mode: $MODE"
+
+  build-pdf:
+    needs: policy
+    if: needs.policy.outputs.mode == 'release'
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Setup LaTex
+        run: |
+          # texlive-core on conda is broken, and has been for some time apparently
+          sudo apt-get update
+          sudo apt-get install texlive-latex-extra latexmk texlive
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Pixi
+        uses: prefix-dev/setup-pixi@v0.9.6
+        with:
+          cache: true
+
+      - name: Build Docs (HTML)
+        run: |
+          pixi run mkdocs html
+
+      - name: Build Docs (PDF)
+        run: |
+          pixi run mkdocs latexpdf
+
+      - name: Upload QAX PDF Document
+        uses: actions/upload-artifact@v7
+        with:
+          name: "HydrOfficeQAX.pdf"
+          path: "docs/_build/latex/HydrOfficeQAX.pdf"
+          archive: false
+          retention-days: 6

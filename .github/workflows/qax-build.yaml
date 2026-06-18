@@ -3,119 +3,17 @@ name: QAX Build
 on:
   push:
     branches:
-      - 'main'
-      - 'develop'
-      - 'kk/*'
+      - "main"
+      - "kk/*"
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - "v[0-9]+.[0-9]+.[0-9]+"
   pull_request:
     branches:
-      - 'develop'
-      - 'main'
+      - "main"
   workflow_dispatch:
 
 jobs:
-  policy:
-    runs-on: ubuntu-latest
-    outputs:
-      # dev|release (tags or main|develop)
-      mode: ${{ steps.eval.outputs.mode }}
-
-    steps:
-      - id: eval
-        shell: bash
-        run: |
-          MODE="dev"
-
-          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-            MODE="release"
-          fi
-
-          if [[ "$GITHUB_REF_TYPE" == "branch" ]]; then
-            if [[ "$GITHUB_REF_NAME" == "main" || "$GITHUB_REF_NAME" == "develop" ]]; then
-              MODE="release"
-            fi
-          fi
-
-          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
-          echo "Resolved build mode: $MODE"
-  build-conda:
-    needs: policy
-    runs-on: "ubuntu-latest" 
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Install Pixi
-        uses: prefix-dev/setup-pixi@v0.9.5
-        with:
-          cache: true
-
-      - name: Patch version for dev build
-        if: needs.policy.outputs.mode == 'dev'
-        run: |
-          awk -i inplace -v run="$GITHUB_RUN_NUMBER" '
-            /^[[:space:]]*version[[:space:]]*=/ {
-              sub(/"$/, ".dev" run "\"")
-            }
-            { print }
-          ' pyproject.toml
-
-          grep -q "\.dev$GITHUB_RUN_NUMBER\"" pyproject.toml \
-            || { echo "Version patch failed" >&2; exit 1; }
-
-      - name: Build Conda Package
-        id: conda-package
-        run: |
-          pixi run mkconda
-          CONDA_PACKAGE_PATH="$(find . -name '*.conda' | head -1)" 
-          echo "path=${CONDA_PACKAGE_PATH}" >> $GITHUB_OUTPUT
-
-      - name: Dump Package Content
-        env:
-          CONDA_PACKAGE_PATH: ${{ steps.conda-package.outputs.path }}
-        run: |
-          pixi run rattler-build package inspect --paths "${CONDA_PACKAGE_PATH}"
-
-      - name: Publish Artifact
-        uses: actions/upload-artifact@v7
-        with:
-          path: ${{ steps.conda-package.outputs.path }}
-          archive: false
-
-  build-pdf:
-    needs: policy
-    if: needs.policy.outputs.mode == 'release'
-    runs-on: "ubuntu-latest" 
-
-    steps:
-      - name: Setup LaTex
-        run: |
-          # texlive-core on conda is broken, and has been for some time apparently
-          sudo apt-get update
-          sudo apt-get install texlive-latex-extra latexmk texlive
-
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Install Pixi
-        uses: prefix-dev/setup-pixi@v0.9.5
-        with:
-          cache: true
-
-      - name: Build Docs (HTML)
-        run: |
-          pixi run mkdocs html
-
-      - name: Build Docs (PDF)
-        run: |
-          pixi run mkdocs latexpdf
-
-      - name: Upload QAX PDF Document
-        uses: actions/upload-artifact@v7
-        with:
-          name: "HydrOfficeQAX.pdf"
-          path: "docs/_build/latex/HydrOfficeQAX.pdf"
-          archive: false
-          retention-days: 6
+  ci:
+    uses: ausseabed/.github/.github/workflows/ci.yaml@main
+    secrets:
+        prefix_api_token: ${{ secrets.PREFIX_API_KEY }}
