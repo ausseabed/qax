@@ -123,10 +123,9 @@ class PluginTab(QtWidgets.QWidget):
                 cw.set_params_and_values(user_input_cache[cw.check_reference.id])
             elif standard is not None:
                 # then get values from the currently selected standard
-                check = standard.get_config_check(cw.check_reference.id)
-                if check is not None:
+                if (check_rw:= standard.get_config_check(cw.check_reference.id)) is not None:
                     standard_p_and_v: dict[str, Any] = {}
-                    for p in check.parameters:
+                    for p in check_rw.parameters:
                         standard_p_and_v[p.name] = p.value
                     cw.set_params_and_values(standard_p_and_v)
 

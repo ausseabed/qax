@@ -8,7 +8,7 @@ from pathlib import Path
 import logging
 import os
 import sys
-import traceback
+from types import TracebackType
 
 from hyo2.qax.app import qta
 from hyo2.qax.app.widgets.qax.manual import ManualWindow
@@ -156,7 +156,10 @@ class MainWin(QtWidgets.QMainWindow):
         )
 
     def exception_hook(
-        self, ex_type: type, ex_value: BaseException, tb: traceback
+        self,
+        ex_type: type,
+        ex_value: BaseException,
+        tb: TracebackType,
     ) -> None:
         sys.__excepthook__(ex_type, ex_value, tb)
 

@@ -4,7 +4,7 @@ user interface
 
 from collections import OrderedDict
 from pathlib import Path
-from typing import List, TypeVar, Optional, Tuple
+from typing import List, TypeVar, Optional, Tuple, Generic
 
 import pandas as pd
 import xlsxwriter
@@ -16,7 +16,7 @@ from hyo2.qax.lib.plugin import QaxProfilePlugins, QaxCheckToolPlugin
 ST = TypeVar("ST")
 
 
-class QajsonSummaryField:
+class QajsonSummaryField(Generic[ST]):
     def __init__(self, name: str, value: ST = None) -> None:
         self.name = name
         self.value = value
@@ -69,7 +69,7 @@ class QajsonFileSummary:
                 separator = sep
                 separator_count = c
 
-        if separator_count == 0:
+        if separator is None:
             return name_only
 
         name_tokens = name_only.split(separator)
@@ -184,6 +184,7 @@ class QajsonTableSummary:
 
     def initialise_file_list(self) -> None:
         """Builds a list of all files under each QajsonTableSummaryCheck"""
+        assert self.check_summaries is not None
         self.all_files = []
 
         for dl_name in self.all_data_levels:
@@ -199,11 +200,12 @@ class QajsonTableSummary:
                 input_file_name = input_file.path
                 if input_file_name not in self.all_files:
                     self.all_files.append(input_file_name)
-                self.check_summaries[check.info.id].file_summaries[input_file_name] = (
-                    check
-                )
+                self.check_summaries[check.info.id].file_summaries[
+                    input_file_name
+                ] = check
 
     def build_template(self) -> None:
+        assert self.check_summaries is not None
         self.template_file_summary = QajsonFileSummary(None)
 
         # add in the header fields
@@ -228,6 +230,8 @@ class QajsonTableSummary:
         self, field_name: str, section_name: str
     ) -> Optional[QaxCheckToolPlugin]:
         """Gets a plugin that provides this field value"""
+        assert self.check_summaries is not None
+
         for _, check in self.check_summaries.items():
             qajson_check_info = check.check_info
             plugin = self.plugins.get_plugin_for_check(qajson_check_info.id)
@@ -260,21 +264,6 @@ class QajsonTableSummary:
                     value = self._get_field_value(field.name, section.name, filename)
                     field.value = value
 
-    @property
-    def rows(self) -> int:
-        """Gets the number of rows that will be output base on the extracted
-        summary information
-        """
-        if len(self.file_summaries) < 1:
-            raise RuntimeError("Can't get row count until summary data is extracted")
-        file_summary = self.file_summaries[0]
-
-    @property
-    def columns(self) -> int:
-        """Number of columns in this table"""
-        # number of files plus 1 column to include the labels
-        return len(self.file_summaries) + 1
-
 
 class QajsonExporter:
     def __init__(self) -> None:
@@ -285,7 +274,12 @@ class QajsonExporter:
         # extension of the filename the exporter generates
         self.extension = None
 
-    def export(qajson: QajsonRoot, file: Path) -> None:
+    def export(
+        self,
+        qajson: QajsonRoot,
+        file: Path,
+        plugins: QaxProfilePlugins,
+    ) -> None:
         """Exports the `qajson` object to the `file`"""
         raise NotImplementedError("Export function must be overwritten")
 
@@ -367,7 +361,10 @@ class QajsonExcelExporter(QajsonExporter):
         writer.close()
 
     def export(
-        self, qajson: QajsonRoot, file: Path, plugins: QaxProfilePlugins
+        self,
+        qajson: QajsonRoot,
+        file: Path,
+        plugins: QaxProfilePlugins,
     ) -> None:
         """Writes QAJSON to an XLSX file"""
 

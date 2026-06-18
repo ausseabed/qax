@@ -12,7 +12,6 @@ from hyo2.qax.lib.config import QaxConfigProfile
 from hyo2.qax.lib.plugin import QaxPlugins
 from hyo2.qax.lib.qajson_util import QajsonExcelExporter
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -140,7 +139,7 @@ class QAXProject(QtCore.QObject):
     @qa_json.setter
     def qa_json(self, value: Optional[QajsonRoot]) -> None:
         self._qa_json = value
-        self.qa_json_changed.emit(self._qa_json)
+        self.qa_json_changed.emit(self._qa_json)  # type: ignore
 
     @property
     def qa_json_path(self) -> Optional[Path]:
@@ -149,10 +148,10 @@ class QAXProject(QtCore.QObject):
     @qa_json_path.setter
     def qa_json_path(self, value: Optional[Path]) -> None:
         self._qa_json_path = value
-        self.qa_json_path_changed.emit(self._qa_json_path)
+        self.qa_json_path_changed.emit(self._qa_json_path)  # type: ignore
 
     @property
-    def profile(self) -> QaxConfigProfile:
+    def profile(self) -> QaxConfigProfile | None:
         return self._profile
 
     @profile.setter
@@ -165,6 +164,9 @@ class QAXProject(QtCore.QObject):
         raise RuntimeError("could not construct qa json path")
 
     def save_qa_json(self) -> None:
+        if self.qa_json is None:
+            return
+
         path = self.get_qa_json_path()
         if self.qa_json_path is None or str(path) != str(self.qa_json_path):
             # then set the qa json path to fire events so the ui updates
@@ -175,6 +177,9 @@ class QAXProject(QtCore.QObject):
             json.dump(self.qa_json.to_dict(), file, indent=4)
 
     def export_qajson_excel(self, output_file: Path) -> bool:
+        if self.qa_json is None or self.profile is None:
+            return False
+
         profile_plugins = QaxPlugins.instance().get_profile_plugins(self.profile)
         exporter = QajsonExcelExporter()
         try:
@@ -186,10 +191,12 @@ class QAXProject(QtCore.QObject):
 
     def open_qa_json(self) -> None:
         path = self.qa_json_path
+        assert path is not None
         qajsonparser = QajsonParser(path)
         self.qa_json = qajsonparser.root
 
     def get_summary(self) -> List[QaCheckSummary]:
+        assert self.qa_json is not None
         return QaCheckSummary.get_summary(self.qa_json)
 
     def is_qajson_valid(self) -> bool:
@@ -197,20 +204,5 @@ class QAXProject(QtCore.QObject):
         user has entered invalid information into the check parameters (for
         example).
         """
+        assert self.qa_json is not None
         return qajson_valid(self.qa_json)
-
-    def execute_all(self, qa_group: str = "survey_products"):
-        checks = self.inputs.qa_json.js["qa"][qa_group]["checks"]
-        logger.debug("checks: %s" % checks)
-        nr_of_checks = len(checks)
-        for idx in range(nr_of_checks):
-            # TODO
-            checks[idx]["outputs"]["execution"]["status"] = "completed"
-
-    def __repr__(self):
-        msg = super().__repr__()
-        msg += "\n"
-        msg += "%s" % (self._p,)
-        msg += "%s" % (self._i,)
-        msg += "%s" % (self._o,)
-        return msg

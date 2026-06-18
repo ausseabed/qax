@@ -392,9 +392,9 @@ class QaxCheckToolPlugin:
     def run(
         self,
         qajson: QajsonRoot,
-        progress_callback: Callable = None,
-        qajson_update_callback: Callable = None,
-        is_stopped: Callable = None,
+        progress_callback: Callable | None = None,
+        qajson_update_callback: Callable | None = None,
+        is_stopped: Callable | None = None,
     ) -> None:
         """Runs the checks implemented within the check tool plugin.
 

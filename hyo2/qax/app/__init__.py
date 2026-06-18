@@ -2,7 +2,7 @@ import os
 from hyo2.qax import name
 from hyo2.qax import __version__
 from hyo2.qax.lib import InfoObject
-
+# type: ignore
 
 app_info = InfoObject()
 
