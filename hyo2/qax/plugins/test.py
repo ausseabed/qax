@@ -136,7 +136,11 @@ class CoverageCheckQaxPlugin(QaxCheckToolPlugin):
     def checks(self) -> List[QaxCheckReference]:
         return self._check_references
 
-    def run(self, qajson: QajsonRoot, progress_callback: Callable = None) -> None:
+    def run(
+        self,
+        qajson: QajsonRoot,
+        progress_callback: Callable | None = None,
+    ) -> None:
         self.stopped = False
         print("Start Coverage checker checks")
         max_val = 10

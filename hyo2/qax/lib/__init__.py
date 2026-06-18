@@ -1,6 +1,7 @@
 import os
 from hyo2.qax import name
 from hyo2.qax import __version__
+# type: ignore
 
 """ Simple object that allows assignment of any attributes
 """

@@ -186,7 +186,7 @@ class QAXWidget(QtWidgets.QTabWidget):
                 (
                     ptab
                     for ptab in self.tab_plugins.plugin_tabs
-                    if type(ptab.plugin) == type(plugin_check_tool)
+                    if type(ptab.plugin) is type(plugin_check_tool)
                 ),
                 None,
             )

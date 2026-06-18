@@ -47,7 +47,6 @@ class ResultTab(QtWidgets.QWidget):
         self.set_data_level = None
         self.qa_group = None
         self.force_reload = None
-        self.execute_all = None
         self.json_text_group = None
         self.json_viewer = None
         self.score_board_widget = None

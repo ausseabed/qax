@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict
+from typing import Any
 import json
 
 """
@@ -20,19 +20,25 @@ class QaxConfigCheckTool:
     """
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "QaxConfigCheckTool":
-        name = data["name"] if ("name" in data) else None
-        plugin_class = data["pluginClass"] if ("pluginClass" in data) else None
-        description = data["description"] if "description" in data else None
-        icon = data["icon"] if "icon" in data else None
+    def from_dict(cls, data: dict[str, str]) -> "QaxConfigCheckTool":
+        name = data.get("name", "")
+        plugin_class = data.get("pluginClass", None)
+        description = data.get("description", "")
+        icon = data.get("icon", None)
 
-        check_tool = cls(
-            name=name, description=description, plugin_class=plugin_class, icon=icon
+        return cls(
+            name=name,
+            description=description,
+            plugin_class=plugin_class,
+            icon=icon,
         )
-        return check_tool
 
     def __init__(
-        self, name: str, description: str, plugin_class: str = None, icon: str = None
+        self,
+        name: str,
+        description: str,
+        plugin_class: str | None = None,
+        icon: str | None = None,
     ):
         self.name = name
         self.description = description
@@ -50,7 +56,7 @@ class QaxConfigCheckTool:
 
 class QaxConfigParameter:
     @classmethod
-    def from_dict(cls, data: Dict) -> "QaxConfigParameter":
+    def from_dict(cls, data: dict[str, Any]) -> "QaxConfigParameter":
         """
         Function to support parsing config file
         """
@@ -61,7 +67,9 @@ class QaxConfigParameter:
         return p
 
     def __init__(
-        self, parameterName: str = None, parameterValue: object = None
+        self,
+        parameterName: str,
+        parameterValue: Any = None,
     ) -> None:
         """
         A QAX config parameter is first matched to a check parameter value by
@@ -69,7 +77,7 @@ class QaxConfigParameter:
 
         Parameters:
         parameterName (str): Name of parameter (as defined in check implementation)
-        parameterValue (object): The value that will be used as the default for this
+        parameterValue (Any): The value that will be used as the default for this
             parameter when this specification is selected.
         """
         self.name = parameterName
@@ -78,31 +86,24 @@ class QaxConfigParameter:
 
 class QaxConfigCheck:
     @classmethod
-    def from_dict(cls, data: Dict) -> "QaxConfigCheck":
+    def from_dict(cls, data: dict[str, Any]) -> "QaxConfigCheck":
         """
         Function to support parsing config file
         """
 
-        checkId = None
-        if "checkId" in data:
-            checkId = data["checkId"]
+        checkId = data.get("checkId", None)
+        checkName = data.get("checkName", None)
 
-        checkName = None
-        if "checkName" in data:
-            checkName = data["checkName"]
-
-        parameters = []
-        if "parameters" in data:
-            parameters_dict = data["parameters"]
-            parameters = [QaxConfigParameter.from_dict(pd) for pd in parameters_dict]
-
+        parameters = [
+            QaxConfigParameter.from_dict(pd) for pd in data.get("parameters", [])
+        ]
         c = cls(checkId=checkId, checkName=checkName, parameters=parameters)
         return c
 
     def __init__(
         self,
-        checkId: str = None,
-        checkName: str = None,
+        checkId: str | None = None,
+        checkName: str | None = None,
         parameters: list[QaxConfigParameter] = [],
     ) -> None:
         self.checkId = checkId
@@ -115,28 +116,22 @@ class QaxConfigCheck:
 
 class QaxConfigSpecification:
     @classmethod
-    def from_dict(cls, data: Dict) -> "QaxConfigSpecification":
+    def from_dict(cls, data: dict[str, Any]) -> "QaxConfigSpecification":
         """
         Function to support parsing config file
         """
-        name = None
-        if "name" in data:
-            name = data["name"]
-
-        description = None
-        if "description" in data:
-            description = data["description"]
-
-        checks = []
-        if "checks" in data:
-            checks_dict = data["checks"]
-            checks = [QaxConfigCheck.from_dict(pd) for pd in checks_dict]
+        name = data.get("name", "")
+        description = data.get("description", "")
+        checks = [QaxConfigCheck.from_dict(pd) for pd in data.get("checks", [])]
 
         p = cls(name=name, description=description, checks=checks)
         return p
 
     def __init__(
-        self, name: str, description: str = None, checks: list[QaxConfigCheck] = []
+        self,
+        name: str,
+        description: str = "",
+        checks: list[QaxConfigCheck] = [],
     ) -> None:
         """
         Parameters:
@@ -150,7 +145,7 @@ class QaxConfigSpecification:
         self.description = description
         self.checks = checks
 
-    def get_config_check(self, check_id: str) -> QaxConfigCheck:
+    def get_config_check(self, check_id: str) -> QaxConfigCheck | None:
         for c in self.checks:
             if c.checkId == check_id:
                 return c
@@ -164,27 +159,22 @@ class QaxConfigProfile:
     """
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "QaxConfigProfile":
+    def from_dict(cls, data: dict[str, Any]) -> "QaxConfigProfile":
         """
         Factory method to create a QAX Profile from a dict
         """
         name = data["name"]
+        description = data.get("description", "")
 
-        description = None
-        if "description" in data:
-            description = data["description"]
+        check_tools = [
+            QaxConfigCheckTool.from_dict(check_tool_dict)
+            for check_tool_dict in data.get("checkTools", [])
+        ]
 
-        check_tools = []
-        for check_tool_dict in data["checkTools"]:
-            check_tool = QaxConfigCheckTool.from_dict(check_tool_dict)
-            check_tools.append(check_tool)
-
-        specifications = []
-        if "specifications" in data:
-            specifications_dict = data["specifications"]
-            specifications = [
-                QaxConfigSpecification.from_dict(pd) for pd in specifications_dict
-            ]
+        specifications = [
+            QaxConfigSpecification.from_dict(pd)
+            for pd in data.get("specifications", [])
+        ]
 
         profile = cls(
             name=name,
@@ -237,22 +227,18 @@ class QaxConfig:
             raise RuntimeError("Configuration has not been loaded")
         return QaxConfig._instance
 
-    def __init__(self, path: Path = None):
-        if path is None:
-            self.path = QaxConfig.config_folder()
-        else:
-            self.path = path
-
+    def __init__(self, path: Path | None = None):
+        self.path = path or QaxConfig.config_folder()
         self.profiles: list[QaxConfigProfile] = []
 
     def __get_config_files(self) -> list[Path]:
-        config_files = []
-        for x in self.path.iterdir():
-            if x.is_file() and x.suffix == ".json":
-                config_files.append(x)
-        return config_files
+        return [
+            dir_entry
+            for dir_entry in self.path.iterdir()
+            if dir_entry.is_file() and dir_entry.suffix == ".json"
+        ]
 
-    def __profile_from_dict(self, config_data: Dict) -> QaxConfigProfile:
+    def __profile_from_dict(self, config_data: dict[str, Any]) -> QaxConfigProfile:
         return QaxConfigProfile.from_dict(config_data)
 
     def __load_config(self, config_file: Path):
@@ -267,11 +253,10 @@ class QaxConfig:
         Loads all JSON config files found in `self.path`. Files not having a
         .json extension will be skipped.
         """
-        config_files = self.__get_config_files()
-        for config_file in config_files:
-            profile = self.__load_config(config_file)
-            self.profiles.append(profile)
-
-        self.profiles.sort(key=lambda x: x.name, reverse=False)
+        self.profiles = sorted(
+            [self.__load_config(cfg) for cfg in self.__get_config_files()],
+            key=lambda x: x.name,
+            reverse=False,
+        )
 
         QaxConfig._instance = self
