@@ -29,7 +29,7 @@ jobs:
         id: policy
         shell: bash
         run: |
-          V="$(pixi list| awk '/^hyo2-qax /{print $2}')"
+          V="$(cd install && pixi list | awk '/^hyo2-qax /{print $2}')"
           echo "version=$V" >> "$GITHUB_OUTPUT"
 
           echo "dist=qax_dist_v${V}" >> "$GITHUB_OUTPUT"
