@@ -1,4 +1,4 @@
-name: QAX Build
+name: CI
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - "main"
       - "kk/*"
     tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v.*"
   pull_request:
     branches:
       - "main"
@@ -14,6 +14,6 @@ on:
 
 jobs:
   ci:
-    uses: ausseabed/.github/.github/workflows/ci.yaml@main
+    uses: ausseabed/.github/.github/workflows/ci.yml@v1
     secrets:
         prefix_api_token: ${{ secrets.PREFIX_API_KEY }}
