@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "main"
+      - "kk/*"
+    tags:
+      - "v.*"
+  pull_request:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+jobs:
+  ci:
+    uses: ausseabed/.github/.github/workflows/ci.yml@v1
+    secrets:
+      prefix_api_token: ${{ secrets.PREFIX_API_KEY }}
+
+  app:
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@v0.10.0
+        with:
+          cache: true
+          working-directory: install
+
+      - name: Policy
+        id: policy
+        shell: bash
+        env:
+          MODE: ${{ needs.ci.outputs.mode }}
+          CONDA_PACKAGE_PATH: ${{ needs.ci.outputs.conda_package_path }}
+        run: |
+          echo MODE="$MODE"
+          echo CONDA_PACKAGE_PATH="$CONDA_PACKAGE_PATH"
+          
+          echo "name=$(basename $CONDA_PACKAGE_PATH)" >> "$GITHUB_OUTPUT"
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v8
+        with:
+          skip-decompress: true
+          path: ./dist/ 
+          name: ${{ steps.policy.outputs.name }} 
+
+      - name: Patch Env
+        env:
+          MODE: ${{ needs.ci.outputs.mode }}
+          CONDA_PACKAGE_NAME: ${{ steps.policy.outputs.name }}
+        shell: bash
+        run: |
+          echo "::group::./dist/"
+          find ./dist
+          echo "::endgroup::"
+
+          F="$(readlink -f ./dist/$CONDA_PACKAGE_NAME)"
+
+          cd install
+          echo "Patching pixi.toml"
+          sed -Ei 's|^[[:space:]]*hyo2-qax[[:space:]]*=.*$|hyo2-qax = { path = "'"$F"'" }|' pixi.toml
+          pixi lock
+
+          echo "::group::Diff pixi.toml"
+          git diff pixi.toml
+          echo "::endgroup::"
+
+          echo "::group::Diff pixi.lock"
+          git diff --text pixi.lock
+          echo "::endgroup::"
+
+          echo "::group::pixi list"
+          pixi list
+          echo "::endgroup::"
+
+
+
